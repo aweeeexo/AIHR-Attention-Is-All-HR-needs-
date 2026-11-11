@@ -111,7 +111,7 @@ class ThresholdKind(StrEnum):
 class Threshold(BaseModel):
     kind: ThresholdKind
     value: str                 # "3" | "higher" | "B2" — нормализованное значение
-    subject: str | None = None # к чему относится: «складская логистика», «английский»
+    subject: str | None = None # к чему относится: «управление проектами», «английский»
 
 
 class Requirement(BaseModel):
@@ -155,7 +155,7 @@ class Position(BaseModel):
     achievements: list[str] = []
     tools: list[str] = []
     level: TaskLevel | None = None
-    scale: str | None = None      # «команда 5 чел.», «склад 2000 м²» — только если прямо написано
+    scale: str | None = None      # «команда 5 чел.», «бюджет 10 млн ₽» — только если прямо написано
     fragment_ids: list[str] = Field(min_length=1)
 
 
@@ -250,7 +250,7 @@ class Verdict(BaseModel):
     status: Status
     evidence_type: EvidenceType | None = None
     evidence: list[Evidence] = []
-    inference: str | None = None    # для indirect: «[R7] React 3 года → владеет JavaScript»
+    inference: str | None = None    # для indirect: «[R7] PostgreSQL 3 года → владеет SQL»
     missing: str | None = None      # для partial: чего не хватает
     comment: str                    # для рекрутера, ≤ 250 символов, без фактов вне evidence
     confidence: float = Field(ge=0, le=1)
