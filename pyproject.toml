@@ -1,0 +1,124 @@
+[project]
+name = "aihr"
+version = "0.1.0"
+description = "Сопоставление резюме с вакансиями: рейтинг, таблица требований с цитатами, отчёт рекрутеру"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "charset-normalizer==3.5.2",
+    "diskcache==5.6.3",
+    "fastapi==0.162.5",
+    "httpx==0.28.1",
+    "jinja2==3.1.6",
+    "natasha==1.6.0",
+    "openai==3.49.0",
+    "pdfplumber==0.11.10",
+    "pydantic==2.14.3",
+    "pydantic-settings==2.16.2",
+    "python-docx==1.2.0",
+    "python-multipart==0.0.33",
+    "pyyaml==6.0.3",
+    "rank-bm25==0.2.2",
+    # pymorphy2 внутри Natasha импортирует pkg_resources; в setuptools 81+ его нет
+    "setuptools==80.10.2",
+    "snowballstemmer==3.1.1",
+    "streamlit==1.67.0",
+    "typer==0.29.1",
+    "uvicorn==0.54.0",
+]
+
+[project.optional-dependencies]
+# Эмбеддинги для поиска доказательств (T06, T07). torch — из CPU-индекса PyTorch (D19)
+embeddings = [
+    "sentence-transformers==6.3.0",
+    "torch==2.15.0",
+]
+
+[project.scripts]
+aihr = "aihr.cli:app"
+
+[build-system]
+requires = ["uv_build>=0.12.21,<0.13"]
+build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "poethepoet==0.49.0",
+    "pytest==9.2.0",
+    "ruff==0.17.4",
+]
+
+# ---------- uv ----------
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
+[tool.uv.sources]
+# Без CUDA ни на Windows, ни в образе. На macOS сборки с PyPI и так без CUDA
+torch = [{ index = "pytorch-cpu", marker = "sys_platform != 'darwin'" }]
+
+# ---------- команды: на Windows нет make, запускаем uv run poe <задача> ----------
+
+[tool.poe.env]
+PYTHONUTF8 = "1"
+
+[tool.poe.tasks.up]
+help = "Собрать образ и поднять API (8000) и UI (8501)"
+cmd = "docker compose up --build"
+
+[tool.poe.tasks.down]
+help = "Остановить сервисы"
+cmd = "docker compose down"
+
+[tool.poe.tasks.test]
+help = "Тесты без сети (LLM подменена заглушкой)"
+cmd = "pytest"
+
+[tool.poe.tasks.lint]
+help = "Проверка стиля"
+sequence = ["ruff check .", "ruff format --check ."]
+default_item_type = "cmd"
+
+[tool.poe.tasks.fmt]
+help = "Автоформатирование"
+sequence = ["ruff format .", "ruff check --fix ."]
+default_item_type = "cmd"
+
+[tool.poe.tasks.eval]
+help = "Метрики на золотом наборе -> eval/report.md (T10)"
+cmd = "python eval/run.py"
+
+[tool.poe.tasks.demo]
+help = "Прогон примера из кейса в контейнере и проверка результата по схеме"
+cmd = "docker compose run --rm api aihr demo"
+
+[tool.poe.tasks.check-leak]
+help = "Слова из вакансий кейса в src/ (код и промпты)"
+cmd = "python scripts/check_leak.py"
+
+[tool.poe.tasks.serve]
+help = "API локально, без Docker"
+cmd = "uvicorn aihr.api.app:app --reload --port 8000"
+
+[tool.poe.tasks.ui]
+help = "UI локально, без Docker"
+cmd = "streamlit run ui/app.py --server.port 8501"
+
+# ---------- инструменты ----------
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-m 'not llm'"
+markers = ["llm: прогон с настоящей моделью, по умолчанию выключен"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+extend-exclude = ["docs"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF"]
+# Кириллица в строках и комментариях — норма для проекта
+ignore = ["RUF001", "RUF002", "RUF003"]

@@ -1,0 +1,21 @@
+# секреты
+.env
+.env.*
+!.env.example
+
+# окружение Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# IDE
+.idea/
+.vscode/
+
+# данные прогонов, кэш LLM, черновики
+data/runs/
+data/cache/
+scratch/
