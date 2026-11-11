@@ -1,6 +1,6 @@
 # Контракты v1
 
-Это текст `src/aihr/contracts.py` версии 1. Роль B переносит его в код в задаче T00. После этого правда — в коде, этот файл обновляем вместе с ним.
+Это текст `src/aihr/contracts.py` версии 1. Перенесён в код в задаче T00 (отличия только в форматировании комментариев). Теперь правда — в коде, этот файл обновляем вместе с ним.
 
 Изменения — только по согласию обоих: PR с меткой `contracts` и увеличением `CONTRACTS_VERSION`.
 
@@ -363,6 +363,20 @@ class MatchResult(BaseModel):
     warnings: list[str] = []
     outbound_log_path: str | None = None
     timings_ms: dict[str, int] = {}
+```
+
+## Исключения
+
+Добавлены при переносе в код (T00): в интерфейсах ниже они упоминались, но не были определены. Лежат в том же `contracts.py`.
+
+```python
+class IngestFailure(Exception):            # несёт IngestError → MatchResult.errors
+    def __init__(self, error: IngestError) -> None: ...
+    error: IngestError
+
+class LLMUnavailable(Exception): ...       # сеть, таймауты, 5xx после всех повторов, LLM_PROVIDER=none
+class LLMBadOutput(Exception): ...         # ответ не прошёл схему после всех повторов (T03)
+class PrivacyViolation(Exception): ...     # guard нашёл ПДн; найденный текст в сообщение не кладём
 ```
 
 ## Интерфейсы модулей
