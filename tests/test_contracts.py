@@ -146,7 +146,10 @@ def _examples() -> dict[type[BaseModel], BaseModel]:
         computed=verdict.computed,
     )
     stats = c.VerificationStats(
-        quotes_total=1, quotes_verified=1, generated_entities_total=0, generated_entities_unverified=0
+        quotes_total=1,
+        quotes_verified=1,
+        generated_entities_total=0,
+        generated_entities_unverified=0,
     )
     report = c.Report(
         vacancy_id="V1",
