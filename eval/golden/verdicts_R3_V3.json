@@ -1,0 +1,107 @@
+{
+ "resume_file": "Семенов Алексей _резюме 3.docx",
+ "vacancy_file": "Вакансия 3.docx",
+ "note": "Разметка 12.11 по рубрике T07 и D43: «Не соответствует» — только при факте против требования; личные качества — только по прямому факту; разметчик один (Claude), фрагменты подбирались с помощью поиска и проверялись по тексту резюме",
+ "items": [
+  {
+   "key": "коммуникация с образовательными организациями сопровождение",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "сбор информации для договоров",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "сбор статистических данных отчетность",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "проверка комплектности документов",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "контрольные срезы успеваемости",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "табличные данные Excel Google Sheets",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "рабочие созвоны с командой",
+   "status": "partial",
+   "fragment_ids": [
+    "R33"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "коммуникативные навыки",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "ответственность",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "самоорганизация",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "навыки работы с таблицами большой объем информации",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "личный ноутбук ПК",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность к взаимодействию с организациями и командой",
+   "status": "partial",
+   "fragment_ids": [
+    "R43"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "опыт в сфере образования государственных муниципальных структурах",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "делопроизводитель документовед",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность к очному формату",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

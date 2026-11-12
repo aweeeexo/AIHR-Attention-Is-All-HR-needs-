@@ -1,0 +1,110 @@
+{
+ "resume_file": "Иванов Алексей_резюме 1.docx",
+ "vacancy_file": "Вакансия 2.docx",
+ "note": "Разметка 12.11 по рубрике T07 и D43: «Не соответствует» — только при факте против требования; личные качества — только по прямому факту; разметчик один (Claude), фрагменты подбирались с помощью поиска и проверялись по тексту резюме",
+ "items": [
+  {
+   "key": "таблица поступления выдачи ОС",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "оклейка ОС инвентарными номерами",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "инвентаризация ОС на объектах",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на перемещение ОС подписи комиссии",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС по кабинетам подразделениям",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "список ОС по источникам",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "контроль поступления ОС субсидии гранты списки",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС при переезде",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на списание перемещение ОС",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "высшее экономическое образование",
+   "status": "mismatch",
+   "fragment_ids": [
+    "R60",
+    "R62"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "опыт не менее 3 лет направления",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "внимание к деталям",
+   "status": "match",
+   "fragment_ids": [
+    "R50"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "системность",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "концентрация монотонная работа",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммуникабельность",
+   "status": "match",
+   "fragment_ids": [
+    "R50"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "стрессоустойчивость",
+   "status": null,
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

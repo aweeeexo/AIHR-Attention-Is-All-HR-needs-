@@ -77,6 +77,10 @@ cmd = "docker compose down"
 help = "Тесты без сети (LLM подменена заглушкой)"
 cmd = "pytest"
 
+[tool.poe.tasks.clean-check]
+help = "Чистый клон, сборка, запуск и проверка примера — как у жюри (T12)"
+cmd = "bash scripts/clean_check.sh"
+
 [tool.poe.tasks.test-docker]
 help = "Тесты в Linux-контейнере"
 sequence = ["docker build --target test -t aihr-test .", "docker run --rm aihr-test"]
