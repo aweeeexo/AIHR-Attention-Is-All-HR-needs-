@@ -58,6 +58,7 @@ uv sync                                    # Python 3.12 и зависимост
 uv run poe serve                           # API на :8000
 uv run poe ui                              # UI на :8501 (в другом терминале)
 uv run aihr match --resume data/case/<резюме>.docx --vacancies data/case/
+uv run aihr batch --resumes data/case/ --vacancies data/case/   # пакет: все резюме × все вакансии
 uv run aihr demo                           # use cases из examples/ + проверка
 ```
 
@@ -197,6 +198,8 @@ flowchart LR
 | 2 | [Неполные данные](examples/uc2_incomplete/result.md) | Резюме из трёх строк без опыта, образования и дат + 3 вакансии | Не меньше 60% требований «Не указано», интервал балла шире 30 пунктов, вопросы кандидату, предупреждение «мало текста», ни одного «Не соответствует» без доказательства |
 | 3 | [Плохой файл](examples/uc3_bad_file/result.md) | Резюме + 2 вакансии + битый docx | По битому файлу `E_CORRUPTED` с сообщением, рейтинг по двум оставшимся |
 
+**Пакет резюме (D38).** В UI переключатель «Пакет резюме» → «Пакет из кейса»: 4 резюме × 3 вакансии кейса, матрица баллов с цветом метки, лучшие кандидаты на каждую вакансию с выводом («лучший кандидат …», «почти вровень», «прямо не подходит ни один — ближе всех …») и полный отчёт по любому кандидату. Каждое резюме считается тем же пайплайном, что и одно; вакансии разбираются один раз (кэш). Битое резюме даёт ошибку только у этого кандидата.
+
 Ещё 23 плохих и нестандартных файла (пустой, переименованная картинка, docx с паролем, старый .doc, pdf-скан, txt в cp1251, резюме таблицей, договор вместо резюме) лежат в [`tests/fixtures/bad_files/`](tests/fixtures/bad_files/README.md) с ожидаемым результатом для каждого.
 
 ## Правила оценки
@@ -271,12 +274,16 @@ flowchart LR
 
 | Метод | Путь | Что делает |
 |---|---|---|
-| GET | `/health` | `{"status": "ok", "llm": "configured" \| "none", "contracts_version": 2}` |
+| GET | `/health` | `{"status": "ok", "llm": "configured" \| "none", "retrieval": "bm25+embeddings" \| "bm25", "contracts_version": 3}` |
 | POST | `/match` | multipart: `resume` (один файл), `vacancies` (несколько) → `MatchResult` |
 | POST | `/match/example` | прогон на `data/case/` → `MatchResult`; `?resume=<часть имени>` выбирает резюме |
+| POST | `/match/batch` | пакет (D38): `resumes` (несколько файлов, до `MAX_BATCH_RESUMES`=50), `vacancies` → `BatchResult`: матрица «кандидат × вакансия», лучшие кандидаты на каждую вакансию |
+| POST | `/match/batch/example` | пакет из всех резюме и вакансий `data/case/` |
+| GET | `/batches/{batch_id}` | сохранённый пакет; отчёт кандидата — `/runs/{run_id}` из `resumes[]` |
 | GET | `/example/files` | файлы примера |
 | GET | `/runs/{run_id}` | сохранённый результат прогона |
 | GET | `/runs/{run_id}/outbound` | журнал запросов к внешней LLM |
+| GET | `/runs/{run_id}/report/{vacancy_id}.docx` | отчёт по вакансии в DOCX (D37) |
 
 ```bash
 curl -F resume=@resume.docx -F vacancies=@v1.docx -F vacancies=@v2.pdf localhost:8000/match

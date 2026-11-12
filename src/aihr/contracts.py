@@ -11,7 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-CONTRACTS_VERSION = 2
+CONTRACTS_VERSION = 3
 
 
 # ---------- 1. Вход ----------
@@ -360,6 +360,48 @@ class MatchResult(BaseModel):
     warnings: list[str] = []
     outbound_log_path: str | None = None
     timings_ms: dict[str, int] = {}
+
+
+# ---------- 6а. Пакет: несколько резюме × вакансии (D38, v3) ----------
+
+
+class BatchResume(BaseModel):
+    resume_id: str  # C1, C2, … — по порядку загрузки
+    filename: str
+    run_id: str | None = None  # полный MatchResult этого кандидата — GET /runs/{run_id}
+    mode: Literal["llm", "fallback"] | None = None
+    best_vacancy_id: str | None = None
+    error: IngestError | None = None  # резюме не прочиталось — кандидат в матрицу не попал
+
+
+class BatchCell(BaseModel):
+    resume_id: str
+    vacancy_id: str
+    score: float
+    score_min: float
+    score_max: float
+    label: FitLabel
+    must_match: int
+    must_total: int
+
+
+class BatchVacancy(BaseModel):
+    vacancy_id: str  # V1, V2, … — одинаковые во всех прогонах пакета
+    filename: str
+    title: str | None = None
+    candidates: list[str] = []  # resume_id: лучшие первыми, порядок считает код (D11)
+    summary: str = ""
+
+
+class BatchResult(BaseModel):
+    contracts_version: int = CONTRACTS_VERSION
+    batch_id: str
+    resumes: list[BatchResume]
+    vacancies: list[BatchVacancy]
+    cells: list[BatchCell]
+    errors: list[IngestError] = []  # ошибки вакансий — один раз на пакет
+    warnings: list[str] = []
+    summary: str = ""
 
 
 # ---------- 7. Исключения на границах модулей ----------

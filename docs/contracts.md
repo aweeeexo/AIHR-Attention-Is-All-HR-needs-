@@ -1,6 +1,6 @@
-# Контракты v2
+# Контракты v3
 
-Это текст `src/aihr/contracts.py` версии 2 (v2, 12.11: `Ranking.summary` — D35, `Report.summary` — D36; оба со значением по умолчанию, результаты v1 читаются). Перенесён в код в задаче T00 (отличия только в форматировании комментариев). Теперь правда — в коде, этот файл обновляем вместе с ним.
+Это текст `src/aihr/contracts.py` версии 3 (v3, 12.11: пакет `BatchResult` — D38, новые модели, старые не менялись; v2, 12.11: `Ranking.summary` — D35, `Report.summary` — D36; оба со значением по умолчанию, результаты v1 читаются). Перенесён в код в задаче T00 (отличия только в форматировании комментариев). Теперь правда — в коде, этот файл обновляем вместе с ним.
 
 Изменения — только по согласию обоих: PR с меткой `contracts` и увеличением `CONTRACTS_VERSION`.
 
@@ -9,6 +9,7 @@
 | Что | Формат | Пример |
 |---|---|---|
 | Резюме в прогоне | `R` | `R` |
+| Кандидат в пакете | `C{n}` по порядку загрузки | `C3` |
 | Вакансия в прогоне | `V{n}` по порядку загрузки | `V2` |
 | Фрагмент резюме | `R{n}` | `R12` |
 | Фрагмент вакансии | `V{n}.{m}` | `V2.7` |
@@ -365,6 +366,44 @@ class MatchResult(BaseModel):
     warnings: list[str] = []
     outbound_log_path: str | None = None
     timings_ms: dict[str, int] = {}
+
+
+# ---------- 6а. Пакет: несколько резюме × вакансии (D38, v3) ----------
+
+class BatchResume(BaseModel):
+    resume_id: str                 # C1, C2, … — по порядку загрузки
+    filename: str
+    run_id: str | None = None      # полный MatchResult кандидата — GET /runs/{run_id}
+    mode: Literal["llm", "fallback"] | None = None
+    best_vacancy_id: str | None = None
+    error: IngestError | None = None   # резюме не прочиталось — в матрицу не попал
+
+class BatchCell(BaseModel):
+    resume_id: str
+    vacancy_id: str
+    score: float
+    score_min: float
+    score_max: float
+    label: FitLabel
+    must_match: int
+    must_total: int
+
+class BatchVacancy(BaseModel):
+    vacancy_id: str                # V1, V2, … — одинаковые во всех прогонах пакета
+    filename: str
+    title: str | None = None
+    candidates: list[str] = []     # resume_id: лучшие первыми, порядок считает код (D11)
+    summary: str = ""
+
+class BatchResult(BaseModel):
+    contracts_version: int = CONTRACTS_VERSION
+    batch_id: str
+    resumes: list[BatchResume]
+    vacancies: list[BatchVacancy]
+    cells: list[BatchCell]
+    errors: list[IngestError] = []   # ошибки вакансий — один раз на пакет
+    warnings: list[str] = []
+    summary: str = ""
 ```
 
 ## Исключения

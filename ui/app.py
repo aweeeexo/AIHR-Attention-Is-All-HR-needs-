@@ -166,6 +166,31 @@ def stage_lines(timings: dict[str, int]) -> list[str]:
     return [f"{STEP_KEYS[k]}: {v} мс" for k, v in timings.items() if k in STEP_KEYS]
 
 
+def batch_matrix(batch: dict[str, Any]) -> tuple[pd.DataFrame, pd.DataFrame]:
+    """(значения, метки) матрицы «кандидат × вакансия» для пакета (D38)."""
+    vac_cols = {
+        v["vacancy_id"]: f"{v['vacancy_id']} · {(v.get('title') or v['filename'])[:40]}"
+        for v in batch["vacancies"]
+    }
+    rows = {r["resume_id"]: f"{r['resume_id']} · {r['filename']}" for r in batch["resumes"]}
+    values = pd.DataFrame("—", index=list(rows.values()), columns=list(vac_cols.values()))
+    labels = pd.DataFrame("", index=values.index, columns=values.columns)
+    for c in batch["cells"]:
+        row, col = rows[c["resume_id"]], vac_cols[c["vacancy_id"]]
+        values.loc[row, col] = f"{c['score']:g} · {LABEL_RU[c['label']]}"
+        labels.loc[row, col] = c["label"]
+    return values, labels
+
+
+def retrieval_text(health: dict[str, Any]) -> str:
+    mode = health.get("retrieval")
+    if mode == "bm25+embeddings":
+        return "поиск доказательств: BM25 + эмбеддинги"
+    if mode == "bm25":
+        return "поиск доказательств: BM25"
+    return ""
+
+
 # ---------- отрисовка ----------
 
 
@@ -395,7 +420,15 @@ def main() -> None:
         st.error(f"API по адресу {API_URL} не отвечает.")
     else:
         llm = "подключена" if health["llm"] == "configured" else "не настроена (режим без LLM)"
-        st.caption(f"API: {health['status']} · LLM: {llm}")
+        parts = [f"API: {health['status']}", f"LLM: {llm}", retrieval_text(health)]
+        st.caption(" · ".join(p for p in parts if p))
+
+    mode = st.radio(
+        "Режим", ["Одно резюме", "Пакет резюме"], horizontal=True, label_visibility="collapsed"
+    )
+    if mode == "Пакет резюме":
+        _batch_page()
+        return
 
     with st.container(border=True):
         left, right = st.columns(2)
@@ -437,8 +470,11 @@ def main() -> None:
             _post("/match/example", params={"resume": pick} if pick else None)
 
     result = st.session_state.get("result")
-    if not result:
-        return
+    if result:
+        _show_result(result)
+
+
+def _show_result(result: dict[str, Any], key: str = "") -> None:
     st.caption(f"Прогон {result['run_id']} · режим: {result['mode']}")
     _show_errors_and_warnings(result)
     timings = stage_lines(result.get("timings_ms", {}))
@@ -451,7 +487,11 @@ def main() -> None:
         names = {s["vacancy_id"]: f"{s['vacancy_id']} · {s.get('title') or ''}" for s in ranking}
         st.subheader("Вакансия подробно")
         vid = st.radio(
-            "Вакансия", list(names), format_func=names.get, horizontal=True, key="selected_vacancy"
+            "Вакансия",
+            list(names),
+            format_func=names.get,
+            horizontal=True,
+            key=f"selected_vacancy{key}",
         )
         _show_vacancy(result, vid)
 
@@ -462,7 +502,105 @@ def main() -> None:
         json.dumps(result, ensure_ascii=False, indent=2),
         file_name=f"aihr_{result['run_id']}.json",
         mime="application/json",
+        key=f"download{key}",
     )
+
+
+def _post_batch(path: str, **kwargs: Any) -> None:
+    try:
+        with st.status("Считаем пакет: каждое резюме против всех вакансий") as status:
+            response = httpx.post(f"{API_URL}{path}", timeout=TIMEOUT_S * 4, **kwargs)
+            status.update(label="Готово", state="complete")
+    except httpx.HTTPError as exc:
+        st.error(f"API недоступен: {type(exc).__name__}")
+        return
+    if response.status_code != 200:
+        st.error(f"Ошибка API {response.status_code}: {response.text[:500]}")
+        return
+    st.session_state["batch"] = response.json()
+    st.session_state.pop("batch_candidate", None)
+
+
+def _batch_page() -> None:
+    with st.container(border=True):
+        left, right = st.columns(2)
+        resumes = left.file_uploader(
+            "Резюме (несколько файлов)",
+            type=["docx", "pdf", "rtf", "txt"],
+            accept_multiple_files=True,
+            key="batch_resumes",
+        )
+        vacancies = right.file_uploader(
+            "Вакансии (одна или несколько)",
+            type=["docx", "pdf", "rtf", "txt"],
+            accept_multiple_files=True,
+            key="batch_vacancies",
+        )
+        col_run, col_example, _ = st.columns([1, 1, 2])
+        ready_to_run = bool(resumes and vacancies)
+        if col_run.button("Сопоставить пакет", type="primary", disabled=not ready_to_run):
+            files = [("resumes", (r.name, r.getvalue())) for r in resumes or []]
+            files += [("vacancies", (v.name, v.getvalue())) for v in vacancies or []]
+            _post_batch("/match/batch", files=files)
+        if col_example.button("Пакет из кейса"):
+            _post_batch("/match/batch/example")
+
+    batch = st.session_state.get("batch")
+    if not batch:
+        st.caption(
+            "Каждое резюме сопоставляется со всеми вакансиями той же формулой, что и в режиме "
+            "одного резюме. Полный отчёт по каждому кандидату — ниже, после матрицы."
+        )
+        return
+    st.caption(f"Пакет {batch['batch_id']}")
+    st.info(batch["summary"])
+    for warning in batch.get("warnings", []):
+        st.warning(warning)
+    resume_errors = [r["error"] for r in batch["resumes"] if r.get("error")]
+    for err in batch.get("errors", []) + resume_errors:
+        with st.container(border=True):
+            st.markdown(f"**{err['filename']}** · `{err['code']}`")
+            st.markdown(f"{err['message']} {err['hint']}")
+
+    st.subheader("Кандидаты × вакансии")
+    values, labels = batch_matrix(batch)
+    colors = {"fits": "#d4edda", "fits_with_caveats": "#fff3cd", "not_fit": "#f8d7da"}
+    styled = values.style.apply(
+        lambda col: [f"background-color: {colors.get(v, '')}" for v in labels[col.name]], axis=0
+    )
+    st.dataframe(styled, use_container_width=True)
+
+    names = {r["resume_id"]: r["filename"] for r in batch["resumes"]}
+    scores = {(c["resume_id"], c["vacancy_id"]): c for c in batch["cells"]}
+    st.subheader("Лучшие кандидаты по вакансиям")
+    for vac in batch["vacancies"]:
+        with st.container(border=True):
+            st.markdown(f"**{vac['vacancy_id']} · {vac.get('title') or vac['filename']}**")
+            st.write(vac["summary"])
+            for place, rid in enumerate(vac["candidates"][:5], 1):
+                c = scores[(rid, vac["vacancy_id"])]
+                st.caption(
+                    f"{place}. {rid} · {names[rid]} — {c['score']:g} "
+                    f"(от {c['score_min']:g} до {c['score_max']:g}), {LABEL_RU[c['label']]}"
+                )
+
+    ready = [r for r in batch["resumes"] if r.get("run_id") and not r.get("error")]
+    if not ready:
+        return
+    st.subheader("Кандидат подробно")
+    rid = st.selectbox(
+        "Кандидат",
+        [r["resume_id"] for r in ready],
+        format_func=lambda x: f"{x} · {names[x]}",
+        key="batch_candidate",
+    )
+    run_id = next(r["run_id"] for r in ready if r["resume_id"] == rid)
+    try:
+        result = httpx.get(f"{API_URL}/runs/{run_id}", timeout=30).json()
+    except (httpx.HTTPError, ValueError):
+        st.error("Не удалось загрузить отчёт кандидата.")
+        return
+    _show_result(result, key=f"_{rid}")
 
 
 if __name__ == "__main__":

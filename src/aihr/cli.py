@@ -1,4 +1,4 @@
-"""Командная строка: `aihr match`, `aihr demo` и отладочные команды извлечения."""
+"""Командная строка: `aihr match`, `aihr batch`, `aihr demo` и отладочные команды извлечения."""
 
 from __future__ import annotations
 
@@ -11,9 +11,9 @@ import typer
 
 from aihr import extract, fallback, usecases
 from aihr.config import get_settings, setup_logging
-from aihr.contracts import DocKind, Document, IngestFailure, MatchResult
+from aihr.contracts import BatchResult, DocKind, Document, IngestFailure, MatchResult
 from aihr.ingest import load_document
-from aihr.inputs import collect_vacancies, read_files
+from aihr.inputs import _supported_files, collect_vacancies, looks_like_resume, read_files
 from aihr.llm import LLMClient
 from aihr.pipeline import run
 from aihr.privacy import PrivacyContext, mask_document
@@ -77,6 +77,54 @@ def match(
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(payload, encoding="utf-8", newline="\n")
     typer.echo(payload if as_json else summary(result))
+
+
+def batch_summary(batch: BatchResult) -> str:
+    names = {r.resume_id: r.filename for r in batch.resumes}
+    lines = [f"Пакет {batch.batch_id}. {batch.summary}"]
+    for vac in batch.vacancies:
+        lines.append(f"{vac.vacancy_id} «{(vac.title or vac.filename)[:70]}»: {vac.summary}")
+        for place, rid in enumerate(vac.candidates[:5], 1):
+            cell = next(
+                c for c in batch.cells if c.resume_id == rid and c.vacancy_id == vac.vacancy_id
+            )
+            lines.append(f"  {place}. {rid} {names[rid]} — {cell.score:g}, {LABEL_RU[cell.label]}")
+    for r in batch.resumes:
+        if r.error:
+            lines.append(f"Ошибка: {r.filename}: {r.error.message} {r.error.hint}")
+    for err in batch.errors:
+        lines.append(f"Ошибка: {err.filename}: {err.message} {err.hint}")
+    for warning in batch.warnings:
+        lines.append(f"Предупреждение: {warning}")
+    lines.append(f"Результат: {get_settings().runs_dir / 'batches' / (batch.batch_id + '.json')}")
+    return "\n".join(lines)
+
+
+@app.command()
+def batch(
+    resumes: Annotated[
+        list[Path], typer.Option(exists=True, help="Файл резюме или папка; можно повторять")
+    ],
+    vacancies: Annotated[
+        list[Path], typer.Option(exists=True, help="Файл вакансии или папка; можно повторять")
+    ],
+    as_json: Annotated[bool, typer.Option("--json", help="Напечатать весь JSON")] = False,
+) -> None:
+    """Пакет: несколько резюме против набора вакансий (D38)."""
+    from aihr.batch import run_batch
+
+    resume_paths: list[Path] = []
+    for path in resumes:
+        if path.is_dir():
+            resume_paths += [f for f in _supported_files(path) if looks_like_resume(f)]
+        else:
+            resume_paths.append(path)
+    vacancy_paths = [p for p in collect_vacancies(vacancies) if p not in resume_paths]
+    if not resume_paths or not vacancy_paths:
+        typer.echo("Нужны хотя бы одно резюме и одна вакансия (docx, pdf, txt).", err=True)
+        raise typer.Exit(2)
+    result = run_batch(read_files(resume_paths), read_files(vacancy_paths))
+    typer.echo(result.model_dump_json(indent=2) if as_json else batch_summary(result))
 
 
 def _load_masked(path: Path, kind: DocKind, doc_id: str) -> Document:

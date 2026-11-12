@@ -50,6 +50,7 @@ class Settings(BaseSettings):
     embeddings_model: str | None = "intfloat/multilingual-e5-small"
 
     max_file_mb: float = Field(default=10, gt=0)
+    max_batch_resumes: int = Field(default=50, ge=1)  # резюме в одном пакете (D38)
     runs_dir: Path = Path("data/runs")
     cache_dir: Path = Path("data/cache")
     case_dir: Path = Path("data/case")
@@ -115,8 +116,15 @@ def get_settings() -> Settings:
     return Settings(_env_file=env_file or None)  # type: ignore[call-arg]
 
 
+# Сторонние библиотеки шумят на INFO и предупреждают об офлайн-режиме, который мы включили сами
+_QUIET = ("huggingface_hub", "sentence_transformers", "transformers", "pymorphy2", "httpx")
+
+
 def setup_logging(level: str | None = None) -> None:
     logging.basicConfig(
         level=(level or get_settings().log_level).upper(),
         format="%(asctime)s %(levelname)s %(name)s: %(message)s",
     )
+    if (level or "").upper() != "DEBUG":
+        for name in _QUIET:
+            logging.getLogger(name).setLevel(logging.ERROR)

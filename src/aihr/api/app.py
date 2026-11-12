@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from collections.abc import AsyncIterator
 from contextlib import asynccontextmanager
 from pathlib import Path
@@ -13,8 +14,9 @@ from fastapi import FastAPI, File, HTTPException, Query, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
 
 from aihr import __version__
+from aihr.batch import run_batch
 from aihr.config import get_settings, setup_logging
-from aihr.contracts import CONTRACTS_VERSION, MatchResult
+from aihr.contracts import CONTRACTS_VERSION, BatchResult, MatchResult
 from aihr.ingest import fix_filename
 from aihr.inputs import case_files, read_files
 from aihr.pipeline import RUN_ID_RE, run
@@ -86,6 +88,45 @@ async def match_example(
             raise HTTPException(404, "Резюме с таким именем в примере нет")
     resume_file = read_files(resumes[:1])[0]
     return await run_in_threadpool(run, resume_file, read_files(vacancies))
+
+
+BATCH_ID_RE = re.compile(r"^b\d{8}-\d{6}-[0-9a-f]{6}$")
+
+
+@app.post("/match/batch", response_model=BatchResult)
+async def match_batch(
+    resumes: Annotated[list[UploadFile], File(description="Несколько резюме: docx, pdf или txt")],
+    vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
+) -> BatchResult:
+    """Пакет (D38): каждое резюме против всех вакансий, матрица и лучшие кандидаты."""
+    s = get_settings()
+    if len(resumes) > s.max_batch_resumes:
+        raise HTTPException(
+            413, f"В пакете не больше {s.max_batch_resumes} резюме (MAX_BATCH_RESUMES)"
+        )
+    resume_files = [await _read(r, s.max_file_bytes) for r in resumes]
+    vacancy_files = [await _read(v, s.max_file_bytes) for v in vacancies]
+    return await run_in_threadpool(run_batch, resume_files, vacancy_files)
+
+
+@app.post("/match/batch/example", response_model=BatchResult)
+async def match_batch_example() -> BatchResult:
+    """Все резюме примера против всех его вакансий."""
+    s = get_settings()
+    resumes, vacancies = case_files(s.case_dir)
+    if not resumes or not vacancies:
+        raise HTTPException(404, f"В {s.case_dir} нет резюме или вакансий примера")
+    return await run_in_threadpool(run_batch, read_files(resumes), read_files(vacancies))
+
+
+@app.get("/batches/{batch_id}", response_model=BatchResult)
+def get_batch(batch_id: str) -> BatchResult:
+    if not BATCH_ID_RE.match(batch_id):
+        raise HTTPException(400, "Неверный batch_id")
+    path = get_settings().runs_dir / "batches" / f"{batch_id}.json"
+    if not path.is_file():
+        raise HTTPException(404, "Пакет не найден")
+    return BatchResult.model_validate_json(path.read_text(encoding="utf-8"))
 
 
 @app.get("/example/files")
