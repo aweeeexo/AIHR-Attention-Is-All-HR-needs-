@@ -57,7 +57,7 @@ export function Report({ result, vacancy, api, score }) {
   return (
     <>
       <section className="summary report-summary">
-        <div><h2>Вывод по вакансии</h2>{report.summary && <p>{report.summary}</p>}</div>
+        {report.summary && <div><h2>Вывод по вакансии</h2><p>{report.summary}</p></div>}
         <div className="report-actions">{score}<a className="button secondary" href={api.reportUrl(result.run_id, vacancy.id)}><Download size={16} aria-hidden="true" /> Скачать DOCX</a></div>
       </section>
 
@@ -107,7 +107,7 @@ export function Report({ result, vacancy, api, score }) {
         </div>
         <aside className="resume-panel" id="resume-viewer" aria-labelledby="resume-pane-title" hidden={!showResume}>
           <div className="resume-head"><h3 id="resume-pane-title">Исходное резюме</h3>
-            <p aria-live="polite">{activeIds.size ? `Подсвечено фрагментов: ${activeIds.size}` : 'Выберите подтверждение в таблице.'}</p>
+            <p aria-live="polite">{activeIds.size ? `Подсвечено фрагментов: ${activeIds.size}` : 'Нажмите «Показать в резюме» у нужной цитаты.'}</p>
           </div>
           <div id="resume-fragments" className="fragment-scroll" ref={evidencePane} tabIndex={0} aria-label="Фрагменты резюме">
             {fragments.map((fragment) => (

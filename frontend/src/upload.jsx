@@ -32,19 +32,16 @@ export function Upload({ mode, pending, submit }) {
   return (
     <form onSubmit={handleSubmit}>
       <fieldset disabled={pending} className="upload-fieldset">
-        <div className="upload-grid">
-          <UploadCard id="resume" title={batch ? 'Резюме кандидатов' : 'Резюме кандидата'}
-            description={batch ? 'До 50 файлов, один на кандидата' : 'Один файл с опытом и навыками кандидата'}
-            files={batch ? resumes : resumes.slice(0, 1)} setFiles={setResumes} multiple={batch}
-            limit={batch ? 50 : 1} canPaste={!batch} source={activeResumeSource} setSource={setResumeSource}
-            value={resumeText} setValue={setResumeText} disabled={pending} />
-          <UploadCard id="vacancy" title="Вакансии"
-            description="Один или несколько файлов с требованиями"
-            files={vacancies} setFiles={setVacancies} multiple canPaste source={vacancySource} setSource={setVacancySource}
-            value={vacancyText} setValue={setVacancyText} disabled={pending} />
-        </div>
+        <UploadCard id="resume" title={batch ? 'Резюме кандидатов' : 'Резюме кандидата'}
+          description={batch ? 'До 50 файлов, по одному на кандидата.' : undefined}
+          files={batch ? resumes : resumes.slice(0, 1)} setFiles={setResumes} multiple={batch}
+          limit={batch ? 50 : 1} canPaste={!batch} source={activeResumeSource} setSource={setResumeSource}
+          value={resumeText} setValue={setResumeText} disabled={pending} />
+        <UploadCard id="vacancy" title="Вакансии"
+          files={vacancies} setFiles={setVacancies} multiple canPaste source={vacancySource} setSource={setVacancySource}
+          value={vacancyText} setValue={setVacancyText} disabled={pending} />
         <div className="submit-row">
-          <span>{pending ? 'Ожидаем ответ API' : ready ? 'Документы готовы к отправке' : 'Добавьте резюме и хотя бы одну вакансию'}</span>
+          {!ready && !pending && <span>Добавьте резюме и хотя бы одну вакансию.</span>}
           <button className="button primary" type="submit" disabled={!ready || pending}>
             {pending ? <><LoaderCircle className="spin" size={16} aria-hidden="true" /> Обработка…</> : <>Начать анализ <ArrowRight size={16} aria-hidden="true" /></>}
           </button>
@@ -82,7 +79,8 @@ function UploadCard({
   return (
     <section className="upload-card" aria-labelledby={`${id}-title`}>
       <div className="upload-head">
-        <h2 id={`${id}-title`}>{title}</h2><p>{description}</p>
+        <h2 id={`${id}-title`}>{title}</h2>
+        {description && <p>{description}</p>}
       </div>
       {canPaste && <div className="source-control" role="group" aria-label={`Источник · ${title}`}>
         <button type="button" aria-pressed={source === 'file'} onClick={() => setSource('file')}>Файлы</button>
@@ -101,7 +99,7 @@ function UploadCard({
             onDragLeave={() => setDragging(false)}
             onDrop={(event) => { event.preventDefault(); setDragging(false); add(event.dataTransfer.files); }}>
             <Paperclip size={17} aria-hidden="true" />
-            <span><strong>{files.length && !multiple ? 'Заменить файл' : multiple ? 'Выбрать файлы' : 'Выбрать файл'}</strong><small>DOCX, PDF, RTF, TXT · можно перетащить</small></span>
+            <span><strong>{files.length && !multiple ? 'Заменить файл' : multiple ? 'Выбрать файлы' : 'Выбрать файл'}</strong><span className="drop-instruction"> или перетащите сюда</span><small>DOCX, PDF, RTF, TXT</small></span>
           </button>
           {warning && <p className="input-warning" role="status">{warning}</p>}
           {!!files.length && (

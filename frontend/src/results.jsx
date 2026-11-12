@@ -3,7 +3,7 @@ import { ArrowUpRight, CircleAlert, FileWarning } from 'lucide-react';
 import { Report } from './report.jsx';
 import { Tag } from './tag.jsx';
 
-export const statusLabels = {
+const statusLabels = {
   match: 'Соответствует',
   partial: 'Частично',
   mismatch: 'Не соответствует',
@@ -18,7 +18,7 @@ export function Notices({ fallback, errors = [], warnings = [], error }) {
   return (
     <div className="notices">
       {error && <div className="notice danger" role="alert"><CircleAlert size={20} /><p>{error}</p></div>}
-      {fallback && <div className="notice caution"><CircleAlert size={20} /><div><strong>Упрощённый анализ</strong><p>Результат полностью или частично получен без LLM.</p></div></div>}
+      {fallback && <div className="notice caution"><CircleAlert size={20} /><div><strong>Упрощённый анализ</strong><p>Часть этапов или весь анализ выполнены без LLM.</p></div></div>}
       {errors.map(({ code, filename, message, hint }, index) => (
         <div className="notice danger" key={index}><FileWarning size={20} /><div><strong>{filename}</strong><p>{message}</p>{hint && <p>{hint}</p>}<small>{code}</small></div></div>
       ))}
@@ -63,7 +63,7 @@ export function Match({ result, vacancy, api, reportUrl }) {
           {ranking.items.length ? <div className="table-scroll" tabIndex={0} aria-label="Таблица рейтинга">
             <table className="ranking">
               <caption className="sr-only">Вакансии в порядке рейтинга</caption>
-              <thead><tr><th scope="col" aria-label="Место">№</th><th scope="col">Вакансия и объяснение</th><th scope="col">Балл и интервал</th><th scope="col">Вердикт</th></tr></thead>
+              <thead><tr><th scope="col" aria-label="Место">№</th><th scope="col">Вакансия</th><th scope="col">Балл и вердикт</th></tr></thead>
               <tbody>
                 {ranking.items.map((entry, index) => {
                   const document = result.vacancies.find(({ id }) => id === entry.vacancy_id);
@@ -74,13 +74,12 @@ export function Match({ result, vacancy, api, reportUrl }) {
                       <th scope="row">
                         {result.reports[entry.vacancy_id] ? <a className="report-link" href={reportUrl(entry.vacancy_id)}
                           aria-label={`Открыть отчёт · ${title}`}><span>{title}</span><ArrowUpRight size={15} aria-hidden="true" /></a> : title}
+                      <details className="rating-counts"><summary>Почему этот балл</summary>
                         <p className="ranking-explanation">{entry.explanation}</p>
-                        <details className="rating-counts"><summary>Статусы требований</summary>
                           <Counts title="Обязательные" counts={entry.must} /><Counts title="Желательные" counts={entry.nice} />
                         </details>
                       </th>
-                      <td><Score item={entry} /><div className="narrow-verdict"><Tag kind={entry.label}>{fitLabels[entry.label]}</Tag></div></td>
-                      <td><Tag kind={entry.label}>{fitLabels[entry.label]}</Tag></td>
+                    <td className="rank-score"><Score item={entry} /><Tag kind={entry.label}>{fitLabels[entry.label]}</Tag></td>
                     </tr>
                   );
                 })}
