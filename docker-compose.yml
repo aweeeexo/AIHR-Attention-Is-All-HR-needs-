@@ -13,7 +13,6 @@ x-app: &app
   env_file:
     - path: .env
       required: false   # без .env поднимется в режиме без LLM
-  restart: unless-stopped
 
 services:
   api:
