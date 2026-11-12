@@ -60,7 +60,7 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     api_url: str = "http://localhost:8000"  # куда ходит UI
-    # Откуда браузерный фронтенд может ходить в API (через запятую; "*" — откуда угодно)
+    # Откуда браузерный веб-интерфейс может ходить в API (через запятую; "*" — откуда угодно)
     cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8501"
 
     @property
