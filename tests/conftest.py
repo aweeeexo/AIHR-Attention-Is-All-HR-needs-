@@ -58,3 +58,29 @@ def llm_settings() -> Settings:
         llm_base_url="http://llm.invalid/v1",
         llm_model="test-model",
     )
+
+
+FIXTURES = Path(__file__).resolve().parent / "fixtures"
+
+
+def fixture_file(name: str) -> tuple[bytes, str]:
+    path = FIXTURES / name
+    return path.read_bytes(), path.name
+
+
+def make_docx(paragraphs: list[str], table: list[list[str]] | None = None) -> bytes:
+    import io
+
+    import docx
+
+    d = docx.Document()
+    for text in paragraphs:
+        d.add_paragraph(text)
+    if table:
+        t = d.add_table(rows=len(table), cols=len(table[0]))
+        for r, row in enumerate(table):
+            for c, text in enumerate(row):
+                t.cell(r, c).text = text
+    buf = io.BytesIO()
+    d.save(buf)
+    return buf.getvalue()
