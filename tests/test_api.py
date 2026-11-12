@@ -98,3 +98,13 @@ def test_match_fixes_cp1251_filename(client: TestClient) -> None:
     )
     assert r.status_code == 200, r.text
     assert r.json()["vacancies"][0]["filename"] == "Вакансия повара.txt"
+
+
+def test_cors_for_browser_frontend(client: TestClient) -> None:
+    r = client.options(
+        "/health",
+        headers={"Origin": "http://localhost:5173", "Access-Control-Request-Method": "GET"},
+    )
+    assert r.headers.get("access-control-allow-origin") == "http://localhost:5173"
+    other = client.get("/health", headers={"Origin": "http://evil.example"})
+    assert "access-control-allow-origin" not in other.headers

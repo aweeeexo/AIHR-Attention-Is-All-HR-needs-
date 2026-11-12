@@ -60,6 +60,12 @@ class Settings(BaseSettings):
     log_level: str = "INFO"
 
     api_url: str = "http://localhost:8000"  # куда ходит UI
+    # Откуда браузерный фронтенд может ходить в API (через запятую; "*" — откуда угодно)
+    cors_origins: str = "http://localhost:3000,http://localhost:5173,http://localhost:8501"
+
+    @property
+    def cors_origin_list(self) -> list[str]:
+        return [o.strip() for o in self.cors_origins.split(",") if o.strip()]
 
     @model_validator(mode="before")
     @classmethod

@@ -12,6 +12,7 @@ from typing import Annotated, Any
 
 from fastapi import FastAPI, File, HTTPException, Query, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
+from fastapi.middleware.cors import CORSMiddleware
 
 from aihr import __version__
 from aihr.batch import run_batch
@@ -40,6 +41,15 @@ app = FastAPI(
     version=__version__,
     description="Сопоставление резюме с вакансиями: рейтинг, таблица требований с цитатами, "
     "отчёт рекрутеру.",
+)
+
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=get_settings().cors_origin_list,
+    allow_methods=["GET", "POST"],
+    allow_headers=["*"],
+    expose_headers=["Content-Disposition"],  # имя файла DOCX-отчёта
 )
 
 
