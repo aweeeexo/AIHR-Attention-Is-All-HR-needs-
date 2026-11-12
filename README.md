@@ -65,7 +65,7 @@ uv run aihr demo                           # use cases из examples/ + пров
 
 ## Зависимости
 
-Python 3.12, все версии закреплены в [`pyproject.toml`](pyproject.toml) и [`uv.lock`](uv.lock). Основные: FastAPI, Streamlit, Pydantic v2, openai SDK (любой OpenAI-совместимый сервер), python-docx, pdfplumber, striprtf, charset-normalizer, Natasha (NER для обезличивания), rank-bm25, snowballstemmer, diskcache. Эмбеддинги (sentence-transformers и torch с CPU-индекса PyTorch, без CUDA) — необязательный extra `embeddings`: `WITH_EMBEDDINGS=1` при сборке образа.
+Python 3.12, все версии закреплены в [`pyproject.toml`](pyproject.toml) и [`uv.lock`](uv.lock). Основные: FastAPI, Streamlit, Pydantic v2, openai SDK (любой OpenAI-совместимый сервер), python-docx, pdfplumber, striprtf, charset-normalizer, Natasha (NER для обезличивания), rank-bm25, snowballstemmer, diskcache. Эмбеддинги (sentence-transformers и torch с CPU-индекса PyTorch, без CUDA) — extra `embeddings`, в образе включён по умолчанию (`WITH_EMBEDDINGS=0` — сборка без него).
 
 ## Настройки и переменные окружения
 
@@ -84,7 +84,7 @@ Python 3.12, все версии закреплены в [`pyproject.toml`](pypr
 | `LLM_STRUCTURED_MODE` | `json_schema`, `json_object` или `auto` (json_schema, при отказе провайдера — json_object) | `auto` | нет |
 | `LLM_CACHE` | Кэш ответов LLM по хэшу запроса | `1` | нет |
 | `CACHE_DIR` | Каталог кэша (в Docker — том `cache`) | `data/cache` | нет |
-| `WITH_EMBEDDINGS` | Аргумент сборки: `1` — образ с sentence-transformers и torch (CPU) | `0` | нет |
+| `WITH_EMBEDDINGS` | Аргумент сборки: `1` — образ с sentence-transformers и torch (CPU), `0` — только BM25 | `1` | нет |
 | `EMBEDDINGS_MODEL` | Модель эмбеддингов; пусто — только BM25 | `intfloat/multilingual-e5-small` | нет |
 | `MAX_FILE_MB` | Лимит размера файла | `10` | нет |
 | `RUNS_DIR` | Результаты прогонов и журнал исходящих запросов | `data/runs` | нет |

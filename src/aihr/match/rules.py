@@ -111,6 +111,11 @@ def _years_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -
     else:
         status, partial_value, sign = Status.partial, round(fact_years / required_years, 2), "<"
     computed = f"{scope}: {periods} = {fact} {sign} {need}"
+    weak = verdict.evidence_type in (EvidenceType.adjacent, EvidenceType.indirect)
+    if status == Status.match and req.threshold.subject and weak:
+        # Стаж набран, но опыт по теме смежный или косвенный — не выше «Частично» (D15, D43)
+        status = Status.partial
+        computed += "; опыт по теме смежный — не выше «Частично»"
     ids = [fid for p in dated for fid in p.fragment_ids]
     return _changed(
         verdict,
@@ -120,7 +125,7 @@ def _years_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -
         evidence=verdict.evidence or _evidence(ids),
         evidence_type=verdict.evidence_type or EvidenceType.direct,
         missing=(f"не хватает {format_months(round(required_years * 12) - months)}"
-                 if status == Status.partial else None),
+                 if status == Status.partial and not weak else verdict.missing),
     )  # fmt: skip
 
 
@@ -133,6 +138,13 @@ def _years_word(n: float) -> str:
 
 
 # ---------- образование ----------
+
+# Требование называет специальность, а не только уровень: «высшее техническое», «профильное»,
+# «по специальности …», «в области …»
+_FIELD = re.compile(
+    r"(?i)\b(?:высшее|среднее(?:\s+(?:специальное|профессиональное))?)\s+(?!образован|специальн|профессиональн)"
+    r"[а-яё]+ое\b|профильн|по\s+специальност|в\s+области|по\s+направлени"
+)
 
 
 def _education_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -> Verdict:
@@ -157,9 +169,16 @@ def _education_rule(req: Requirement, verdict: Verdict, profile: CandidateProfil
     best = max((lv for lv in levels if lv in EDUCATION_RANK), key=lambda lv: EDUCATION_RANK[lv])
     ids = [fid for e in profile.education if e.level == best for fid in e.fragment_ids]
     computed = f"уровень в резюме: {best.value}; требуется не ниже {required.value}"
+    status = Status.match if ok else Status.mismatch
+    field_doubt = verdict.status in (Status.partial, Status.mismatch) and bool(verdict.evidence)
+    if ok and _FIELD.search(f"{req.threshold.value} {req.text}") and field_doubt:
+        # Уровень подходит, а специальность модель сочла другой: код уровень проверил,
+        # специальность — нет. Не выше «Частично» (D43)
+        status = Status.partial
+        computed += "; специальность не совпала по оценке модели"
     return _changed(
         verdict,
-        status=Status.match if ok else Status.mismatch,
+        status=status,
         evidence=verdict.evidence or _evidence(ids),
         evidence_type=verdict.evidence_type or EvidenceType.direct,
         partial_value=None,

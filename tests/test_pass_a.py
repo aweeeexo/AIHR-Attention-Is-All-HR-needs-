@@ -201,3 +201,25 @@ def test_batches_long_vacancy(resume, profile) -> None:
 def test_no_requirements_no_call(resume, profile) -> None:
     out, fake = _run([], profile, resume, [])
     assert out == {} and fake.completions.calls == []
+
+
+def test_soft_skill_by_adjacent_facts_is_not_stated(resume) -> None:
+    """D43: «коммуникабельность» по смежным фактам не выводим — вопрос на интервью."""
+    from aihr.contracts import ReqKind
+    from aihr.match.pass_a import gate
+    from aihr.match.schemas import PassAVerdict
+
+    fid = resume.fragments[0].id
+    req = _req(1, "Коммуникабельность").model_copy(update={"kind": ReqKind.soft})
+    raw = PassAVerdict(
+        requirement_id=req.id,
+        reasoning="…",
+        status=Status.partial,
+        evidence_type="adjacent",
+        fragment_ids=[fid],
+        comment="согласовывал",
+    )
+    v = gate(req, raw, resume)
+    assert v.status == Status.not_stated and v.evidence == [] and "интервью" in v.comment
+    direct = raw.model_copy(update={"evidence_type": "direct", "status": Status.match})
+    assert gate(req, direct, resume).status == Status.match

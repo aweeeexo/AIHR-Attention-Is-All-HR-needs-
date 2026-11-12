@@ -23,6 +23,7 @@ from aihr.contracts import Document, ReqKind
 log = logging.getLogger(__name__)
 
 RRF_K = 60
+ROLE_BONUS = 0.5  # вес списка «нужные разделы» в RRF
 
 _TOKEN_RE = re.compile(r"[a-zа-яё0-9]+(?:[+#]+)?", re.IGNORECASE)
 
@@ -184,23 +185,30 @@ class Retriever:
         full = " ".join([query, *terms])
         q = tokens(full)
         everything = list(range(len(self.ids)))
-        allowed = (
-            [i for i in everything if self.roles[i] in section_roles]
-            if section_roles
-            else everything
+        # Разделы — бонус, а не фильтр: подтверждение опыта часто лежит в «О себе», навыках или
+        # сопроводительном письме, а не в «Опыте работы» (замер на золотом наборе, D42)
+        preferred = (
+            {i for i in everything if self.roles[i] in section_roles} if section_roles else set()
         )
-        result = self._fuse(q, full, allowed, k)
-        if not result and section_roles:
-            result = self._fuse(q, full, everything, k)  # в нужных разделах пусто — весь документ
-        return result
+        return self._fuse(q, full, everything, k, preferred)
 
-    def _fuse(self, q: list[str], full: str, allowed: list[int], k: int) -> list[tuple[str, float]]:
-        rankings = [self._bm25_ranking(q, allowed)]
+    def _fuse(
+        self, q: list[str], full: str, allowed: list[int], k: int, preferred: set[int]
+    ) -> list[tuple[str, float]]:
+        bm25 = self._bm25_ranking(q, allowed)
+        rankings = [bm25]
         if self._vectors is not None:
             rankings.append(self._embedding_ranking(full, allowed, max(k * 2, 16)))
+        if preferred:
+            weights = [1.0] * len(rankings)
+            first = rankings[0] if rankings[0] else rankings[-1]
+            rankings.append([i for i in first if i in preferred])
+            weights.append(ROLE_BONUS)
+        else:
+            weights = [1.0] * len(rankings)
         fused: dict[int, float] = {}
-        for ranking in rankings:
+        for ranking, w in zip(rankings, weights, strict=True):
             for rank, i in enumerate(ranking):
-                fused[i] = fused.get(i, 0.0) + 1.0 / (RRF_K + rank + 1)
+                fused[i] = fused.get(i, 0.0) + w / (RRF_K + rank + 1)
         best = sorted(fused, key=lambda i: (-fused[i], i))[:k]
         return [(self.ids[i], round(fused[i], 6)) for i in best]

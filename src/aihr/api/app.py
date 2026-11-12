@@ -4,6 +4,8 @@ from __future__ import annotations
 
 import json
 import logging
+from collections.abc import AsyncIterator
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated, Any
 
@@ -16,11 +18,22 @@ from aihr.contracts import CONTRACTS_VERSION, MatchResult
 from aihr.ingest import fix_filename
 from aihr.inputs import case_files, read_files
 from aihr.pipeline import RUN_ID_RE, run
+from aihr.retrieve import default_encoder
 
 setup_logging()
 log = logging.getLogger(__name__)
 
+
+@asynccontextmanager
+async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    # Модель эмбеддингов грузим при старте (~10 с), а не на первом запросе пользователя
+    encoder, _e5 = await run_in_threadpool(default_encoder)
+    log.info("поиск доказательств: %s", "BM25 + эмбеддинги" if encoder else "только BM25")
+    yield
+
+
 app = FastAPI(
+    lifespan=lifespan,
     title="AIHR",
     version=__version__,
     description="Сопоставление резюме с вакансиями: рейтинг, таблица требований с цитатами, "
@@ -34,6 +47,7 @@ def health() -> dict[str, Any]:
     return {
         "status": "ok",
         "llm": "configured" if s.llm_configured else "none",
+        "retrieval": "bm25+embeddings" if default_encoder()[0] is not None else "bm25",
         "contracts_version": CONTRACTS_VERSION,
     }
 

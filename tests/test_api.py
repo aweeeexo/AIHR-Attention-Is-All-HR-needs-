@@ -15,7 +15,9 @@ def client() -> TestClient:
 def test_health(client: TestClient) -> None:
     r = client.get("/health")
     assert r.status_code == 200
-    assert r.json() == {"status": "ok", "llm": "none", "contracts_version": CONTRACTS_VERSION}
+    body = r.json()
+    assert body.pop("retrieval") in ("bm25", "bm25+embeddings")  # D42: режим поиска виден
+    assert body == {"status": "ok", "llm": "none", "contracts_version": CONTRACTS_VERSION}
 
 
 def test_health_llm_configured(client: TestClient, monkeypatch: pytest.MonkeyPatch) -> None:

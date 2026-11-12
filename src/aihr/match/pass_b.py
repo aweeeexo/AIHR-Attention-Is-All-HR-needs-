@@ -8,11 +8,13 @@
 from __future__ import annotations
 
 import logging
+from concurrent.futures import ThreadPoolExecutor
 
 from aihr.contracts import (
     STATUS_RU,
     CandidateProfile,
     Document,
+    Fragment,
     LLMBadOutput,
     LLMUnavailable,
     Modality,
@@ -64,14 +66,10 @@ def _previous(v: Verdict) -> str:
     return f"{STATUS_RU[v.status]} (фрагменты: {ids}). {v.comment}"
 
 
-def ask(
-    req: Requirement,
-    previous: Verdict,
-    profile: CandidateProfile,
-    resume: Document,
-    retriever: Retriever,
-    llm: LLMClient,
-) -> Verdict:
+def evidence(
+    req: Requirement, previous: Verdict, resume: Document, retriever: Retriever
+) -> list[Fragment]:
+    """Фрагменты для узкого вопроса: поиск по требованию и фрагменты прохода A, по порядку."""
     terms = [*req.canonical_terms, *(a for c in req.canonical_terms for a in aliases(c)[:4])]
     query = " ".join(
         [req.text, *req.alternatives, (req.threshold.subject or "") if req.threshold else ""]
@@ -80,7 +78,7 @@ def ask(
     ids = [fid for fid, _ in hits]
     ids += [e.fragment_id for e in previous.evidence if e.fragment_id not in ids]
     by_id = {f.id: f for f in resume.fragments}
-    fragments = [
+    return [
         by_id[fid].model_copy(
             update={
                 "masked_text": f"{{{ROLE_RU.get(by_id[fid].section_role or '', 'без раздела')}}} "
@@ -90,6 +88,16 @@ def ask(
         for fid in sorted(set(ids), key=lambda x: by_id[x].order)
         if fid in by_id
     ]
+
+
+def _ask_llm(
+    req: Requirement,
+    previous: Verdict,
+    fragments: list[Fragment],
+    profile: CandidateProfile,
+    resume: Document,
+    llm: LLMClient,
+) -> Verdict:
     if not fragments:  # поиск ничего не нашёл — подтверждения в резюме нет
         return previous
     raw = llm.structured(
@@ -106,6 +114,17 @@ def ask(
     return gate(req, raw.model_copy(update={"requirement_id": req.id}), resume)
 
 
+def ask(
+    req: Requirement,
+    previous: Verdict,
+    profile: CandidateProfile,
+    resume: Document,
+    retriever: Retriever,
+    llm: LLMClient,
+) -> Verdict:
+    return _ask_llm(req, previous, evidence(req, previous, resume, retriever), profile, resume, llm)
+
+
 def pass_b(
     reqs: list[Requirement],
     verdicts: list[Verdict],
@@ -115,17 +134,31 @@ def pass_b(
     llm: LLMClient,
 ) -> list[Verdict]:
     result = {v.requirement_id: v for v in verdicts}
-    for req, previous in disputed(reqs, verdicts):
+    todo = disputed(reqs, verdicts)
+    # Поиск — по очереди (кодировщик эмбеддингов один на процесс), вопросы к LLM — параллельно:
+    # общий семафор клиента всё равно держит не больше LLM_CONCURRENCY запросов
+    found = [evidence(req, previous, resume, retriever) for req, previous in todo]
+
+    def one(i: int) -> Verdict | None:
+        req, previous = todo[i]
         try:
-            new = ask(req, previous, profile, resume, retriever, llm)
+            return _ask_llm(req, previous, found[i], profile, resume, llm)
         except (LLMBadOutput, PrivacyViolation) as exc:
             log.warning("%s: проход B не дал валидного ответа (%s), остаётся проход A", req.id, exc)
-            continue
         except LLMUnavailable as exc:
             # Вердикты прохода A уже есть — не теряем их из-за сбоя на уточнении
-            log.warning("проход B прерван, LLM недоступна (%s): остаются вердикты прохода A", exc)
-            break
-        if new is previous:
+            log.warning("%s: LLM недоступна (%s), остаётся проход A", req.id, exc)
+        return None
+
+    workers = min(len(todo), llm.settings.llm_concurrency)
+    if workers <= 1:
+        answers = [one(i) for i in range(len(todo))]
+    else:
+        with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="pass_b") as pool:
+            answers = list(pool.map(one, range(len(todo))))
+
+    for (req, previous), new in zip(todo, answers, strict=True):
+        if new is None or new is previous:
             continue
         changed = new.status != previous.status
         comment = new.comment

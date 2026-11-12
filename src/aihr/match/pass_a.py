@@ -21,6 +21,7 @@ from aihr.contracts import (
     EvidenceType,
     Fragment,
     Modality,
+    ReqKind,
     Requirement,
     Status,
     Verdict,
@@ -131,6 +132,13 @@ def gate(req: Requirement, raw: PassAVerdict | None, resume: Document) -> Verdic
     status, evidence_type = raw.status, raw.evidence_type
     needs_review = False
 
+    if req.kind == ReqKind.soft and evidence_type in (EvidenceType.adjacent, EvidenceType.indirect):
+        # Личное качество по смежным фактам не выводим (D43): это вопрос на интервью
+        return _not_stated(
+            req,
+            "Личное качество прямо в резюме не подтверждено — уточнить на интервью.",
+            needs_review=False,
+        )
     if evidence_type == EvidenceType.adjacent and status == Status.match:
         status = Status.partial  # смежный навык — максимум «Частично» (D15)
     if evidence_type == EvidenceType.indirect:

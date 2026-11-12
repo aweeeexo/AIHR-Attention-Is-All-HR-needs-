@@ -1,6 +1,7 @@
 # syntax=docker/dockerfile:1.7
 # Многоступенчатая сборка: uv ставит зависимости в первом этапе, в итоговый образ попадает .venv.
-# Эмбеддинги (sentence-transformers + torch CPU, D19): docker compose build --build-arg WITH_EMBEDDINGS=1
+# Эмбеддинги (sentence-transformers + torch CPU, D19) включены по умолчанию (D42).
+# Образ без них (меньше на ~2,5 ГБ, только BM25): WITH_EMBEDDINGS=0 docker compose up --build
 
 ARG PYTHON_IMAGE=python:3.12.16-slim-trixie
 
@@ -14,7 +15,7 @@ ENV UV_COMPILE_BYTECODE=1 \
     UV_PYTHON_DOWNLOADS=never \
     UV_PROJECT_ENVIRONMENT=/app/.venv
 WORKDIR /app
-ARG WITH_EMBEDDINGS=0
+ARG WITH_EMBEDDINGS=1
 
 # Сначала только зависимости: слой кэшируется, пока не меняется uv.lock
 COPY pyproject.toml uv.lock .python-version README.md ./

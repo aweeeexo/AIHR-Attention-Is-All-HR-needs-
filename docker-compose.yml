@@ -8,7 +8,7 @@ x-app: &app
     context: .
     target: runtime
     args:
-      WITH_EMBEDDINGS: ${WITH_EMBEDDINGS:-0}
+      WITH_EMBEDDINGS: ${WITH_EMBEDDINGS:-1}
   image: aihr:latest
   env_file:
     - path: .env

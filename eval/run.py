@@ -159,9 +159,10 @@ def score_keywords() -> MethodResult:
     return res
 
 
-def retrieval_recall(k: int = 8) -> tuple[int, int]:
+def retrieval_recall(k: int = 8, embeddings: bool = False) -> tuple[int, int]:
     """Полнота поиска доказательств: доля пунктов эталона с фрагментами, у которых хотя бы один
-    фрагмент эталона есть в первых k результатах поиска по тексту требования (без LLM)."""
+    фрагмент эталона есть в первых k результатах поиска по тексту требования (без LLM).
+    embeddings=True — гибрид BM25 + эмбеддинги, если extra установлен; иначе (0, 0)."""
     from aihr.fallback import extract_requirements_fallback
     from aihr.retrieve import Retriever, roles_for
 
@@ -172,7 +173,9 @@ def retrieval_recall(k: int = 8) -> tuple[int, int]:
         doc = mask_document(
             load_document(path.read_bytes(), path.name, DocKind.resume, "R"), PrivacyContext()
         )
-        retriever = Retriever(doc, embeddings=False)
+        retriever = Retriever(doc, embeddings=embeddings)
+        if embeddings and not retriever.uses_embeddings:
+            return 0, 0
         vpath = ROOT / "data" / "case" / vfile
         vac = mask_document(
             load_document(vpath.read_bytes(), vfile, DocKind.vacancy, "V1"), PrivacyContext()
@@ -294,9 +297,19 @@ def main() -> int:
         "",
         "## Поиск доказательств",
         "",
-        f"Recall@8 (BM25 + синонимы, без эмбеддингов): {hit} из {total} пунктов эталона с "
-        f"фрагментами — {hit / max(total, 1):.0%}. Цель T06 — 90%.",
+        "Recall@8 — доля пунктов эталона, для которых нужный фрагмент резюме есть среди 8 "
+        "найденных. Цель T06 — 90%.",
+        "",
+        f"- BM25 + синонимы: {hit} из {total} — {hit / max(total, 1):.0%}",
     ]
+    e_hit, e_total = retrieval_recall(embeddings=True)
+    if e_total:
+        out.append(
+            f"- BM25 + синонимы + эмбеддинги (`{offline.embeddings_model}`, RRF): {e_hit} из "
+            f"{e_total} — {e_hit / e_total:.0%}"
+        )
+    else:
+        out.append("- с эмбеддингами — не посчитано: extra `embeddings` не установлен")
     out += [
         "",
         "## Справедливость",

@@ -251,3 +251,63 @@ def test_tokens_are_thread_safe() -> None:
     with ThreadPoolExecutor(max_workers=8) as pool:
         for _ in range(5):
             assert list(pool.map(tokens, texts)) == expected
+
+
+SECTIONED = """О себе
+Сам собираю сметы в Гранд-Смете и веду исполнительную документацию.
+Опыт работы
+2019 — 2024, ООО «Пример», инженер ПТО. Проверял акты и вёл переписку с заказчиком.
+Навыки
+AutoCAD, Гранд-Смета
+"""
+
+
+def _sectioned():
+    return mask_document(
+        load_document(SECTIONED.encode(), "r.txt", DocKind.resume, "R"), PrivacyContext()
+    )
+
+
+def test_section_roles_boost_but_do_not_filter() -> None:
+    """D42: подтверждение из «О себе» находится и для требования-обязанности."""
+    doc = _sectioned()
+    r = Retriever(doc, embeddings=False)
+    by_role = {f.id: f.section_role for f in doc.fragments}
+    found = [fid for fid, _ in r.search("Составление смет", [], k=3, section_roles=["experience"])]
+    assert any(by_role[f] == "about" for f in found)
+
+
+def test_preferred_section_ranks_first_on_equal_match() -> None:
+    doc = _sectioned()
+    r = Retriever(doc, embeddings=False)
+    by_role = {f.id: f.section_role for f in doc.fragments}
+    found = [fid for fid, _ in r.search("Гранд-Смета", [], k=3, section_roles=["skills"])]
+    assert by_role[found[0]] == "skills"
+
+
+def test_years_with_adjacent_topic_capped_at_partial() -> None:
+    """D43: стаж набран, но опыт по теме смежный — правило не поднимает до «Соответствует»."""
+    from aihr.contracts import EvidenceType
+
+    profile = _profile(positions=[_position("2011 — 2025", "R2")])
+    adjacent = _verdict(Status.partial, "R2").model_copy(
+        update={"evidence_type": EvidenceType.adjacent, "missing": "нет учёта склада"}
+    )
+    v = apply_rules(_req(ThresholdKind.years, "3", subject="складской учёт"), adjacent, profile)
+    assert v.status == Status.partial and "смежный" in v.computed
+    assert v.missing == "нет учёта склада"
+
+
+def test_education_field_doubt_is_partial() -> None:
+    """D43: уровень подходит, специальность модель сочла другой → «Частично»."""
+    req = _req(ThresholdKind.education_level, "higher").model_copy(
+        update={"text": "Высшее юридическое образование"}
+    )
+    edu = Education(level=EducationLevel.bachelor, institution="Вуз", field="информатика",
+                    year_end=2021, fragment_ids=["R7"])  # fmt: skip
+    v = apply_rules(req, _verdict(Status.mismatch, "R7"), _profile(education=[edu]))
+    assert v.status == Status.partial and "специальность" in v.computed
+    plain = req.model_copy(update={"text": "Высшее образование"})
+    assert apply_rules(plain, _verdict(Status.partial, "R7"), _profile(education=[edu])).status == (
+        Status.match
+    )

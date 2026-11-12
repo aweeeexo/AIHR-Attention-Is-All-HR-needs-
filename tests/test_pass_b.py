@@ -190,3 +190,46 @@ def test_pass_b_unavailable_keeps_pass_a(resume) -> None:
         [req], [previous], CandidateProfile(), resume, Retriever(resume, embeddings=False), llm
     )
     assert out == [previous]
+
+
+def test_pass_b_runs_in_parallel_and_keeps_order(resume) -> None:
+    import re
+    import threading
+    import time
+    from types import SimpleNamespace
+
+    fid = next(f.id for f in resume.fragments if "Автокад" in f.text)
+
+    class Slow:
+        def __init__(self) -> None:
+            self.active = self.peak = 0
+            self.lock = threading.Lock()
+            self.chat = SimpleNamespace(completions=self)
+
+        def create(self, **kwargs):
+            with self.lock:
+                self.active += 1
+                self.peak = max(self.peak, self.active)
+            time.sleep(0.2)
+            with self.lock:
+                self.active -= 1
+            rid = re.search(r"\[(V1\.req\d+)\]", kwargs["messages"][1]["content"]).group(1)
+            answer = {"requirement_id": rid, "reasoning": "…", "status": "match",
+                      "evidence_type": "direct", "fragment_ids": [fid], "comment": rid}  # fmt: skip
+            msg = SimpleNamespace(content=json.dumps(answer))
+            return SimpleNamespace(choices=[SimpleNamespace(message=msg)])
+
+    fake = Slow()
+    s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m", llm_cache=False)  # type: ignore[call-arg]
+    reqs = [_req(i, "Знание AutoCAD и Компас") for i in range(1, 5)]
+    out = pass_b(
+        reqs,
+        [_verdict(r.id, Status.not_stated) for r in reqs],
+        CandidateProfile(),
+        resume,
+        Retriever(resume, embeddings=False),
+        LLMClient(s, client=fake),
+    )
+    assert fake.peak > 1
+    assert [v.requirement_id for v in out] == [r.id for r in reqs]
+    assert all(v.comment.startswith(v.requirement_id) for v in out)
