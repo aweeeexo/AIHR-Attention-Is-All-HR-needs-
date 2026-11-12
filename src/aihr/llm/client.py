@@ -1,9 +1,8 @@
 """Единственная точка выхода к LLM (принцип 4, D10).
 
-T00: загрузка промпта, вызов через openai SDK, разбор JSON, проверка схемой, повтор с текстом
-ошибки. T03 добавит guard на ПДн, журнал исходящих, кэш, режимы structured output и семафор.
-
-До T02 сюда не отправляем резюме кейса: маскирование ещё не готово.
+Загрузка промпта, guard на ПДн (T02) перед каждым запросом, журнал исходящих (T02), вызов через
+openai SDK, разбор JSON, проверка схемой, повтор с текстом ошибки. T03 добавит кэш, режимы
+structured output и семафор.
 """
 
 from __future__ import annotations
@@ -18,8 +17,10 @@ import openai
 from pydantic import BaseModel, ValidationError
 
 from aihr.config import Settings, get_settings
-from aihr.contracts import LLMBadOutput, LLMUnavailable
+from aihr.contracts import LLMBadOutput, LLMUnavailable, PrivacyViolation
 from aihr.llm.prompting import render_prompt
+from aihr.privacy import PrivacyContext, check_outbound
+from aihr.privacy.outbound import OutboundLog
 
 log = logging.getLogger(__name__)
 
@@ -38,6 +39,16 @@ def _schema_instruction(schema: type[BaseModel]) -> str:
     )
 
 
+def _error_text(exc: Exception) -> str:
+    """Ошибка для модели: поле и сообщение. Без ссылок pydantic — их заблокировал бы guard."""
+    if isinstance(exc, ValidationError):
+        lines = [
+            f"{'.'.join(str(x) for x in e['loc']) or '<корень>'}: {e['msg']}" for e in exc.errors()
+        ]
+        return "\n".join(lines[:20])
+    return str(exc)[:500]
+
+
 def _extract_json(content: str) -> Any:
     text = content.strip()
     m = _FENCE_RE.match(text)
@@ -52,9 +63,24 @@ class LLMClient:
     `client` — подмена openai.OpenAI в тестах: любой объект с `.chat.completions.create(...)`.
     """
 
-    def __init__(self, settings: Settings | None = None, client: Any | None = None) -> None:
+    def __init__(
+        self,
+        settings: Settings | None = None,
+        client: Any | None = None,
+        privacy: PrivacyContext | None = None,
+        outbound: OutboundLog | None = None,
+    ) -> None:
         self.settings = settings or get_settings()
         self._client = client
+        self.privacy = privacy
+        self.outbound = outbound
+
+    def for_run(self, privacy: PrivacyContext, outbound: OutboundLog | None) -> LLMClient:
+        """Клиент одного прогона: guard знает ФИО этого прогона, запросы пишутся в его журнал."""
+        clone = LLMClient(self.settings, self._client, privacy, outbound)
+        if self._client is None and self.settings.llm_configured:
+            clone._client = self._get_client()  # одно соединение на все прогоны
+        return clone
 
     @property
     def available(self) -> bool:
@@ -93,11 +119,12 @@ class LLMClient:
 
         last_error = ""
         for attempt in range(MAX_FIX_ATTEMPTS + 1):
-            content = self._complete(client, messages, prompt_id)
+            self._guard(messages, prompt_id, prompt.version)
+            content = self._complete(client, messages, prompt_id, prompt.version)
             try:
                 return schema.model_validate(_extract_json(content))
             except (json.JSONDecodeError, ValidationError) as exc:
-                last_error = str(exc)[:2000]
+                last_error = _error_text(exc)
                 log.warning(
                     "%s: ответ не прошёл схему %s (попытка %d)",
                     prompt_id,
@@ -115,8 +142,40 @@ class LLMClient:
                 ]
         raise LLMBadOutput(f"{prompt_id}: ответ не прошёл схему {schema.__name__}: {last_error}")
 
-    def _complete(self, client: Any, messages: list[dict[str, str]], prompt_id: str) -> str:
+    def _guard(self, messages: list[dict[str, str]], prompt_id: str, version: int) -> None:
+        text = "\n".join(m["content"] for m in messages)
+        try:
+            check_outbound(text, self.privacy, prompt_id)
+        except PrivacyViolation as exc:
+            log.warning("%s", exc)  # без самих данных
+            if self.outbound:
+                self.outbound.write(
+                    prompt_id=prompt_id,
+                    prompt_version=version,
+                    model=self.settings.llm_model,
+                    status="blocked",
+                    reason=str(exc),
+                )
+            raise
+
+    def _complete(
+        self, client: Any, messages: list[dict[str, str]], prompt_id: str, version: int = 0
+    ) -> str:
         started = time.perf_counter()
+
+        def record(status: str, response_chars: int = 0) -> None:
+            if self.outbound:
+                self.outbound.write(
+                    prompt_id=prompt_id,
+                    prompt_version=version,
+                    model=self.settings.llm_model,
+                    status=status,
+                    messages=messages,
+                    response_chars=response_chars,
+                    duration_ms=int((time.perf_counter() - started) * 1000),
+                    cached=False,
+                )
+
         try:
             response = client.chat.completions.create(
                 model=self.settings.llm_model,
@@ -125,11 +184,14 @@ class LLMClient:
                 response_format={"type": "json_object"},
             )
         except openai.APIStatusError as exc:
+            record(f"http_{exc.status_code}")
             raise LLMUnavailable(f"{prompt_id}: провайдер вернул HTTP {exc.status_code}") from exc
         except openai.APIError as exc:
+            record(type(exc).__name__)
             raise LLMUnavailable(f"{prompt_id}: {type(exc).__name__}") from exc
         log.info("%s: ответ за %d мс", prompt_id, (time.perf_counter() - started) * 1000)
         content = response.choices[0].message.content
+        record("ok", len(content or ""))
         if not content:
             raise LLMBadOutput(f"{prompt_id}: пустой ответ модели")
         return content

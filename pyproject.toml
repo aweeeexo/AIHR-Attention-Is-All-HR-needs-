@@ -118,6 +118,7 @@ cmd = "streamlit run ui/app.py --server.port 8501"
 testpaths = ["tests"]
 addopts = "-m 'not llm'"
 markers = ["llm: прогон с настоящей моделью, по умолчанию выключен"]
+filterwarnings = ["ignore:pkg_resources is deprecated:UserWarning"]
 
 [tool.ruff]
 line-length = 100

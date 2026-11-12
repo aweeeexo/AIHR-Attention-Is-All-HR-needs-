@@ -28,6 +28,7 @@ from aihr.contracts import (
     IngestFailure,
     LLMUnavailable,
     MatchResult,
+    PrivacyViolation,
     Report,
     Requirement,
     VacancyScore,
@@ -38,6 +39,7 @@ from aihr.llm import LLMClient
 from aihr.match import apply_rules, match_vacancy
 from aihr.normalize import enrich_profile
 from aihr.privacy import PrivacyContext, mask_document
+from aihr.privacy.outbound import OutboundLog
 from aihr.report import build_report
 from aihr.retrieve import Retriever
 from aihr.score import rank, score_vacancy
@@ -83,6 +85,11 @@ class _Run:
         if self.mode == "llm":
             try:
                 return with_llm()
+            except PrivacyViolation as exc:
+                # Запрос не ушёл. Только этот шаг считаем без LLM, прогон продолжается с LLM
+                self.warnings.append(f"Запрос к LLM заблокирован проверкой ПДн ({exc}).")
+                log.warning("guard заблокировал запрос: %s", exc)
+                return without_llm()
             except LLMUnavailable as exc:
                 self.mode = "fallback"
                 self.warnings.append(f"LLM недоступна ({exc}): дальше режим без LLM.")
@@ -120,9 +127,12 @@ def run(
 ) -> MatchResult:
     settings = settings or get_settings()
     llm = llm or LLMClient(settings)
-    state = _Run(settings, llm)
     t = _Timings()
     run_id = new_run_id()
+    ctx = PrivacyContext()  # таблица замен ПДн — только в памяти этого прогона
+    outbound_path = settings.runs_dir / run_id / "outbound.jsonl"
+    llm = llm.for_run(ctx, OutboundLog(outbound_path) if save else None)
+    state = _Run(settings, llm)
     errors: list[IngestError] = []
     started = time.perf_counter()
 
@@ -136,7 +146,6 @@ def run(
         ]
 
     # 2. Маскирование: наружу уходит только masked_text
-    ctx = PrivacyContext()
     with t.step("mask"):
         if resume_doc is not None:
             resume_doc = mask_document(resume_doc, ctx)
@@ -236,6 +245,7 @@ def run(
         errors=errors,
         warnings=state.warnings,
         timings_ms=dict(t.ms),
+        outbound_log_path=str(outbound_path) if save and outbound_path.is_file() else None,
     )
     if save:
         _save(result, settings)

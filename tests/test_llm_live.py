@@ -66,3 +66,35 @@ def test_fragment_ids_are_real(live_llm: LLMClient, name: str) -> None:
         print(f"  {item.fragment_ids} {item.text}")
     assert result.items
     assert set(used) <= known, f"выдуманные номера: {set(used) - known}"
+
+
+@pytest.mark.parametrize(
+    "name", sorted(p.name for p in (REPO_ROOT / "data" / "case").glob("*резюме*.docx"))
+)
+def test_case_resume_outbound_log_is_clean(live_llm: LLMClient, name: str, tmp_path) -> None:  # noqa: ANN001
+    """Главный тест T02 вживую: замаскированное резюме кейса уходит в LLM, журнал без ПДн."""
+    import re
+
+    from aihr.privacy import patterns
+    from aihr.privacy.names import name_pattern, names_from_filename
+    from aihr.privacy.outbound import OutboundLog
+
+    path = REPO_ROOT / "data" / "case" / name
+    doc = load_document(path.read_bytes(), name, DocKind.resume, "R")
+    ctx = PrivacyContext()
+    masked = mask_document(doc, ctx)
+    log = OutboundLog(tmp_path / "outbound.jsonl")
+    llm = live_llm.for_run(ctx, log)
+    result = llm.structured(
+        "llm/selftest_fragments", {"fragments": masked.fragments[:40]}, FoundRequirements
+    )
+    sent = log.path.read_text(encoding="utf-8")
+    for word in names_from_filename(name):
+        assert not name_pattern(word).search(sent), "ФИО в журнале исходящих"
+    for kind, pattern in patterns.GUARD_PATTERNS.items():
+        assert not pattern.search(sent), kind
+    assert "[CANDIDATE]" in sent
+    known = {f.id for f in masked.fragments}
+    assert {fid for i in result.items for fid in i.fragment_ids} <= known
+    print(f"\n{name[-14:]}: {len(result.items)} пунктов, журнал {len(sent)} символов, ФИО нет")
+    assert re.search(r'"status": "ok"', sent)
