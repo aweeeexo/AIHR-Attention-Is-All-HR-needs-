@@ -39,7 +39,7 @@ from aihr.contracts import (
 )
 from aihr.ingest import load_document, make_error
 from aihr.llm import LLMClient
-from aihr.match import apply_rules, match_vacancy
+from aihr.match import apply_rules, attach_quotes, match_vacancy
 from aihr.normalize import enrich_profile
 from aihr.privacy import PrivacyContext, mask_document
 from aihr.privacy.outbound import OutboundLog
@@ -224,7 +224,11 @@ def run(
                         ),
                     )
                     by_id = {r.id: r for r in reqs}
-                    vs = [apply_rules(by_id[v.requirement_id], v, profile) for v in vs]
+                    # Правила (стаж, уровни) могут добавить фрагменты — цитаты снова ставит код
+                    vs = [
+                        attach_quotes(apply_rules(by_id[v.requirement_id], v, profile), resume_doc)
+                        for v in vs
+                    ]
                 step = "score"
                 with t.step(step):
                     out.score = score_vacancy(vac, reqs, vs)
