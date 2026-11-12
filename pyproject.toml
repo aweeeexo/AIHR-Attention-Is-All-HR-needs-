@@ -76,6 +76,11 @@ cmd = "docker compose down"
 help = "Тесты без сети (LLM подменена заглушкой)"
 cmd = "pytest"
 
+[tool.poe.tasks.test-docker]
+help = "Тесты в Linux-контейнере"
+sequence = ["docker build --target test -t aihr-test .", "docker run --rm aihr-test"]
+default_item_type = "cmd"
+
 [tool.poe.tasks.lint]
 help = "Проверка стиля"
 sequence = ["ruff check .", "ruff format --check ."]

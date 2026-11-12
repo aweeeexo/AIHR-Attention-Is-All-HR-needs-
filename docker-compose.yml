@@ -1,0 +1,67 @@
+# Запуск: cp .env.example .env && docker compose up --build
+# API — http://localhost:8000 (документация /docs), UI — http://localhost:8501
+
+name: aihr
+
+x-app: &app
+  build:
+    context: .
+    target: runtime
+    args:
+      WITH_EMBEDDINGS: ${WITH_EMBEDDINGS:-0}
+  image: aihr:latest
+  env_file:
+    - path: .env
+      required: false   # без .env поднимется в режиме без LLM
+  restart: unless-stopped
+
+services:
+  api:
+    <<: *app
+    ports:
+      - "${API_PORT:-8000}:8000"
+    volumes:
+      - runs:/app/data/runs     # результаты прогонов и журнал исходящих запросов
+      - cache:/app/data/cache   # кэш ответов LLM (T03)
+
+  ui:
+    <<: *app
+    command:
+      - streamlit
+      - run
+      - ui/app.py
+      - --server.port=8501
+      - --server.address=0.0.0.0
+      - --server.headless=true
+      - --browser.gatherUsageStats=false
+    environment:
+      API_URL: http://api:8000
+    ports:
+      - "${UI_PORT:-8501}:8501"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test:
+        - CMD
+        - python
+        - -c
+        - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8501/_stcore/health', timeout=4)"
+      interval: 10s
+      timeout: 5s
+      start_period: 20s
+      retries: 5
+
+  # Профиль local: локальная LLM без внешнего API (D20). Включается в T03:
+  #   docker compose --profile local up --build, а в .env — LLM_BASE_URL=http://llm:11434/v1
+  # llm:
+  #   image: ollama/ollama:<версия>
+  #   profiles: ["local"]
+  #   volumes:
+  #     - ollama:/root/.ollama
+  #   ports:
+  #     - "11434:11434"
+
+volumes:
+  runs:
+  cache:
