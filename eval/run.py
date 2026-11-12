@@ -402,6 +402,9 @@ def main() -> int:
     if methods[-1].pairs:
         model = re.sub(r"^(\w+://)[^/]+/", r"\1<каталог>/", online.llm_model or "")
         out += ["", f"Модель в строках с LLM: `{model}`."]
+        if online.llm_model_routes.strip():
+            routes = re.sub(r"(\w+://)[^/,]+/", r"\1<каталог>/", online.llm_model_routes)
+            out[-1] += f" Маршруты шагов (`LLM_MODEL_ROUTES`): `{routes}`."
         if online.llm_provider == "replay":
             out[-1] += (
                 " Провайдер replay (D39): ответы модели из файлов. Время — ожидание исполнителя "

@@ -259,7 +259,7 @@ class LLMClient:
             self.outbound.write(
                 prompt_id=prompt.prompt_id,
                 prompt_version=prompt.version,
-                model=self.settings.llm_model,
+                model=self.settings.model_for(prompt.prompt_id),
                 **entry,
             )
 
@@ -270,7 +270,7 @@ class LLMClient:
     ) -> str:
         parts = [
             str(CACHE_FORMAT),
-            self.settings.llm_model or "",
+            self.settings.model_for(prompt.prompt_id) or "",
             prompt.prompt_id,
             str(prompt.version),
             schema.__name__,
@@ -299,9 +299,9 @@ class LLMClient:
 
     # ---------- запрос ----------
 
-    def _response_format(self, schema: type[BaseModel]) -> dict[str, Any]:
+    def _response_format(self, schema: type[BaseModel], model: str) -> dict[str, Any]:
         mode = self.settings.llm_structured_mode
-        target = (self.settings.llm_base_url or "", self.settings.llm_model or "")
+        target = (self.settings.llm_base_url or "", model)
         if mode == "json_object" or (mode == "auto" and target in self._no_json_schema):
             return {"type": "json_object"}
         return {
@@ -321,16 +321,16 @@ class LLMClient:
         prompt: RenderedPrompt,
         schema: type[BaseModel],
     ) -> str:
-        response_format = self._response_format(schema)
+        model = self.settings.model_for(prompt.prompt_id) or ""
+        response_format = self._response_format(schema, model)
         started = time.perf_counter()
         try:
             with _semaphore(self.settings.llm_concurrency):
-                response = self._create(client, messages, response_format)
+                response = self._create(client, messages, response_format, model)
         except (openai.BadRequestError, openai.UnprocessableEntityError) as exc:
             auto = self.settings.llm_structured_mode == "auto"
             if auto and response_format["type"] == "json_schema":
-                target = (self.settings.llm_base_url or "", self.settings.llm_model or "")
-                self._no_json_schema.add(target)
+                self._no_json_schema.add((self.settings.llm_base_url or "", model))
                 log.info("провайдер не принял json_schema, переходим на json_object")
                 return self._complete(client, messages, prompt, schema)
             self._record(prompt, messages, started, f"http_{exc.status_code}")
@@ -362,13 +362,21 @@ class LLMClient:
         return content
 
     def _create(
-        self, client: Any, messages: list[dict[str, str]], response_format: dict[str, Any]
+        self,
+        client: Any,
+        messages: list[dict[str, str]],
+        response_format: dict[str, Any],
+        model: str,
     ) -> Any:
+        extra: dict[str, Any] = {}
+        if self.settings.llm_max_tokens:
+            extra["max_tokens"] = self.settings.llm_max_tokens
         return client.chat.completions.create(
-            model=self.settings.llm_model,
+            model=model,
             messages=messages,
             temperature=0,
             response_format=response_format,
+            **extra,
         )
 
     def _record(

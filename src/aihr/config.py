@@ -37,10 +37,16 @@ class Settings(BaseSettings):
     llm_base_url: str | None = None
     llm_api_key: SecretStr | None = None
     llm_model: str | None = None
+    # Своя модель для отдельных шагов: "extract/profile=<модель>,report/questions=<модель>".
+    # Ключ — prompt_id или его начало («extract/» — все шаги извлечения). Провайдер тот же (D46)
+    llm_model_routes: str = ""
     llm_project: str | None = None
     llm_timeout_s: float = Field(default=60, gt=0)
     llm_max_retries: int = Field(default=3, ge=0)
     llm_concurrency: int = Field(default=4, ge=1)
+    # Предел длины ответа. Пусто — по умолчанию провайдера; у части провайдеров он мал, и длинный
+    # JSON обрывается на середине
+    llm_max_tokens: int | None = Field(default=None, ge=1)
     # auto — пробуем json_schema, при отказе провайдера переходим на json_object
     llm_structured_mode: Literal["auto", "json_schema", "json_object"] = "auto"
     llm_cache: bool = True  # кэш ответов по хэшу запроса (D17)
@@ -90,6 +96,16 @@ class Settings(BaseSettings):
         if not m or not 1 <= int(m.group(2)) <= 12:
             raise ValueError("TODAY должен быть в формате ГГГГ-ММ, например 2026-11")
         return value.strip()
+
+    def model_for(self, prompt_id: str) -> str | None:
+        """Модель для шага: самый длинный подходящий маршрут, иначе LLM_MODEL."""
+        best, model = -1, self.llm_model
+        for item in self.llm_model_routes.split(","):
+            key, sep, value = item.partition("=")
+            key, value = key.strip(), value.strip()
+            if sep and key and value and prompt_id.startswith(key) and len(key) > best:
+                best, model = len(key), value
+        return model
 
     @property
     def llm_configured(self) -> bool:

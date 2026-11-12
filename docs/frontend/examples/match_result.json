@@ -1,6 +1,6 @@
 {
  "contracts_version": 3,
- "run_id": "20261112-201540-55eb7b",
+ "run_id": "20261112-211558-d3519e",
  "mode": "llm",
  "resume": {
   "id": "R",
@@ -582,8 +582,8 @@
      "R13",
      "R25",
      "R34",
-     "R20",
-     "R38"
+     "R38",
+     "R20"
     ]
    },
    {
@@ -1480,23 +1480,7 @@
    {
     "id": "V1.req1",
     "vacancy_id": "V1",
-    "text": "Опыт работы от 1 года",
-    "kind": "experience",
-    "modality": "must",
-    "modality_marker": "от 1 года",
-    "modality_reason": "маркер «от 1 года»",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V1.11"
-    ]
-   },
-   {
-    "id": "V1.req2",
-    "vacancy_id": "V1",
-    "text": "Уверенное знание HTML5 и принципов семантической вёрстки",
+    "text": "Уверенное знание HTML5 и принципов семантической верстки — HTML5",
     "kind": "skill",
     "modality": "must",
     "modality_marker": null,
@@ -1508,13 +1492,15 @@
     ],
     "verifiable": true,
     "source_fragment_ids": [
-     "V1.12"
+     "V1.12",
+     "V1.13",
+     "V1.14"
     ]
    },
    {
-    "id": "V1.req3",
+    "id": "V1.req2",
     "vacancy_id": "V1",
-    "text": "Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирование, псевдоклассы и анимации",
+    "text": "Уверенное знание HTML5 и принципов семантической верстки — CSS3",
     "kind": "skill",
     "modality": "must",
     "modality_marker": null,
@@ -1522,18 +1508,19 @@
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [
-     "css",
-     "responsive"
+     "css"
     ],
     "verifiable": true,
     "source_fragment_ids": [
-     "V1.13"
+     "V1.12",
+     "V1.13",
+     "V1.14"
     ]
    },
    {
-    "id": "V1.req4",
+    "id": "V1.req3",
     "vacancy_id": "V1",
-    "text": "Знание JavaScript (ES6+): работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок",
+    "text": "Уверенное знание HTML5 и принципов семантической верстки — JavaScript (ES6+)",
     "kind": "skill",
     "modality": "must",
     "modality_marker": null,
@@ -1545,14 +1532,134 @@
     ],
     "verifiable": true,
     "source_fragment_ids": [
+     "V1.12",
+     "V1.13",
      "V1.14"
+    ]
+   },
+   {
+    "id": "V1.req4",
+    "vacancy_id": "V1",
+    "text": "Хорошее знание CSS3: Flexbox",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
     ]
    },
    {
     "id": "V1.req5",
     "vacancy_id": "V1",
-    "text": "Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомизация темы",
+    "text": "Хорошее знание CSS3: Grid",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
+    ]
+   },
+   {
+    "id": "V1.req6",
+    "vacancy_id": "V1",
+    "text": "Хорошее знание CSS3: адаптивная верстка",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [
+     "responsive"
+    ],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
+    ]
+   },
+   {
+    "id": "V1.req7",
+    "vacancy_id": "V1",
+    "text": "Хорошее знание CSS3: позиционирование",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
+    ]
+   },
+   {
+    "id": "V1.req8",
+    "vacancy_id": "V1",
+    "text": "Хорошее знание CSS3: псевдоклассы",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
+    ]
+   },
+   {
+    "id": "V1.req9",
+    "vacancy_id": "V1",
+    "text": "Хорошее знание CSS3: анимации",
+    "kind": "skill",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.13"
+    ]
+   },
+   {
+    "id": "V1.req10",
+    "vacancy_id": "V1",
+    "text": "Опыт работы от 1 года",
     "kind": "experience",
+    "modality": "must",
+    "modality_marker": "от 1 года",
+    "modality_reason": "маркер «от 1 года»",
+    "alternatives": [],
+    "threshold": {
+     "kind": "years",
+     "value": "1",
+     "subject": null
+    },
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.11"
+    ]
+   },
+   {
+    "id": "V1.req11",
+    "vacancy_id": "V1",
+    "text": "Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомизация темы",
+    "kind": "skill",
     "modality": "must",
     "modality_marker": null,
     "modality_reason": "раздел «Требования» без маркера → must",
@@ -1564,12 +1671,11 @@
     "verifiable": true,
     "source_fragment_ids": [
      "V1.15",
-     "V1.16",
      "V1.8"
     ]
    },
    {
-    "id": "V1.req6",
+    "id": "V1.req12",
     "vacancy_id": "V1",
     "text": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model",
     "kind": "experience",
@@ -1584,13 +1690,12 @@
     "verifiable": true,
     "source_fragment_ids": [
      "V1.16",
-     "V1.19",
      "V1.9",
      "V1.24"
     ]
    },
    {
-    "id": "V1.req7",
+    "id": "V1.req13",
     "vacancy_id": "V1",
     "text": "Навыки самостоятельного тестирования реализованных интерфейсов",
     "kind": "skill",
@@ -1606,7 +1711,7 @@
     ]
    },
    {
-    "id": "V1.req8",
+    "id": "V1.req14",
     "vacancy_id": "V1",
     "text": "Аккуратность в коде (читаемость)",
     "kind": "soft",
@@ -1622,7 +1727,7 @@
     ]
    },
    {
-    "id": "V1.req9",
+    "id": "V1.req15",
     "vacancy_id": "V1",
     "text": "Готовность работать в небольшой команде",
     "kind": "soft",
@@ -1638,7 +1743,7 @@
     ]
    },
    {
-    "id": "V1.req10",
+    "id": "V1.req16",
     "vacancy_id": "V1",
     "text": "Понимание разницы между SSR и SPA",
     "kind": "skill",
@@ -1657,17 +1762,34 @@
     ]
    },
    {
-    "id": "V1.req11",
+    "id": "V1.req17",
     "vacancy_id": "V1",
-    "text": "Опыт работы с Pinia, Nuxt, Monaco Editor",
-    "kind": "experience",
+    "text": "Опыт работы с Pinia",
+    "kind": "skill",
     "modality": "nice",
     "modality_marker": null,
     "modality_reason": "раздел «Будет плюсом» → nice",
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [
-     "pinia",
+     "pinia"
+    ],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.22"
+    ]
+   },
+   {
+    "id": "V1.req18",
+    "vacancy_id": "V1",
+    "text": "Опыт работы с Nuxt",
+    "kind": "skill",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Будет плюсом» → nice",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [
      "nuxt"
     ],
     "verifiable": true,
@@ -1676,7 +1798,23 @@
     ]
    },
    {
-    "id": "V1.req12",
+    "id": "V1.req19",
+    "vacancy_id": "V1",
+    "text": "Опыт работы с Monaco Editor",
+    "kind": "skill",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Будет плюсом» → nice",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V1.22"
+    ]
+   },
+   {
+    "id": "V1.req20",
     "vacancy_id": "V1",
     "text": "Знание Figma (работа с макетом, экспорт ресурсов)",
     "kind": "skill",
@@ -1694,28 +1832,9 @@
     ]
    },
    {
-    "id": "V1.req13",
+    "id": "V1.req21",
     "vacancy_id": "V1",
-    "text": "Адаптивная и кроссбраузерная вёрстка",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [
-     "cross_browser"
-    ],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V1.16",
-     "V1.7"
-    ]
-   },
-   {
-    "id": "V1.req14",
-    "vacancy_id": "V1",
-    "text": "Вёрстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
+    "text": "Верстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
     "kind": "duty",
     "modality": "nice",
     "modality_marker": null,
@@ -1730,48 +1849,13 @@
     ],
     "verifiable": true,
     "source_fragment_ids": [
-     "V1.16",
      "V1.6"
     ]
-   }
-  ],
-  "V2": [
-   {
-    "id": "V2.req1",
-    "vacancy_id": "V2",
-    "text": "Опыт ведения таблицы поступления и выдачи ОС",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.3"
-    ]
    },
    {
-    "id": "V2.req2",
-    "vacancy_id": "V2",
-    "text": "Опыт оклейки ОС инвентарными номерами",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.4"
-    ]
-   },
-   {
-    "id": "V2.req3",
-    "vacancy_id": "V2",
-    "text": "Опыт проведения инвентаризации ОС",
+    "id": "V1.req22",
+    "vacancy_id": "V1",
+    "text": "Адаптивная и кроссбраузерная верстка",
     "kind": "duty",
     "modality": "nice",
     "modality_marker": null,
@@ -1779,120 +1863,33 @@
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [
-     "inventory_count"
+     "cross_browser"
     ],
     "verifiable": true,
     "source_fragment_ids": [
-     "V2.5"
+     "V1.7"
     ]
-   },
+   }
+  ],
+  "V2": [
    {
-    "id": "V2.req4",
+    "id": "V2.req1",
     "vacancy_id": "V2",
-    "text": "Опыт заполнения документов на перемещение ОС и организации подписи комиссии",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.6"
-    ]
-   },
-   {
-    "id": "V2.req5",
-    "vacancy_id": "V2",
-    "text": "Опыт организации учёта ОС по кабинетам и структурным подразделениям",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.7"
-    ]
-   },
-   {
-    "id": "V2.req6",
-    "vacancy_id": "V2",
-    "text": "Опыт организации учёта ОС с разными источниками финансирования и контроля перемещения ОС",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.12",
-     "V2.13"
-    ]
-   },
-   {
-    "id": "V2.req7",
-    "vacancy_id": "V2",
-    "text": "Опыт организации учёта ОС при переезде лабораторий/производств/отделов",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.14"
-    ]
-   },
-   {
-    "id": "V2.req8",
-    "vacancy_id": "V2",
-    "text": "Опыт оформления пакета документов на списание и перемещение ОС",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.15"
-    ]
-   },
-   {
-    "id": "V2.req9",
-    "vacancy_id": "V2",
-    "text": "Высшее экономическое образование",
-    "kind": "education",
-    "modality": "must",
-    "modality_marker": null,
-    "modality_reason": "раздел «Требования» без маркера → must",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V2.17"
-    ]
-   },
-   {
-    "id": "V2.req10",
-    "vacancy_id": "V2",
-    "text": "Подтверждённый опыт профессиональной деятельности не менее 3 лет в одном из направлений: бухгалтер по учёту ОС и ТМЦ, специалист складского учёта, инвентаризация",
+    "text": "Подтвержденный опыт профессиональной деятельности не менее 3 лет в одном из направлений: бухгалтер по учету ОС и ТМЦ, специалист складского учета, инвентаризация",
     "kind": "experience",
     "modality": "must",
     "modality_marker": "не менее",
     "modality_reason": "маркер «не менее»",
-    "alternatives": [],
-    "threshold": null,
+    "alternatives": [
+     "бухгалтер по учету ОС и ТМЦ",
+     "специалист складского учета",
+     "инвентаризация"
+    ],
+    "threshold": {
+     "kind": "years",
+     "value": "3",
+     "subject": null
+    },
     "canonical_terms": [
      "inventory_items",
      "inventory_count"
@@ -1903,7 +1900,27 @@
     ]
    },
    {
-    "id": "V2.req11",
+    "id": "V2.req2",
+    "vacancy_id": "V2",
+    "text": "Высшее экономическое образование",
+    "kind": "education",
+    "modality": "must",
+    "modality_marker": null,
+    "modality_reason": "раздел «Требования» без маркера → must",
+    "alternatives": [],
+    "threshold": {
+     "kind": "education_level",
+     "value": "higher",
+     "subject": null
+    },
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.17"
+    ]
+   },
+   {
+    "id": "V2.req3",
     "vacancy_id": "V2",
     "text": "Внимание к деталям",
     "kind": "soft",
@@ -1921,7 +1938,7 @@
     ]
    },
    {
-    "id": "V2.req12",
+    "id": "V2.req4",
     "vacancy_id": "V2",
     "text": "Системность",
     "kind": "soft",
@@ -1937,7 +1954,7 @@
     ]
    },
    {
-    "id": "V2.req13",
+    "id": "V2.req5",
     "vacancy_id": "V2",
     "text": "Способность сохранять концентрацию при длительной монотонной работе",
     "kind": "soft",
@@ -1953,7 +1970,7 @@
     ]
    },
    {
-    "id": "V2.req14",
+    "id": "V2.req6",
     "vacancy_id": "V2",
     "text": "Коммуникабельность",
     "kind": "soft",
@@ -1971,7 +1988,7 @@
     ]
    },
    {
-    "id": "V2.req15",
+    "id": "V2.req7",
     "vacancy_id": "V2",
     "text": "Стрессоустойчивость",
     "kind": "soft",
@@ -1989,9 +2006,91 @@
     ]
    },
    {
-    "id": "V2.req16",
+    "id": "V2.req8",
     "vacancy_id": "V2",
-    "text": "Опыт организации списка ОС (операционных систем), приобретённых за средства заказчика, перемещённых с других подразделений института МФТИ, находящихся на ответственном хранении",
+    "text": "Ведение таблицы поступления и выдачи ОС",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.3"
+    ]
+   },
+   {
+    "id": "V2.req9",
+    "vacancy_id": "V2",
+    "text": "Оклейка ОС инвентарными номерами",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.4"
+    ]
+   },
+   {
+    "id": "V2.req10",
+    "vacancy_id": "V2",
+    "text": "Проведение инвентаризации ОС на всех объектах института электродвижения",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [
+     "inventory_count"
+    ],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.5"
+    ]
+   },
+   {
+    "id": "V2.req11",
+    "vacancy_id": "V2",
+    "text": "Заполнение документов на перемещение ОС, организация подписи комиссии и передача их в бухгалтерию",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.6"
+    ]
+   },
+   {
+    "id": "V2.req12",
+    "vacancy_id": "V2",
+    "text": "Организация учета ОС по кабинетам и структурным подразделениям",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.7"
+    ]
+   },
+   {
+    "id": "V2.req13",
+    "vacancy_id": "V2",
+    "text": "Организация списка ОС по источникам поступления: приобретенные за средства заказчика, перемещенные из других подразделений института МФТИ, находящиеся на ответственном хранении, купленные за собственные средства",
     "kind": "duty",
     "modality": "nice",
     "modality_marker": null,
@@ -2004,7 +2103,56 @@
      "V2.8",
      "V2.9",
      "V2.10",
-     "V2.11"
+     "V2.11",
+     "V2.12"
+    ]
+   },
+   {
+    "id": "V2.req14",
+    "vacancy_id": "V2",
+    "text": "Непрерывный контроль поступления ОС по субсидиям и грантам, составление списков на оснащение лабораторий, передача их в бухгалтерию и контроль исполнения перемещения на сч.12",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.13"
+    ]
+   },
+   {
+    "id": "V2.req15",
+    "vacancy_id": "V2",
+    "text": "Организация учета ОС при переезде лабораторий, производств, отделов в другие корпуса и кабинеты",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.14"
+    ]
+   },
+   {
+    "id": "V2.req16",
+    "vacancy_id": "V2",
+    "text": "Оформление пакета документов на списание и перемещение ОС",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V2.15"
     ]
    }
   ],
@@ -2012,87 +2160,7 @@
    {
     "id": "V3.req1",
     "vacancy_id": "V3",
-    "text": "Опыт коммуникации с образовательными организациями, сопровождение от 30 до 40 организаций",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.6"
-    ]
-   },
-   {
-    "id": "V3.req2",
-    "vacancy_id": "V3",
-    "text": "Умение собирать информацию, необходимую для заключения договоров и иных документов",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.7"
-    ]
-   },
-   {
-    "id": "V3.req3",
-    "vacancy_id": "V3",
-    "text": "Умение собирать статистические данные для формирования отчётности",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.8"
-    ]
-   },
-   {
-    "id": "V3.req4",
-    "vacancy_id": "V3",
-    "text": "Умение проводить первичную проверку и контроль комплектности документов (договорных и расчётных)",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.9"
-    ]
-   },
-   {
-    "id": "V3.req5",
-    "vacancy_id": "V3",
-    "text": "Умение проводить контрольные срезы по успеваемости обучающихся",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.10"
-    ]
-   },
-   {
-    "id": "V3.req6",
-    "vacancy_id": "V3",
-    "text": "Навыки работы с табличными данными: Excel, Google Sheets",
+    "text": "Работа с табличными данными: Excel",
     "kind": "duty",
     "modality": "nice",
     "modality_marker": null,
@@ -2100,7 +2168,24 @@
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [
-     "excel",
+     "excel"
+    ],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.11"
+    ]
+   },
+   {
+    "id": "V3.req2",
+    "vacancy_id": "V3",
+    "text": "Работа с табличными данными: Google Sheets",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [
      "google_sheets"
     ],
     "verifiable": true,
@@ -2109,23 +2194,7 @@
     ]
    },
    {
-    "id": "V3.req7",
-    "vacancy_id": "V3",
-    "text": "Готовность участвовать в регулярных рабочих созвонах с командой",
-    "kind": "duty",
-    "modality": "nice",
-    "modality_marker": null,
-    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
-    "alternatives": [],
-    "threshold": null,
-    "canonical_terms": [],
-    "verifiable": true,
-    "source_fragment_ids": [
-     "V3.12"
-    ]
-   },
-   {
-    "id": "V3.req8",
+    "id": "V3.req3",
     "vacancy_id": "V3",
     "text": "Развитые коммуникативные навыки",
     "kind": "soft",
@@ -2143,7 +2212,7 @@
     ]
    },
    {
-    "id": "V3.req9",
+    "id": "V3.req4",
     "vacancy_id": "V3",
     "text": "Высокий уровень ответственности и самоорганизации",
     "kind": "soft",
@@ -2159,9 +2228,9 @@
     ]
    },
    {
-    "id": "V3.req10",
+    "id": "V3.req5",
     "vacancy_id": "V3",
-    "text": "Уверенные навыки работы с таблицами и большим объёмом информации",
+    "text": "Уверенные навыки работы с таблицами и большим объемом информации",
     "kind": "skill",
     "modality": "must",
     "modality_marker": null,
@@ -2175,7 +2244,7 @@
     ]
    },
    {
-    "id": "V3.req11",
+    "id": "V3.req6",
     "vacancy_id": "V3",
     "text": "Наличие личного ноутбука или ПК (при дистанционном формате)",
     "kind": "other",
@@ -2185,13 +2254,13 @@
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [],
-    "verifiable": true,
+    "verifiable": false,
     "source_fragment_ids": [
      "V3.17"
     ]
    },
    {
-    "id": "V3.req12",
+    "id": "V3.req7",
     "vacancy_id": "V3",
     "text": "Готовность к регулярному взаимодействию с образовательными организациями и командой проекта",
     "kind": "soft",
@@ -2207,7 +2276,7 @@
     ]
    },
    {
-    "id": "V3.req13",
+    "id": "V3.req8",
     "vacancy_id": "V3",
     "text": "Опыт работы в сфере образования, а также государственных или муниципальных структурах",
     "kind": "experience",
@@ -2223,7 +2292,7 @@
     ]
    },
    {
-    "id": "V3.req14",
+    "id": "V3.req9",
     "vacancy_id": "V3",
     "text": "Опыт работы в роли делопроизводителя или документоведа",
     "kind": "experience",
@@ -2239,7 +2308,7 @@
     ]
    },
    {
-    "id": "V3.req15",
+    "id": "V3.req10",
     "vacancy_id": "V3",
     "text": "Готовность к очному формату работы",
     "kind": "other",
@@ -2249,9 +2318,105 @@
     "alternatives": [],
     "threshold": null,
     "canonical_terms": [],
-    "verifiable": true,
+    "verifiable": false,
     "source_fragment_ids": [
      "V3.22"
+    ]
+   },
+   {
+    "id": "V3.req11",
+    "vacancy_id": "V3",
+    "text": "Опыт коммуникации с образовательными организациями: сопровождение от 30 до 40 организаций",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.6"
+    ]
+   },
+   {
+    "id": "V3.req12",
+    "vacancy_id": "V3",
+    "text": "Опыт сбора информации, необходимой для заключения договоров и иных документов",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.7"
+    ]
+   },
+   {
+    "id": "V3.req13",
+    "vacancy_id": "V3",
+    "text": "Опыт сбора статистических данных для формирования отчетности",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.8"
+    ]
+   },
+   {
+    "id": "V3.req14",
+    "vacancy_id": "V3",
+    "text": "Опыт первичной проверки и контроля комплектности документов (договорных и расчетных)",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.9"
+    ]
+   },
+   {
+    "id": "V3.req15",
+    "vacancy_id": "V3",
+    "text": "Опыт проведения контрольных срезов по успеваемости обучающихся в рамках набора и обучения",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.10"
+    ]
+   },
+   {
+    "id": "V3.req16",
+    "vacancy_id": "V3",
+    "text": "Опыт участия в регулярных рабочих созвонах с командой",
+    "kind": "duty",
+    "modality": "nice",
+    "modality_marker": null,
+    "modality_reason": "раздел «Обязанности» → пожелание (D3)",
+    "alternatives": [],
+    "threshold": null,
+    "canonical_terms": [],
+    "verifiable": true,
+    "source_fragment_ids": [
+     "V3.12"
     ]
    }
   ]
@@ -2260,6 +2425,221 @@
   "V1": [
    {
     "requirement_id": "V1.req1",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R8",
+      "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
+     },
+     {
+      "fragment_id": "R20",
+      "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+     },
+     {
+      "fragment_id": "R34",
+      "quote": "Стек: HTML5, CSS3, JavaScript, Figma."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В резюме прямо указано знание HTML5 и семантической верстки, включая доступность и SEO.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req2",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R31",
+      "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+     },
+     {
+      "fragment_id": "R34",
+      "quote": "Стек: HTML5, CSS3, JavaScript, Figma."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В резюме указано знание CSS3, включая Flexbox, Grid, адаптивность, псевдоклассы, анимации.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req3",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R11",
+      "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
+     },
+     {
+      "fragment_id": "R25",
+      "quote": "Стек: Vue 3 (Composition API), Tailwind CSS, JavaScript (ES6+), Figma, Git."
+     },
+     {
+      "fragment_id": "R32",
+      "quote": "Базовые JSскрипты: валидация форм, обработка событий, простые взаимодействия без тяжелых фреймворков."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В резюме указано знание JavaScript (ES6+), включая работу с DOM, событиями, промисами, async/await.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req4",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R31",
+      "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В навыках указан Flexbox, в опыте — использование Flexbox для сложных сеток.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req5",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R31",
+      "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В навыках указан Grid, в опыте — использование CSSGrid для сложных сеток.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req6",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R20",
+      "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+     },
+     {
+      "fragment_id": "R30",
+      "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В навыках указана адаптивная верстка, в опыте — адаптивные страницы и брейкпоинты.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req7",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В резюме нет явного упоминания позиционирования, но есть общее знание CSS3.",
+    "confidence": 0.7,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req8",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В навыках указана работа с псевдоклассами.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req9",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R31",
+      "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "В навыках указана работа с анимациями, в опыте — анимации для микровзаимодействий.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req10",
     "status": "match",
     "evidence_type": "direct",
     "evidence": [
@@ -2274,91 +2654,42 @@
     ],
     "inference": null,
     "missing": null,
-    "comment": "Общий опыт превышает 1 год",
-    "confidence": 1.0,
+    "comment": "Стаж по профилю: 2 года (R17) + 1,5 года (R27) = 3,5 года, что превышает 1 год.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
     "needs_review": false
    },
    {
-    "requirement_id": "V1.req2",
+    "requirement_id": "V1.req11",
     "status": "match",
     "evidence_type": "direct",
     "evidence": [
      {
-      "fragment_id": "R8",
-      "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Подтверждено прямое указание на знание HTML5 и семантической вёрстки",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req3",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R9",
-      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Все элементы требования подтверждены",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req4",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R11",
-      "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Все элементы требования подтверждены",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req5",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
+      "fragment_id": "R6",
+      "quote": "Vue.js использовал в коммерческой разработке для создания компонентов каталога, форм и модальных окон; в пет‐проектах — для прототипов модулей LMS. Tailwind применял как основную систему стилей, включая настройку конфига и адаптивных брейкпоинтов."
+     },
      {
       "fragment_id": "R10",
       "quote": "Tailwind CSS: уверенное использование utilityклассов, настройка конфига, адаптивные брейкпоинты, кастомизация темы."
+     },
+     {
+      "fragment_id": "R22",
+      "quote": "Применение Tailwind CSS: настройка конфига под дизайнсистему, создание кастомных утилит и тем, работа с адаптивными брейкпоинтами."
      }
     ],
     "inference": null,
     "missing": null,
-    "comment": "Все элементы требования подтверждены",
-    "confidence": 1.0,
+    "comment": "Опыт описан в коммерческой разработке и пет-проектах: настройка конфига, брейкпоинты, кастомизация темы.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
     "needs_review": false
    },
    {
-    "requirement_id": "V1.req6",
+    "requirement_id": "V1.req12",
     "status": "match",
     "evidence_type": "direct",
     "evidence": [
@@ -2377,122 +2708,8 @@
     ],
     "inference": null,
     "missing": null,
-    "comment": "Все элементы требования подтверждены",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req7",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R13",
-      "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Подтверждены базовые навыки тестирования интерфейсов",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req8",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R44",
-      "quote": "Аккуратный код: понятные имена, структура компонентов, комментарии там, где это помогает поддержке."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Прямое подтверждение аккуратности в коде",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req9",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R43",
-      "quote": "Готов работать в небольшой команде, соблюдать кодстайл и процессы ревью."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Прямое подтверждение готовности работать в небольшой команде",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req10",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R14",
-      "quote": "Дополнительно (плюс): понимание различий SPA и SSR, знакомство с Pinia (базовые сторы), опыт работы с UIбиблиотеками."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "Прямое подтверждение понимания разницы между SSR и SPA",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_a",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req11",
-    "status": "partial",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R14",
-      "quote": "Дополнительно (плюс): понимание различий SPA и SSR, знакомство с Pinia (базовые сторы), опыт работы с UIбиблиотеками."
-     }
-    ],
-    "inference": null,
-    "missing": "опыт работы с Nuxt и Monaco Editor",
-    "comment": "Есть только знакомство с Pinia, нет данных о Nuxt и Monaco Editor",
-    "confidence": 1.0,
-    "computed": null,
-    "partial_value": null,
-    "decided_by": "pass_b",
-    "needs_review": false
-   },
-   {
-    "requirement_id": "V1.req12",
-    "status": "match",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R13",
-      "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
-     }
-    ],
-    "inference": null,
-    "missing": null,
-    "comment": "умеет работать с макетом и экспортировать ресурсы",
-    "confidence": 1.0,
+    "comment": "Опыт коммерческой разработки на Vue 3 подтвержден: компоненты, props/emit/v-model.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2504,18 +2721,14 @@
     "evidence_type": "direct",
     "evidence": [
      {
-      "fragment_id": "R9",
-      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
-     },
-     {
-      "fragment_id": "R20",
-      "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+      "fragment_id": "R13",
+      "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
      }
     ],
     "inference": null,
     "missing": null,
-    "comment": "указана адаптивная и кроссбраузерная вёрстка",
-    "confidence": 1.0,
+    "comment": "Указаны базовые навыки тестирования интерфейсов: валидация верстки, адаптивность, кроссбраузерность.",
+    "confidence": 0.8,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2527,17 +2740,109 @@
     "evidence_type": "direct",
     "evidence": [
      {
-      "fragment_id": "R8",
-      "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
-     },
+      "fragment_id": "R44",
+      "quote": "Аккуратный код: понятные имена, структура компонентов, комментарии там, где это помогает поддержке."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "Личное качество подтверждено только собственным утверждением в резюме, без внешних подтверждений.",
+    "confidence": 0.6,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req15",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
      {
-      "fragment_id": "R9",
-      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
-     },
+      "fragment_id": "R43",
+      "quote": "Готов работать в небольшой команде, соблюдать кодстайл и процессы ревью."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "Прямое заявление о готовности работать в небольшой команде.",
+    "confidence": 0.6,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req16",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
      {
-      "fragment_id": "R11",
-      "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
-     },
+      "fragment_id": "R14",
+      "quote": "Дополнительно (плюс): понимание различий SPA и SSR, знакомство с Pinia (базовые сторы), опыт работы с UIбиблиотеками."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "Понимание различий SPA и SSR указано в дополнительных навыках.",
+    "confidence": 0.8,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req17",
+    "status": "partial",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R14",
+      "quote": "Дополнительно (плюс): понимание различий SPA и SSR, знакомство с Pinia (базовые сторы), опыт работы с UIбиблиотеками."
+     }
+    ],
+    "inference": null,
+    "missing": "практический опыт работы с Pinia",
+    "comment": "Указано только знакомство с Pinia (базовые сторы), практический опыт не подтверждён.",
+    "confidence": 0.8,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_b",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req18",
+    "status": "not_stated",
+    "evidence_type": null,
+    "evidence": [],
+    "inference": null,
+    "missing": null,
+    "comment": "Nuxt не упоминается в резюме.",
+    "confidence": 0.9,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req19",
+    "status": "not_stated",
+    "evidence_type": null,
+    "evidence": [],
+    "inference": null,
+    "missing": null,
+    "comment": "Monaco Editor не упоминается в резюме.",
+    "confidence": 0.9,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req20",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
      {
       "fragment_id": "R13",
       "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
@@ -2545,18 +2850,33 @@
      {
       "fragment_id": "R20",
       "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "Указано чтение макетов и экспорт ассетов, что соответствует работе с макетом и экспорту ресурсов.",
+    "confidence": 0.9,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req21",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R20",
+      "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
      },
      {
-      "fragment_id": "R21",
-      "quote": "Разработка компонентов на Vue 3: карточки курсов, формы регистрации, модальные окна, пагинация. Использовал props/emit/v-model для передачи данных между компонентами."
+      "fragment_id": "R30",
+      "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
      },
      {
-      "fragment_id": "R22",
-      "quote": "Применение Tailwind CSS: настройка конфига под дизайнсистему, создание кастомных утилит и тем, работа с адаптивными брейкпоинтами."
-     },
-     {
-      "fragment_id": "R23",
-      "quote": "Интеграция с API: запросы через axios, обработка состояний загрузки/ошибок, валидация форм на клиенте."
+      "fragment_id": "R32",
+      "quote": "Базовые JSскрипты: валидация форм, обработка событий, простые взаимодействия без тяжелых фреймворков."
      },
      {
       "fragment_id": "R24",
@@ -2565,8 +2885,35 @@
     ],
     "inference": null,
     "missing": null,
-    "comment": "опыт вёрстки и поддержки страниц подтверждён",
-    "confidence": 1.0,
+    "comment": "Верстка по Figma, HTML/CSS/JS, поддержка страниц подтверждены в R20, R30, R32, R24.",
+    "confidence": 0.95,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V1.req22",
+    "status": "match",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R9",
+      "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+     },
+     {
+      "fragment_id": "R20",
+      "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+     },
+     {
+      "fragment_id": "R30",
+      "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
+     }
+    ],
+    "inference": null,
+    "missing": null,
+    "comment": "Адаптивная и кроссбраузерная верстка подтверждены в R9, R20, R30.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2581,25 +2928,30 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме только frontend-разработка, нет упоминаний об учете ОС, ТМЦ, складском учете или инвентаризации.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_a",
+    "decided_by": "pass_b",
     "needs_review": false
    },
    {
     "requirement_id": "V2.req2",
-    "status": "not_stated",
-    "evidence_type": null,
-    "evidence": [],
+    "status": "partial",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R40",
+      "quote": "Бакалавр, направление «Прикладная информатика», 2021"
+     }
+    ],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
-    "computed": null,
+    "comment": "В резюме указано только образование по прикладной информатике, экономического образования нет.",
+    "confidence": 0.95,
+    "computed": "уровень в резюме: bachelor; требуется не ниже bachelor; специальность не совпала по оценке модели",
     "partial_value": null,
-    "decided_by": "pass_a",
+    "decided_by": "rule",
     "needs_review": false
    },
    {
@@ -2609,8 +2961,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о внимательности или внимании к деталям.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2623,8 +2975,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о системности.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2637,8 +2989,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о способности к монотонной работе.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2651,8 +3003,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о коммуникабельности или коммуникативных навыках.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2665,8 +3017,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о стрессоустойчивости.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2679,8 +3031,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о ведении таблиц поступления и выдачи ОС.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2688,21 +3040,16 @@
    },
    {
     "requirement_id": "V2.req9",
-    "status": "mismatch",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R40",
-      "quote": "Бакалавр, направление «Прикладная информатика», 2021"
-     }
-    ],
+    "status": "not_stated",
+    "evidence_type": null,
+    "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Образование в области прикладной информатики, не экономическое",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний об оклейке ОС инвентарными номерами.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_b",
+    "decided_by": "pass_a",
     "needs_review": false
    },
    {
@@ -2712,11 +3059,11 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Кандидат имеет опыт в разработке на Vue 3, но не в требуемых областях учёта и инвентаризации.",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний об инвентаризации ОС.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_b",
+    "decided_by": "pass_a",
     "needs_review": false
    },
    {
@@ -2726,8 +3073,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний о заполнении документов на перемещение ОС, организации подписи комиссии или передаче в бухгалтерию.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2740,8 +3087,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний об учете ОС по кабинетам или подразделениям.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2754,8 +3101,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний о списках ОС по источникам поступления.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2768,8 +3115,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний о контроле поступления ОС по субсидиям и грантам, составлении списков на оснащение лабораторий.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2782,8 +3129,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний об учете ОС при переездах лабораторий или отделов.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2796,8 +3143,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 0.7,
+    "comment": "В резюме нет упоминаний об оформлении пакета документов на списание и перемещение ОС.",
+    "confidence": 0.95,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2812,8 +3159,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний Excel или работы с табличными данными.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2826,8 +3173,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний Google Sheets или работы с табличными данными.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2840,8 +3187,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет прямых упоминаний коммуникативных навыков.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2854,8 +3201,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет прямых упоминаний ответственности или самоорганизации.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2868,11 +3215,11 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний работы с таблицами или большим объемом информации.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_a",
+    "decided_by": "pass_b",
     "needs_review": false
    },
    {
@@ -2882,8 +3229,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний о наличии ноутбука или ПК.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2896,8 +3243,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет прямых упоминаний готовности к взаимодействию с образовательными организациями и командой.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2905,16 +3252,33 @@
    },
    {
     "requirement_id": "V3.req8",
-    "status": "not_stated",
-    "evidence_type": null,
-    "evidence": [],
+    "status": "partial",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R16",
+      "quote": "Frontendразработчик (Vue + Tailwind), ООО «Образовательные решения»"
+     },
+     {
+      "fragment_id": "R18",
+      "quote": "Проекты: внутренние образовательные лендинги и модули для онлайнкурсов."
+     },
+     {
+      "fragment_id": "R26",
+      "quote": "HTMLверстальщик / Junior Frontend, Студия «ВебПрактика»"
+     },
+     {
+      "fragment_id": "R28",
+      "quote": "Проекты: промостраницы и лендинги для образовательных мероприятий."
+     }
+    ],
     "inference": null,
-    "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "missing": "Опыт в государственных или муниципальных структурах не указан.",
+    "comment": "Опыт в образовательной сфере подтверждён (R16, R18, R26, R28), но нет упоминаний о работе в государственных или муниципальных структурах.",
+    "confidence": 0.8,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_a",
+    "decided_by": "pass_b",
     "needs_review": false
    },
    {
@@ -2924,8 +3288,8 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Не указано",
-    "confidence": 1.0,
+    "comment": "В резюме нет упоминаний опыта делопроизводителя или документоведа.",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2933,16 +3297,25 @@
    },
    {
     "requirement_id": "V3.req10",
-    "status": "not_stated",
-    "evidence_type": null,
-    "evidence": [],
+    "status": "partial",
+    "evidence_type": "direct",
+    "evidence": [
+     {
+      "fragment_id": "R4",
+      "quote": "Не готов к переезду, готов к командировкам"
+     },
+     {
+      "fragment_id": "R45",
+      "quote": "По расположению офиса: Долгопрудный удобен, дорога в среднем занимает 35–45 минут (МЦД1 либо от Алтуфьево)."
+     }
+    ],
     "inference": null,
-    "missing": null,
-    "comment": "Нет информации о работе с таблицами и большим объёмом информации, указаны навыки в области фронтенд-разработки.",
-    "confidence": 1.0,
+    "missing": "Прямого подтверждения готовности к очному формату нет.",
+    "comment": "В резюме указано, что кандидат готов к командировкам, но не к очному формату; также упоминается удобство дороги до офиса.",
+    "confidence": 0.7,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_b",
+    "decided_by": "pass_a",
     "needs_review": false
    },
    {
@@ -2952,11 +3325,11 @@
     "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "В резюме не указано о наличии личного ноутбука или ПК",
-    "confidence": 1.0,
+    "comment": "Не указано",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_b",
+    "decided_by": "pass_a",
     "needs_review": false
    },
    {
@@ -2967,7 +3340,7 @@
     "inference": null,
     "missing": null,
     "comment": "Не указано",
-    "confidence": 0.7,
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -2975,29 +3348,16 @@
    },
    {
     "requirement_id": "V3.req13",
-    "status": "partial",
-    "evidence_type": "direct",
-    "evidence": [
-     {
-      "fragment_id": "R16",
-      "quote": "Frontendразработчик (Vue + Tailwind), ООО «Образовательные решения»"
-     },
-     {
-      "fragment_id": "R17",
-      "quote": "Москва, март 2023 — настоящее время (2 года)"
-     },
-     {
-      "fragment_id": "R18",
-      "quote": "Проекты: внутренние образовательные лендинги и модули для онлайнкурсов."
-     }
-    ],
+    "status": "not_stated",
+    "evidence_type": null,
+    "evidence": [],
     "inference": null,
-    "missing": "опыт работы в государственных или муниципальных структурах",
-    "comment": "Работал в компании «Образовательные решения», разрабатывал образовательные лендинги и модули для онлайн-курсов, но нет опыта в госструктурах",
+    "missing": null,
+    "comment": "Не указано",
     "confidence": 0.9,
     "computed": null,
     "partial_value": null,
-    "decided_by": "pass_b",
+    "decided_by": "pass_a",
     "needs_review": false
    },
    {
@@ -3008,7 +3368,7 @@
     "inference": null,
     "missing": null,
     "comment": "Не указано",
-    "confidence": 0.7,
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
@@ -3018,19 +3378,33 @@
     "requirement_id": "V3.req15",
     "status": "not_stated",
     "evidence_type": null,
-    "evidence": [
-     {
-      "fragment_id": "R4",
-      "quote": "Не готов к переезду, готов к командировкам"
-     }
-    ],
+    "evidence": [],
     "inference": null,
     "missing": null,
-    "comment": "Указано, что не готов к переезду, но готов к командировкам; о готовности к очному формату информации нет",
-    "confidence": 0.7,
+    "comment": "Не указано",
+    "confidence": 0.9,
     "computed": null,
     "partial_value": null,
     "decided_by": "pass_a",
+    "needs_review": false
+   },
+   {
+    "requirement_id": "V3.req16",
+    "status": "partial",
+    "evidence_type": "adjacent",
+    "evidence": [
+     {
+      "fragment_id": "R33",
+      "quote": "Работа в команде: согласование правок с дизайнером, передача верстки разработчикам, контроль соответствия макету."
+     }
+    ],
+    "inference": null,
+    "missing": "нет подтверждения участия в регулярных рабочих созвонах",
+    "comment": "Указана работа в команде (согласование правок, передача верстки), но нет упоминания регулярных рабочих созвонов.",
+    "confidence": 0.8,
+    "computed": null,
+    "partial_value": null,
+    "decided_by": "pass_b",
     "needs_review": false
    }
   ]
@@ -3040,22 +3414,22 @@
    {
     "vacancy_id": "V1",
     "title": "Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)",
-    "score": 98.4,
-    "score_min": 98.4,
-    "score_max": 98.4,
+    "score": 97.1,
+    "score_min": 95.2,
+    "score_max": 99.0,
     "must": {
-     "total": 9,
-     "match": 9,
+     "total": 15,
+     "match": 15,
      "partial": 0,
      "mismatch": 0,
      "not_stated": 0
     },
     "nice": {
-     "total": 5,
+     "total": 7,
      "match": 4,
      "partial": 1,
      "mismatch": 0,
-     "not_stated": 0
+     "not_stated": 2
     },
     "blocking_gaps": [],
     "label": "fits",
@@ -3065,16 +3439,18 @@
      "V1.req3"
     ],
     "top_minus": [
-     "V1.req11"
+     "V1.req17",
+     "V1.req18",
+     "V1.req19"
     ],
-    "explanation": "Закрыто 9 из 9 обязательных и 4 из 5 желательных требований, частично — 1. Сильнее всего добавили: «Опыт работы от 1 года»; «Уверенное знание HTML5 и принципов семантической вёрстки»; «Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирова…». Больше всего потеряно на: «Опыт работы с Pinia, Nuxt, Monaco Editor»."
+    "explanation": "Закрыто 15 из 15 обязательных и 4 из 7 желательных требований, частично — 1. Не указано 2 требования, поэтому балл от 95.2 до 99. Сильнее всего добавили: «Уверенное знание HTML5 и принципов семантической верстки — HTML5»; «Уверенное знание HTML5 и принципов семантической верстки — CSS3»; «Уверенное знание HTML5 и принципов семантической верстки — JavaScript…». Больше всего потеряно на: «Опыт работы с Pinia»; «Опыт работы с Nuxt»; «Опыт работы с Monaco Editor»."
    },
    {
     "vacancy_id": "V3",
     "title": "Куратор образовательного процесса",
     "score": 50.0,
-    "score_min": 2.0,
-    "score_max": 98.0,
+    "score_min": 5.8,
+    "score_max": 94.2,
     "must": {
      "total": 5,
      "match": 0,
@@ -3083,37 +3459,37 @@
      "not_stated": 5
     },
     "nice": {
-     "total": 10,
+     "total": 11,
      "match": 0,
-     "partial": 1,
+     "partial": 3,
      "mismatch": 0,
-     "not_stated": 9
+     "not_stated": 8
     },
     "blocking_gaps": [],
     "label": "not_fit",
     "top_plus": [
-     "V3.req8",
-     "V3.req9",
-     "V3.req10"
+     "V3.req3",
+     "V3.req4",
+     "V3.req5"
     ],
     "top_minus": [
-     "V3.req8",
-     "V3.req9",
-     "V3.req10"
+     "V3.req3",
+     "V3.req4",
+     "V3.req5"
     ],
-    "explanation": "Закрыто 0 из 5 обязательных и 0 из 10 желательных требований, частично — 1. Не указано 14 требований, поэтому балл от 2 до 98. Мало данных: в резюме подтверждено 0 из 5 обязательных, поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл до 98. Сильнее всего добавили: «Развитые коммуникативные навыки»; «Высокий уровень ответственности и самоорганизации»; «Уверенные навыки работы с таблицами и большим объёмом информации». Больше всего потеряно на: «Развитые коммуникативные навыки»; «Высокий уровень ответственности и самоорганизации»; «Уверенные навыки работы с таблицами и большим объёмом информации»."
+    "explanation": "Закрыто 0 из 5 обязательных и 0 из 11 желательных требований, частично — 3. Не указано 13 требований, поэтому балл от 5.8 до 94.2. Мало данных: в резюме подтверждено 0 из 5 обязательных, поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл до 94.2. Сильнее всего добавили: «Развитые коммуникативные навыки»; «Высокий уровень ответственности и самоорганизации»; «Уверенные навыки работы с таблицами и большим объемом информации». Больше всего потеряно на: «Развитые коммуникативные навыки»; «Высокий уровень ответственности и самоорганизации»; «Уверенные навыки работы с таблицами и большим объемом информации»."
    },
    {
     "vacancy_id": "V2",
     "title": "Специалист по учёту и движению основных средств",
-    "score": 45.0,
-    "score_min": 0.0,
-    "score_max": 90.0,
+    "score": 50.0,
+    "score_min": 5.0,
+    "score_max": 95.0,
     "must": {
      "total": 7,
      "match": 0,
-     "partial": 0,
-     "mismatch": 1,
+     "partial": 1,
+     "mismatch": 0,
      "not_stated": 6
     },
     "nice": {
@@ -3123,30 +3499,28 @@
      "mismatch": 0,
      "not_stated": 9
     },
-    "blocking_gaps": [
-     "V2.req9"
-    ],
+    "blocking_gaps": [],
     "label": "not_fit",
     "top_plus": [
-     "V2.req10",
-     "V2.req11",
-     "V2.req12"
+     "V2.req1",
+     "V2.req2",
+     "V2.req3"
     ],
     "top_minus": [
-     "V2.req9",
-     "V2.req10",
-     "V2.req11"
+     "V2.req1",
+     "V2.req2",
+     "V2.req3"
     ],
-    "explanation": "Закрыто 0 из 7 обязательных и 0 из 9 желательных требований. Не указано 15 требований, поэтому балл от 0 до 90. Мало данных: в резюме подтверждено 0 из 7 обязательных, поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл до 90. Сильнее всего добавили: «Подтверждённый опыт профессиональной деятельности не менее 3 лет в од…»; «Внимание к деталям»; «Системность». Больше всего потеряно на: «Высшее экономическое образование»; «Подтверждённый опыт профессиональной деятельности не менее 3 лет в од…»; «Внимание к деталям». Обязательные требования без соответствия: «Высшее экономическое образование». Поэтому метка не может быть «подходит» (решает рекрутер)."
+    "explanation": "Закрыто 0 из 7 обязательных и 0 из 9 желательных требований, частично — 1. Не указано 15 требований, поэтому балл от 5 до 95. Мало данных: в резюме подтверждено 1 из 7 обязательных, поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл до 95. Сильнее всего добавили: «Подтвержденный опыт профессиональной деятельности не менее 3 лет в од…»; «Высшее экономическое образование»; «Внимание к деталям». Больше всего потеряно на: «Подтвержденный опыт профессиональной деятельности не менее 3 лет в од…»; «Высшее экономическое образование»; «Внимание к деталям»."
    }
   ],
   "best_vacancy_id": "V1",
   "comparison": [
-   "V1 выше V3 на 48 пунктов: в V3 не подтверждены 5 из 5 обязательных требований; в V3 больше неуказанного (14 против 0).",
-   "V3 выше V2 на 5 пунктов: в V2 не подтверждены 7 из 7 обязательных требований; в V2 есть обязательные требования без соответствия; в V2 больше неуказанного (15 против 14)."
+   "V1 выше V3 на 47 пунктов: в V3 не подтверждены 5 из 5 обязательных требований; в V3 больше неуказанного (13 против 2).",
+   "V3 выше V2 при равном балле: в V2 не подтверждены 7 из 7 обязательных требований; в V2 больше неуказанного (15 против 13). Баллы почти равны (разница меньше 3): при других весах порядок может поменяться — сравните таблицы требований."
   ],
   "formula": "Балл = 100 · Σ(вес · значение) / Σ(вес). Вес: обязательное требование 3, желательное и обязанность 1. Значение: «Соответствует» 1, «Частично» 0.5 (или доля порога, например 1,5 года из 3 = 0,5), «Не соответствует» 0, «Не указано» 0.5. Интервал — тот же расчёт, если все «Не указано» окажутся 0 или 1. Метка «подходит»: балл не ниже 70 и нет обязательных требований без соответствия; «подходит с оговорками»: не ниже 45 и в резюме подтверждено не меньше 50% обязательных (или нижняя граница интервала не ниже 45); иначе «не подходит», мало данных. Веса одинаковы для всех вакансий и лежат в config/scoring.yaml.",
-  "summary": "Лучше всего подходит «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tail…» (V1): подходит, балл 98.4, закрыто 9 из 9 обязательных требований."
+  "summary": "Лучше всего подходит «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tail…» (V1): подходит, балл 97.1, закрыто 15 из 15 обязательных требований."
  },
  "reports": {
   "V1": {
@@ -3154,6 +3528,203 @@
    "rows": [
     {
      "requirement_id": "V1.req1",
+     "requirement": "Уверенное знание HTML5 и принципов семантической верстки — HTML5",
+     "modality": "must",
+     "vacancy_quote": "Уверенное знание HTML5 и принципов семантической верстки. … Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации. … JavaScript (ES6+) на уровне: работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R8",
+       "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
+      },
+      {
+       "fragment_id": "R20",
+       "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+      },
+      {
+       "fragment_id": "R34",
+       "quote": "Стек: HTML5, CSS3, JavaScript, Figma."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В резюме прямо указано знание HTML5 и семантической верстки, включая доступность и SEO.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req2",
+     "requirement": "Уверенное знание HTML5 и принципов семантической верстки — CSS3",
+     "modality": "must",
+     "vacancy_quote": "Уверенное знание HTML5 и принципов семантической верстки. … Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации. … JavaScript (ES6+) на уровне: работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R31",
+       "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+      },
+      {
+       "fragment_id": "R34",
+       "quote": "Стек: HTML5, CSS3, JavaScript, Figma."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В резюме указано знание CSS3, включая Flexbox, Grid, адаптивность, псевдоклассы, анимации.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req3",
+     "requirement": "Уверенное знание HTML5 и принципов семантической верстки — JavaScript (ES6+)",
+     "modality": "must",
+     "vacancy_quote": "Уверенное знание HTML5 и принципов семантической верстки. … Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации. … JavaScript (ES6+) на уровне: работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R11",
+       "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
+      },
+      {
+       "fragment_id": "R25",
+       "quote": "Стек: Vue 3 (Composition API), Tailwind CSS, JavaScript (ES6+), Figma, Git."
+      },
+      {
+       "fragment_id": "R32",
+       "quote": "Базовые JSскрипты: валидация форм, обработка событий, простые взаимодействия без тяжелых фреймворков."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В резюме указано знание JavaScript (ES6+), включая работу с DOM, событиями, промисами, async/await.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req4",
+     "requirement": "Хорошее знание CSS3: Flexbox",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R31",
+       "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В навыках указан Flexbox, в опыте — использование Flexbox для сложных сеток.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req5",
+     "requirement": "Хорошее знание CSS3: Grid",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R31",
+       "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В навыках указан Grid, в опыте — использование CSSGrid для сложных сеток.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req6",
+     "requirement": "Хорошее знание CSS3: адаптивная верстка",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R20",
+       "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+      },
+      {
+       "fragment_id": "R30",
+       "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В навыках указана адаптивная верстка, в опыте — адаптивные страницы и брейкпоинты.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req7",
+     "requirement": "Хорошее знание CSS3: позиционирование",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В резюме нет явного упоминания позиционирования, но есть общее знание CSS3.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req8",
+     "requirement": "Хорошее знание CSS3: псевдоклассы",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В навыках указана работа с псевдоклассами.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req9",
+     "requirement": "Хорошее знание CSS3: анимации",
+     "modality": "must",
+     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R31",
+       "quote": "Использование CSSGrid и Flexbox для сложных сеток, анимации для микровзаимодействий."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "В навыках указана работа с анимациями, в опыте — анимации для микровзаимодействий.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req10",
      "requirement": "Опыт работы от 1 года",
      "modality": "must",
      "vacancy_quote": "Опыт работы от 1 года",
@@ -3170,82 +3741,39 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Общий опыт превышает 1 год",
+     "comment": "Стаж по профилю: 2 года (R17) + 1,5 года (R27) = 3,5 года, что превышает 1 год.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req2",
-     "requirement": "Уверенное знание HTML5 и принципов семантической вёрстки",
-     "modality": "must",
-     "vacancy_quote": "Уверенное знание HTML5 и принципов семантической верстки.",
-     "resume_evidence": [
-      {
-       "fragment_id": "R8",
-       "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
-      }
-     ],
-     "status": "match",
-     "status_ru": "Соответствует",
-     "evidence_type": "direct",
-     "comment": "Подтверждено прямое указание на знание HTML5 и семантической вёрстки",
-     "computed": null
-    },
-    {
-     "requirement_id": "V1.req3",
-     "requirement": "Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирование, псевдоклассы и анимации",
-     "modality": "must",
-     "vacancy_quote": "Хорошее знание CSS3: Flexbox, Grid, адаптивная верстка, позиционирование, псевдоклассы и анимации.",
-     "resume_evidence": [
-      {
-       "fragment_id": "R9",
-       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
-      }
-     ],
-     "status": "match",
-     "status_ru": "Соответствует",
-     "evidence_type": "direct",
-     "comment": "Все элементы требования подтверждены",
-     "computed": null
-    },
-    {
-     "requirement_id": "V1.req4",
-     "requirement": "Знание JavaScript (ES6+): работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок",
-     "modality": "must",
-     "vacancy_quote": "JavaScript (ES6+) на уровне: работа с DOM, события, fetch/axios, промисы, асинхронность, обработка ошибок.",
-     "resume_evidence": [
-      {
-       "fragment_id": "R11",
-       "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
-      }
-     ],
-     "status": "match",
-     "status_ru": "Соответствует",
-     "evidence_type": "direct",
-     "comment": "Все элементы требования подтверждены",
-     "computed": null
-    },
-    {
-     "requirement_id": "V1.req5",
+     "requirement_id": "V1.req11",
      "requirement": "Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомизация темы",
      "modality": "must",
-     "vacancy_quote": "Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомизация темы. … Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model. … Реализация интерфейсов преимущественно с использованием utility-классов Tailwind CSS.",
+     "vacancy_quote": "Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомизация темы. … Реализация интерфейсов преимущественно с использованием utility-классов Tailwind CSS.",
      "resume_evidence": [
+      {
+       "fragment_id": "R6",
+       "quote": "Vue.js использовал в коммерческой разработке для создания компонентов каталога, форм и модальных окон; в пет‐проектах — для прототипов модулей LMS. Tailwind применял как основную систему стилей, включая настройку конфига и адаптивных брейкпоинтов."
+      },
       {
        "fragment_id": "R10",
        "quote": "Tailwind CSS: уверенное использование utilityклассов, настройка конфига, адаптивные брейкпоинты, кастомизация темы."
+      },
+      {
+       "fragment_id": "R22",
+       "quote": "Применение Tailwind CSS: настройка конфига под дизайнсистему, создание кастомных утилит и тем, работа с адаптивными брейкпоинтами."
       }
      ],
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Все элементы требования подтверждены",
+     "comment": "Опыт описан в коммерческой разработке и пет-проектах: настройка конфига, брейкпоинты, кастомизация темы.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req6",
+     "requirement_id": "V1.req12",
      "requirement": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model",
      "modality": "must",
-     "vacancy_quote": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model. … Готовность работать в небольшой команде. … Разработка и поддержка компонентов на Vue 3, работа с props, emit, v-model, интеграция с API. … В сопроводительном письме, пожалуйста, укажите, в каких проектах и каким образом вы использовали Vue.js. Также укажите, подходит ли вам расположение офиса и сколько времени в среднем займет дорога.",
+     "vacancy_quote": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model. … Разработка и поддержка компонентов на Vue 3, работа с props, emit, v-model, интеграция с API. … В сопроводительном письме, пожалуйста, укажите, в каких проектах и каким образом вы использовали Vue.js. Также укажите, подходит ли вам расположение офиса и сколько времени в среднем займет дорога.",
      "resume_evidence": [
       {
        "fragment_id": "R6",
@@ -3263,11 +3791,11 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Все элементы требования подтверждены",
+     "comment": "Опыт коммерческой разработки на Vue 3 подтвержден: компоненты, props/emit/v-model.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req7",
+     "requirement_id": "V1.req13",
      "requirement": "Навыки самостоятельного тестирования реализованных интерфейсов",
      "modality": "must",
      "vacancy_quote": "Навыки самостоятельного тестирования реализованных интерфейсов.",
@@ -3280,11 +3808,11 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Подтверждены базовые навыки тестирования интерфейсов",
+     "comment": "Указаны базовые навыки тестирования интерфейсов: валидация верстки, адаптивность, кроссбраузерность.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req8",
+     "requirement_id": "V1.req14",
      "requirement": "Аккуратность в коде (читаемость)",
      "modality": "must",
      "vacancy_quote": "Аккуратность в коде (читаемость).",
@@ -3297,11 +3825,11 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Прямое подтверждение аккуратности в коде",
+     "comment": "Личное качество подтверждено только собственным утверждением в резюме, без внешних подтверждений.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req9",
+     "requirement_id": "V1.req15",
      "requirement": "Готовность работать в небольшой команде",
      "modality": "must",
      "vacancy_quote": "Готовность работать в небольшой команде.",
@@ -3314,12 +3842,12 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Прямое подтверждение готовности работать в небольшой команде",
+     "comment": "Прямое заявление о готовности работать в небольшой команде.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req11",
-     "requirement": "Опыт работы с Pinia, Nuxt, Monaco Editor",
+     "requirement_id": "V1.req17",
+     "requirement": "Опыт работы с Pinia",
      "modality": "nice",
      "vacancy_quote": "Опыт работы с Pinia, Nuxt, Monaco Editor.",
      "resume_evidence": [
@@ -3331,11 +3859,35 @@
      "status": "partial",
      "status_ru": "Частично",
      "evidence_type": "direct",
-     "comment": "Есть только знакомство с Pinia, нет данных о Nuxt и Monaco Editor",
+     "comment": "Указано только знакомство с Pinia (базовые сторы), практический опыт не подтверждён.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req10",
+     "requirement_id": "V1.req18",
+     "requirement": "Опыт работы с Nuxt",
+     "modality": "nice",
+     "vacancy_quote": "Опыт работы с Pinia, Nuxt, Monaco Editor.",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "Nuxt не упоминается в резюме.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req19",
+     "requirement": "Опыт работы с Monaco Editor",
+     "modality": "nice",
+     "vacancy_quote": "Опыт работы с Pinia, Nuxt, Monaco Editor.",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "Monaco Editor не упоминается в резюме.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req16",
      "requirement": "Понимание разницы между SSR и SPA",
      "modality": "nice",
      "vacancy_quote": "Понимание разницы между SSR и SPA.",
@@ -3348,11 +3900,11 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "Прямое подтверждение понимания разницы между SSR и SPA",
+     "comment": "Понимание различий SPA и SSR указано в дополнительных навыках.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req12",
+     "requirement_id": "V1.req20",
      "requirement": "Знание Figma (работа с макетом, экспорт ресурсов)",
      "modality": "nice",
      "vacancy_quote": "Знание Figma (работа с макетом, экспорт ресурсов).",
@@ -3360,23 +3912,6 @@
       {
        "fragment_id": "R13",
        "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
-      }
-     ],
-     "status": "match",
-     "status_ru": "Соответствует",
-     "evidence_type": "direct",
-     "comment": "умеет работать с макетом и экспортировать ресурсы",
-     "computed": null
-    },
-    {
-     "requirement_id": "V1.req13",
-     "requirement": "Адаптивная и кроссбраузерная вёрстка",
-     "modality": "nice",
-     "vacancy_quote": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model. … Адаптивная и кроссбраузерная верстка.",
-     "resume_evidence": [
-      {
-       "fragment_id": "R9",
-       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
       },
       {
        "fragment_id": "R20",
@@ -3386,46 +3921,26 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "указана адаптивная и кроссбраузерная вёрстка",
+     "comment": "Указано чтение макетов и экспорт ассетов, что соответствует работе с макетом и экспорту ресурсов.",
      "computed": null
     },
     {
-     "requirement_id": "V1.req14",
-     "requirement": "Вёрстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
+     "requirement_id": "V1.req21",
+     "requirement": "Верстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
      "modality": "nice",
-     "vacancy_quote": "Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model. … Верстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц.",
+     "vacancy_quote": "Верстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц.",
      "resume_evidence": [
-      {
-       "fragment_id": "R8",
-       "quote": "HTML5: семантическая верстка, доступность (a11y) на базовом уровне, структура страниц под SEOтребования."
-      },
-      {
-       "fragment_id": "R9",
-       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
-      },
-      {
-       "fragment_id": "R11",
-       "quote": "JavaScript (ES6+): работа с DOM и событиями, fetch/axios, промисы, async/await, обработка ошибок, базовые паттерны."
-      },
-      {
-       "fragment_id": "R13",
-       "quote": "Инструменты: Figma (чтение макетов, экспорт ассетов), Git, базовые навыки тестирования интерфейсов (валидация верстки, проверка адаптивности, кроссбраузерность)."
-      },
       {
        "fragment_id": "R20",
        "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
       },
       {
-       "fragment_id": "R21",
-       "quote": "Разработка компонентов на Vue 3: карточки курсов, формы регистрации, модальные окна, пагинация. Использовал props/emit/v-model для передачи данных между компонентами."
+       "fragment_id": "R30",
+       "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
       },
       {
-       "fragment_id": "R22",
-       "quote": "Применение Tailwind CSS: настройка конфига под дизайнсистему, создание кастомных утилит и тем, работа с адаптивными брейкпоинтами."
-      },
-      {
-       "fragment_id": "R23",
-       "quote": "Интеграция с API: запросы через axios, обработка состояний загрузки/ошибок, валидация форм на клиенте."
+       "fragment_id": "R32",
+       "quote": "Базовые JSскрипты: валидация форм, обработка событий, простые взаимодействия без тяжелых фреймворков."
       },
       {
        "fragment_id": "R24",
@@ -3435,15 +3950,132 @@
      "status": "match",
      "status_ru": "Соответствует",
      "evidence_type": "direct",
-     "comment": "опыт вёрстки и поддержки страниц подтверждён",
+     "comment": "Верстка по Figma, HTML/CSS/JS, поддержка страниц подтверждены в R20, R30, R32, R24.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V1.req22",
+     "requirement": "Адаптивная и кроссбраузерная верстка",
+     "modality": "nice",
+     "vacancy_quote": "Адаптивная и кроссбраузерная верстка.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R9",
+       "quote": "CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами."
+      },
+      {
+       "fragment_id": "R20",
+       "quote": "Верстка по макетам Figma: адаптивные страницы, кроссбраузерная проверка, семантическая разметка. Реализовано более 40 страниц."
+      },
+      {
+       "fragment_id": "R30",
+       "quote": "Адаптивная верстка по макетам: мобильные, планшетные и десктопные версии, проверка в разных браузерах."
+      }
+     ],
+     "status": "match",
+     "status_ru": "Соответствует",
+     "evidence_type": "direct",
+     "comment": "Адаптивная и кроссбраузерная верстка подтверждены в R9, R20, R30.",
      "computed": null
     }
    ],
    "strengths": [
     {
-     "text": "Подтверждено: Опыт работы от 1 года",
+     "text": "Подтверждено: Уверенное знание HTML5 и принципов семантической верстки — HTML5",
      "requirement_ids": [
       "V1.req1"
+     ],
+     "fragment_ids": [
+      "R8",
+      "R20",
+      "R34"
+     ]
+    },
+    {
+     "text": "Подтверждено: Уверенное знание HTML5 и принципов семантической верстки — CSS3",
+     "requirement_ids": [
+      "V1.req2"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R31",
+      "R34"
+     ]
+    },
+    {
+     "text": "Подтверждено: Уверенное знание HTML5 и принципов семантической верстки — JavaScript (ES6+)",
+     "requirement_ids": [
+      "V1.req3"
+     ],
+     "fragment_ids": [
+      "R11",
+      "R25",
+      "R32"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: Flexbox",
+     "requirement_ids": [
+      "V1.req4"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R31"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: Grid",
+     "requirement_ids": [
+      "V1.req5"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R31"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: адаптивная верстка",
+     "requirement_ids": [
+      "V1.req6"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R20",
+      "R30"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: позиционирование",
+     "requirement_ids": [
+      "V1.req7"
+     ],
+     "fragment_ids": [
+      "R9"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: псевдоклассы",
+     "requirement_ids": [
+      "V1.req8"
+     ],
+     "fragment_ids": [
+      "R9"
+     ]
+    },
+    {
+     "text": "Подтверждено: Хорошее знание CSS3: анимации",
+     "requirement_ids": [
+      "V1.req9"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R31"
+     ]
+    },
+    {
+     "text": "Подтверждено: Опыт работы от 1 года",
+     "requirement_ids": [
+      "V1.req10"
      ],
      "fragment_ids": [
       "R17",
@@ -3451,45 +4083,20 @@
      ]
     },
     {
-     "text": "Подтверждено: Уверенное знание HTML5 и принципов семантической вёрстки",
-     "requirement_ids": [
-      "V1.req2"
-     ],
-     "fragment_ids": [
-      "R8"
-     ]
-    },
-    {
-     "text": "Подтверждено: Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирование, псевдоклассы и…",
-     "requirement_ids": [
-      "V1.req3"
-     ],
-     "fragment_ids": [
-      "R9"
-     ]
-    },
-    {
-     "text": "Подтверждено: Знание JavaScript (ES6+): работа с DOM, события, fetch/axios, промисы, асинхронность, обр…",
-     "requirement_ids": [
-      "V1.req4"
-     ],
-     "fragment_ids": [
-      "R11"
-     ]
-    },
-    {
      "text": "Подтверждено: Практический опыт работы с Tailwind CSS: конфигурация, адаптивные брейкпоинты и кастомиза…",
      "requirement_ids": [
-      "V1.req5"
+      "V1.req11"
      ],
      "fragment_ids": [
-      "R10"
+      "R6",
+      "R10",
+      "R22"
      ]
     },
     {
      "text": "Подтверждено: Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с e…",
      "requirement_ids": [
-      "V1.req6"
+      "V1.req12"
      ],
      "fragment_ids": [
       "R6",
@@ -3500,7 +4107,7 @@
     {
      "text": "Подтверждено: Навыки самостоятельного тестирования реализованных интерфейсов",
      "requirement_ids": [
-      "V1.req7"
+      "V1.req13"
      ],
      "fragment_ids": [
       "R13"
@@ -3509,7 +4116,7 @@
     {
      "text": "Подтверждено: Аккуратность в коде (читаемость)",
      "requirement_ids": [
-      "V1.req8"
+      "V1.req14"
      ],
      "fragment_ids": [
       "R44"
@@ -3518,7 +4125,7 @@
     {
      "text": "Подтверждено: Готовность работать в небольшой команде",
      "requirement_ids": [
-      "V1.req9"
+      "V1.req15"
      ],
      "fragment_ids": [
       "R43"
@@ -3527,7 +4134,7 @@
     {
      "text": "Подтверждено: Понимание разницы между SSR и SPA",
      "requirement_ids": [
-      "V1.req10"
+      "V1.req16"
      ],
      "fragment_ids": [
       "R14"
@@ -3536,37 +4143,34 @@
     {
      "text": "Подтверждено: Знание Figma (работа с макетом, экспорт ресурсов)",
      "requirement_ids": [
-      "V1.req12"
+      "V1.req20"
      ],
      "fragment_ids": [
-      "R13"
-     ]
-    },
-    {
-     "text": "Подтверждено: Адаптивная и кроссбраузерная вёрстка",
-     "requirement_ids": [
-      "V1.req13"
-     ],
-     "fragment_ids": [
-      "R9",
+      "R13",
       "R20"
      ]
     },
     {
-     "text": "Подтверждено: Вёрстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
+     "text": "Подтверждено: Верстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц",
      "requirement_ids": [
-      "V1.req14"
+      "V1.req21"
      ],
      "fragment_ids": [
-      "R8",
-      "R9",
-      "R11",
-      "R13",
       "R20",
-      "R21",
-      "R22",
-      "R23",
+      "R30",
+      "R32",
       "R24"
+     ]
+    },
+    {
+     "text": "Подтверждено: Адаптивная и кроссбраузерная верстка",
+     "requirement_ids": [
+      "V1.req22"
+     ],
+     "fragment_ids": [
+      "R9",
+      "R20",
+      "R30"
      ]
     }
    ],
@@ -3575,7 +4179,7 @@
     {
      "text": "Стоит уточнить: «Vue.js» указан только в списке навыков, без описания опыта",
      "requirement_ids": [
-      "V1.req6"
+      "V1.req12"
      ],
      "fragment_ids": [
       "R6",
@@ -3586,7 +4190,7 @@
     {
      "text": "Стоит уточнить: «HTML5» указан только в списке навыков, без описания опыта",
      "requirement_ids": [
-      "V1.req14"
+      "V1.req21"
      ],
      "fragment_ids": [
       "R8",
@@ -3596,7 +4200,7 @@
     {
      "text": "Стоит уточнить: «CSS3» указан только в списке навыков, без описания опыта",
      "requirement_ids": [
-      "V1.req14"
+      "V1.req21"
      ],
      "fragment_ids": [
       "R9",
@@ -3606,7 +4210,7 @@
     {
      "text": "Стоит уточнить: «Pinia» указан только в списке навыков, без описания опыта",
      "requirement_ids": [
-      "V1.req11"
+      "V1.req17"
      ],
      "fragment_ids": [
       "R14"
@@ -3615,87 +4219,87 @@
    ],
    "questions": [
     {
+     "requirement_id": "V1.req1",
+     "text": "Расскажите, пожалуйста, как вы применяете принципы семантической верстки в своих проектах? Приведите пример, как вы выбирали семантические теги для конкретного блока.",
+     "kind": "factual",
+     "why": "Уточнить глубину понимания семантики, так как в резюме указано только общее знание."
+    },
+    {
      "requirement_id": "V1.req2",
-     "text": "Где и в каких задачах вы применяли: Уверенное знание HTML5 и принципов семантической вёрстки?",
+     "text": "Какие возможности CSS3 вы используете в повседневной работе? Опишите, как вы подходите к созданию адаптивной верстки.",
      "kind": "factual",
-     "why": "навык указан в списке, но не описан в опыте"
+     "why": "Проверить практическое владение CSS3, так как в резюме перечислены технологии, но не описан опыт их применения."
     },
     {
-     "requirement_id": "V1.req3",
-     "text": "Где и в каких задачах вы применяли: Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирование, псевдоклассы и анимации?",
+     "requirement_id": "V1.req12",
+     "text": "Опишите ваш опыт коммерческой разработки на Vue.js: как вы организуете компоненты, передаете данные через props и работаете с emit и v-model? Приведите пример из недавнего проекта.",
      "kind": "factual",
-     "why": "навык указан в списке, но не описан в опыте"
-    },
-    {
-     "requirement_id": "V1.req6",
-     "text": "Где и в каких задачах вы применяли: Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model?",
-     "kind": "factual",
-     "why": "навык указан в списке, но не описан в опыте"
-    },
-    {
-     "requirement_id": "V1.req8",
-     "text": "Расскажите о ситуации из работы, где проявилось: Аккуратность в коде (читаемость).",
-     "kind": "behavioral",
-     "why": "по резюме не проверяется"
-    },
-    {
-     "requirement_id": "V1.req9",
-     "text": "Расскажите о ситуации из работы, где проявилось: Готовность работать в небольшой команде.",
-     "kind": "behavioral",
-     "why": "по резюме не проверяется"
+     "why": "Подтвердить заявленный уровень владения Vue.js и понять, насколько глубоко кандидат использует эти механизмы."
     },
     {
      "requirement_id": "V1.req14",
-     "text": "Где и в каких задачах вы применяли: Вёрстка макетов (Figma) на HTML/CSS/JS с нуля и поддержка существующих страниц?",
+     "text": "Расскажите о случае, когда вы переписывали или рефакторили свой код для улучшения его читаемости. Что именно вы изменили и почему?",
+     "kind": "behavioral",
+     "why": "Оценить реальное отношение к аккуратности кода, так как это качество сложно проверить по резюме."
+    },
+    {
+     "requirement_id": "V1.req15",
+     "text": "Опишите ваш опыт работы в небольшой команде. Как вы взаимодействовали с коллегами и какие задачи брали на себя?",
+     "kind": "behavioral",
+     "why": "Проверить готовность и способность работать в небольшой команде, так как это заявлено, но не подтверждено опытом."
+    },
+    {
+     "requirement_id": "V1.req21",
+     "text": "Расскажите, как вы верстаете макеты из Figma: с чего начинаете, как обеспечиваете точность и как поддерживаете существующие страницы? Приведите пример.",
      "kind": "factual",
-     "why": "навык указан в списке, но не описан в опыте"
+     "why": "Уточнить практический опыт верстки по Figma и поддержки страниц, так как в резюме это указано, но без деталей."
     }
    ],
    "beyond_requirements": [
     {
-     "text": "Опыт работы с Composition API в Vue 3",
-     "requirement_ids": [],
-     "fragment_ids": [
-      "R12"
-     ]
-    },
-    {
-     "text": "Опыт интеграции с API: запросы через axios, обработка состояний загрузки/ошибок, валидация форм на клиенте",
+     "text": "Интеграция с API: запросы через axios, обработка состояний загрузки/ошибок, валидация форм на клиенте.",
      "requirement_ids": [],
      "fragment_ids": [
       "R23"
      ]
     },
     {
-     "text": "Опыт поддержки и рефакторинга: улучшение читаемости кода, устранение дублирования, документирование компонентов",
+     "text": "Поддержка и рефакторинг: улучшение читаемости кода, устранение дублирования, документирование компонентов.",
      "requirement_ids": [],
      "fragment_ids": [
       "R24"
      ]
     },
     {
-     "text": "Создание компонентной библиотеки с документацией в Markdown",
+     "text": "Компонентная библиотека: набор переиспользуемых компонентов (кнопки, инпуты, карточки) на Vue 3 с документацией в Markdown.",
      "requirement_ids": [],
      "fragment_ids": [
       "R37"
      ]
+    },
+    {
+     "text": "Работа в команде: согласование правок с дизайнером, передача верстки разработчикам, контроль соответствия макету.",
+     "requirement_ids": [],
+     "fragment_ids": [
+      "R33"
+     ]
     }
    ],
-   "recruiter_recommendation": "Подходит: закрыто 9 из 9 обязательных требований, балл 98.4 (от 98.4 до 98.4). Следующий шаг: пригласить на интервью.",
-   "candidate_message": "Здравствуйте!\n\nСпасибо за отклик на вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)». Мы изучили резюме и хотели бы пообщаться подробнее.\n\nПеред встречей подскажите, пожалуйста:\n— Где и в каких задачах вы применяли: Уверенное знание HTML5 и принципов семантической вёрстки?\n— Где и в каких задачах вы применяли: Хорошее знание CSS3: Flexbox, Grid, адаптивная вёрстка, позиционирование, псевдоклассы и анимации?\n— Где и в каких задачах вы применяли: Опыт коммерческой разработки на Vue.js: компонентный подход, передача пропсов, работа с emit, v-model?\n\nКогда вам удобно созвониться?\n\nС уважением, команда подбора",
+   "recruiter_recommendation": "Подходит: закрыто 15 из 15 обязательных требований, балл 97.1 (от 95.2 до 99). Следующий шаг: пригласить на интервью.",
+   "candidate_message": "Здравствуйте!\n\nСпасибо за отклик на вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)». Мы изучили резюме и хотели бы пообщаться подробнее.\n\nПеред встречей подскажите, пожалуйста:\n— Расскажите, пожалуйста, как вы применяете принципы семантической верстки в своих проектах? Приведите пример, как вы выбирали семантические теги для конкретного блока.\n— Какие возможности CSS3 вы используете в повседневной работе? Опишите, как вы подходите к созданию адаптивной верстки.\n— Опишите ваш опыт коммерческой разработки на Vue.js: как вы организуете компоненты, передаете данные через props и работаете с emit и v-model? Приведите пример из недавнего проекта.\n\nКогда вам удобно созвониться?\n\nС уважением, команда подбора",
    "verification": {
-    "quotes_total": 47,
-    "quotes_verified": 47,
-    "generated_entities_total": 8,
+    "quotes_total": 73,
+    "quotes_verified": 73,
+    "generated_entities_total": 17,
     "generated_entities_unverified": 0
    },
-   "summary": "Кандидат подходит: из 9 обязательных требований подтверждено 9. Главное в пользу кандидата: Подтверждено: Опыт работы от 1 года."
+   "summary": "Кандидат подходит: из 15 обязательных требований подтверждено 15. Главное в пользу кандидата: Подтверждено: Уверенное знание HTML5 и принципов семантической верстки — HTML5."
   },
   "V2": {
    "vacancy_id": "V2",
    "rows": [
     {
-     "requirement_id": "V2.req9",
+     "requirement_id": "V2.req2",
      "requirement": "Высшее экономическое образование",
      "modality": "must",
      "vacancy_quote": "Образование: высшее экономическое.",
@@ -3705,26 +4309,26 @@
        "quote": "Бакалавр, направление «Прикладная информатика», 2021"
       }
      ],
-     "status": "mismatch",
-     "status_ru": "Не соответствует",
+     "status": "partial",
+     "status_ru": "Частично",
      "evidence_type": "direct",
-     "comment": "Образование в области прикладной информатики, не экономическое",
-     "computed": null
+     "comment": "В резюме указано только образование по прикладной информатике, экономического образования нет.",
+     "computed": "уровень в резюме: bachelor; требуется не ниже bachelor; специальность не совпала по оценке модели"
     },
     {
-     "requirement_id": "V2.req10",
-     "requirement": "Подтверждённый опыт профессиональной деятельности не менее 3 лет в одном из направлений: бухгалтер по учёту ОС и ТМЦ, специалист складского учёта, инвентаризация",
+     "requirement_id": "V2.req1",
+     "requirement": "Подтвержденный опыт профессиональной деятельности не менее 3 лет в одном из направлений: бухгалтер по учету ОС и ТМЦ, специалист складского учета, инвентаризация",
      "modality": "must",
      "vacancy_quote": "Подтвержденный опыт профессиональной деятельности не менее 3 лет в одном из следующих направлений: бухгалтер по учету ОС и ТМЦ, специалист складского учета, инвентаризация.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Кандидат имеет опыт в разработке на Vue 3, но не в требуемых областях учёта и инвентаризации.",
+     "comment": "В резюме только frontend-разработка, нет упоминаний об учете ОС, ТМЦ, складском учете или инвентаризации.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req11",
+     "requirement_id": "V2.req3",
      "requirement": "Внимание к деталям",
      "modality": "must",
      "vacancy_quote": "Внимание к деталям, системность, способность сохранять концентрацию при длительной монотонной работе, коммуникабельность, стрессоустойчивость.",
@@ -3732,11 +4336,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о внимательности или внимании к деталям.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req12",
+     "requirement_id": "V2.req4",
      "requirement": "Системность",
      "modality": "must",
      "vacancy_quote": "Внимание к деталям, системность, способность сохранять концентрацию при длительной монотонной работе, коммуникабельность, стрессоустойчивость.",
@@ -3744,11 +4348,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о системности.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req13",
+     "requirement_id": "V2.req5",
      "requirement": "Способность сохранять концентрацию при длительной монотонной работе",
      "modality": "must",
      "vacancy_quote": "Внимание к деталям, системность, способность сохранять концентрацию при длительной монотонной работе, коммуникабельность, стрессоустойчивость.",
@@ -3756,11 +4360,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о способности к монотонной работе.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req14",
+     "requirement_id": "V2.req6",
      "requirement": "Коммуникабельность",
      "modality": "must",
      "vacancy_quote": "Внимание к деталям, системность, способность сохранять концентрацию при длительной монотонной работе, коммуникабельность, стрессоустойчивость.",
@@ -3768,11 +4372,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о коммуникабельности или коммуникативных навыках.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req15",
+     "requirement_id": "V2.req7",
      "requirement": "Стрессоустойчивость",
      "modality": "must",
      "vacancy_quote": "Внимание к деталям, системность, способность сохранять концентрацию при длительной монотонной работе, коммуникабельность, стрессоустойчивость.",
@@ -3780,124 +4384,124 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о стрессоустойчивости.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req1",
-     "requirement": "Опыт ведения таблицы поступления и выдачи ОС",
+     "requirement_id": "V2.req8",
+     "requirement": "Ведение таблицы поступления и выдачи ОС",
      "modality": "nice",
      "vacancy_quote": "Ведение таблицы поступление и выдачи ОС.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о ведении таблиц поступления и выдачи ОС.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req2",
-     "requirement": "Опыт оклейки ОС инвентарными номерами",
+     "requirement_id": "V2.req9",
+     "requirement": "Оклейка ОС инвентарными номерами",
      "modality": "nice",
      "vacancy_quote": "Оклейка ОС инвентарными номерами.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний об оклейке ОС инвентарными номерами.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req3",
-     "requirement": "Опыт проведения инвентаризации ОС",
+     "requirement_id": "V2.req10",
+     "requirement": "Проведение инвентаризации ОС на всех объектах института электродвижения",
      "modality": "nice",
      "vacancy_quote": "Инвентаризация ОС на всех объектах института электродвижения.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний об инвентаризации ОС.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req4",
-     "requirement": "Опыт заполнения документов на перемещение ОС и организации подписи комиссии",
+     "requirement_id": "V2.req11",
+     "requirement": "Заполнение документов на перемещение ОС, организация подписи комиссии и передача их в бухгалтерию",
      "modality": "nice",
      "vacancy_quote": "Заполнение документов на перемещение ОС, организация подписи комиссии. Передача их в бухгалтерию.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о заполнении документов на перемещение ОС, организации подписи комиссии или передаче в бухгалтерию.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req5",
-     "requirement": "Опыт организации учёта ОС по кабинетам и структурным подразделениям",
+     "requirement_id": "V2.req12",
+     "requirement": "Организация учета ОС по кабинетам и структурным подразделениям",
      "modality": "nice",
      "vacancy_quote": "Организация учета ОС по кабинетам и структурным подразделениям.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний об учете ОС по кабинетам или подразделениям.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req6",
-     "requirement": "Опыт организации учёта ОС с разными источниками финансирования и контроля перемещения ОС",
+     "requirement_id": "V2.req13",
+     "requirement": "Организация списка ОС по источникам поступления: приобретенные за средства заказчика, перемещенные из других подразделений института МФТИ, находящиеся на ответственном хранении, купленные за собственные средства",
      "modality": "nice",
-     "vacancy_quote": "куплены за собственные средства. … Непрерывный контроль поступления ОС по субсидиям и грантам. Составление списков на оснащение лабораторий по таким проектам. Передача этих списков в бухгалтерию. Контроль бухгалтерии за исполнением факта перемещения таких ОС на сч.12",
+     "vacancy_quote": "Организовать список ОС, которые у нас были: … приобретены за средства заказчика; … сделано перемещение с других подразделений института МФТИ; … находится на ответственном хранении; … куплены за собственные средства.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний о списках ОС по источникам поступления.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req7",
-     "requirement": "Опыт организации учёта ОС при переезде лабораторий/производств/отделов",
+     "requirement_id": "V2.req14",
+     "requirement": "Непрерывный контроль поступления ОС по субсидиям и грантам, составление списков на оснащение лабораторий, передача их в бухгалтерию и контроль исполнения перемещения на сч.12",
+     "modality": "nice",
+     "vacancy_quote": "Непрерывный контроль поступления ОС по субсидиям и грантам. Составление списков на оснащение лабораторий по таким проектам. Передача этих списков в бухгалтерию. Контроль бухгалтерии за исполнением факта перемещения таких ОС на сч.12",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "В резюме нет упоминаний о контроле поступления ОС по субсидиям и грантам, составлении списков на оснащение лабораторий.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V2.req15",
+     "requirement": "Организация учета ОС при переезде лабораторий, производств, отделов в другие корпуса и кабинеты",
      "modality": "nice",
      "vacancy_quote": "Организация учета ОС при переезде лабораторий/производств/отделов в другие корпуса/кабинеты и т.д.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний об учете ОС при переездах лабораторий или отделов.",
      "computed": null
     },
     {
-     "requirement_id": "V2.req8",
-     "requirement": "Опыт оформления пакета документов на списание и перемещение ОС",
+     "requirement_id": "V2.req16",
+     "requirement": "Оформление пакета документов на списание и перемещение ОС",
      "modality": "nice",
      "vacancy_quote": "Оформление пакета документов на списание и перемещение ОС.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
-     "computed": null
-    },
-    {
-     "requirement_id": "V2.req16",
-     "requirement": "Опыт организации списка ОС (операционных систем), приобретённых за средства заказчика, перемещённых с других подразделений института МФТИ, находящихся на ответственном хранении",
-     "modality": "nice",
-     "vacancy_quote": "Организовать список ОС, которые у нас были: … приобретены за средства заказчика; … сделано перемещение с других подразделений института МФТИ; … находится на ответственном хранении;",
-     "resume_evidence": [],
-     "status": "not_stated",
-     "status_ru": "Не указано",
-     "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет упоминаний об оформлении пакета документов на списание и перемещение ОС.",
      "computed": null
     }
    ],
    "strengths": [],
    "gaps": [
     {
-     "text": "Не соответствует обязательному требованию: Высшее экономическое образование",
+     "text": "Частично: Высшее экономическое образование",
      "requirement_ids": [
-      "V2.req9"
+      "V2.req2"
      ],
      "fragment_ids": [
       "R40"
@@ -3906,73 +4510,73 @@
    ],
    "risks": [
     {
-     "text": "Стоит уточнить: в резюме нет сведений — Подтверждённый опыт профессиональной деятельности не менее 3 лет в одном из направлений:…",
+     "text": "Стоит уточнить: в резюме нет сведений — Подтвержденный опыт профессиональной деятельности не менее 3 лет в одном из направлений:…",
      "requirement_ids": [
-      "V2.req10"
+      "V2.req1"
      ],
      "fragment_ids": []
     }
    ],
    "questions": [
     {
-     "requirement_id": "V2.req9",
-     "text": "Есть ли у вас что-то, что закрывает требование: Высшее экономическое образование?",
+     "requirement_id": "V2.req1",
+     "text": "Расскажите, пожалуйста, о вашем опыте работы в одном из направлений: бухгалтер по учету ОС и ТМЦ, специалист складского учета или инвентаризация. Какой у вас суммарный стаж в этой области и какие задачи вы выполняли?",
      "kind": "factual",
-     "why": "по резюме требование не выполнено"
+     "why": "Проверить наличие и продолжительность требуемого профессионального опыта, так как в резюме он не указан."
     },
     {
-     "requirement_id": "V2.req10",
-     "text": "Имеете ли вы опыт работы в качестве бухгалтера по учёту ОС и ТМЦ, специалиста складского учёта или в области инвентаризации? Если да, то укажите, пожалуйста, сколько лет и какие задачи вы выполняли.",
+     "requirement_id": "V2.req2",
+     "text": "Уточните, пожалуйста, имеется ли у вас высшее экономическое образование? Если да, укажите специальность и вуз.",
      "kind": "factual",
-     "why": "Необходимо выяснить, есть ли у кандидата релевантный опыт работы в требуемых областях"
+     "why": "Проверить соответствие образовательному требованию, так как в резюме указано только образование по прикладной информатике."
     },
     {
-     "requirement_id": "V2.req11",
-     "text": "Расскажите о ситуации, когда внимание к деталям помогло вам избежать ошибки или решить сложную задачу на работе.",
+     "requirement_id": "V2.req3",
+     "text": "Приведите, пожалуйста, пример из вашей работы, когда вы заметили ошибку в документах или данных, которую другие пропустили. Как вы ее обнаружили и что сделали?",
      "kind": "behavioral",
-     "why": "Нужно оценить, насколько кандидат внимателен к деталям и осознаёт ли их важность в работе"
+     "why": "Оценить внимание к деталям, так как это качество не отражено в резюме."
     },
     {
-     "requirement_id": "V2.req12",
-     "text": "Приведите пример задачи, которую вы решали системно, разбив её на этапы и последовательно выполняя каждый из них. Как это помогло достичь результата?",
+     "requirement_id": "V2.req4",
+     "text": "Расскажите, пожалуйста, как вы организуете свою работу, когда нужно выполнить несколько задач одновременно. Приведите конкретный пример, как вы выстраивали последовательность действий.",
      "kind": "behavioral",
-     "why": "Необходимо понять, способен ли кандидат мыслить и работать системно"
+     "why": "Оценить системность подхода к работе, так как это качество не отражено в резюме."
     },
     {
-     "requirement_id": "V2.req13",
-     "text": "Были ли у вас задачи, требующие длительной концентрации и монотонной работы? Расскажите, как вы справлялись с сохранением внимания и эффективности в таких условиях.",
+     "requirement_id": "V2.req5",
+     "text": "Опишите, пожалуйста, ситуацию, когда вам приходилось выполнять длительную монотонную работу. Как вы поддерживали концентрацию и качество выполнения?",
      "kind": "behavioral",
-     "why": "Нужно выяснить, способен ли кандидат сохранять концентрацию при длительной монотонной работе"
+     "why": "Оценить способность сохранять концентрацию при монотонной работе, так как это качество не отражено в резюме."
     },
     {
-     "requirement_id": "V2.req14",
-     "text": "Расскажите о случае, когда вам нужно было эффективно взаимодействовать с коллегами или клиентами для решения рабочей задачи. Как вы выстраивали коммуникацию и какой результат достигли?",
+     "requirement_id": "V2.req6",
+     "text": "Приведите, пожалуйста, пример взаимодействия с коллегами или клиентами, когда вам нужно было объяснить сложную информацию простыми словами. Как вы это делали?",
      "kind": "behavioral",
-     "why": "Необходимо оценить коммуникативные навыки кандидата"
+     "why": "Оценить коммуникабельность, так как это качество не отражено в резюме."
     },
     {
-     "requirement_id": "V2.req15",
-     "text": "Вспомните ситуацию, когда вам пришлось работать в условиях высокого давления или стресса. Как вы справились с этим и какие методы использовали для сохранения эффективности?",
+     "requirement_id": "V2.req7",
+     "text": "Расскажите, пожалуйста, о ситуации, когда вам приходилось работать в условиях жестких сроков или под давлением. Как вы справлялись с этим?",
      "kind": "behavioral",
-     "why": "Нужно понять, насколько кандидат стрессоустойчив и какие стратегии использует для работы в сложных условиях"
+     "why": "Оценить стрессоустойчивость, так как это качество не отражено в резюме."
     }
    ],
    "beyond_requirements": [],
-   "recruiter_recommendation": "Не подходит: закрыто 0 из 7 обязательных требований, балл 45 (от 0 до 90). Не подтверждено: Высшее экономическое образование; Подтверждённый опыт профессиональной деятельности не менее…. Следующий шаг: предложить вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)» — по ней метка «подходит».",
-   "candidate_message": "Здравствуйте!\n\nСпасибо за интерес к вакансии «Специалист по учёту и движению основных средств». Мы внимательно изучили резюме: сейчас по нему не подтверждаются некоторые обязательные требования.\n\n— Высшее экономическое образование\n— Подтверждённый опыт профессиональной деятельности не менее 3 лет в од…\n\nЕсли у вас есть такой опыт, но он не попал в резюме, напишите нам — мы вернёмся к вашей кандидатуре.\n\nВозможно, вам будет интересна вакансия «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)».\n\nС уважением, команда подбора",
+   "recruiter_recommendation": "Не подходит: закрыто 0 из 7 обязательных требований, балл 50 (от 5 до 95). Не подтверждено: Подтвержденный опыт профессиональной деятельности не менее…. Следующий шаг: предложить вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)» — по ней метка «подходит».",
+   "candidate_message": "Здравствуйте!\n\nСпасибо за интерес к вакансии «Специалист по учёту и движению основных средств». Мы внимательно изучили резюме: сейчас по нему не подтверждаются некоторые обязательные требования.\n\n— Подтвержденный опыт профессиональной деятельности не менее 3 лет в од…\n— Высшее экономическое образование\n\nЕсли у вас есть такой опыт, но он не попал в резюме, напишите нам — мы вернёмся к вашей кандидатуре.\n\nВозможно, вам будет интересна вакансия «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)».\n\nС уважением, команда подбора",
    "verification": {
     "quotes_total": 21,
     "quotes_verified": 21,
-    "generated_entities_total": 3,
+    "generated_entities_total": 2,
     "generated_entities_unverified": 0
    },
-   "summary": "Кандидат не подходит: из 7 обязательных требований подтверждено 0. Не подтверждено: Высшее экономическое образование; Подтверждённый опыт профессиональной деятельности не менее…."
+   "summary": "Кандидат не подходит: из 7 обязательных требований подтверждено 0, частично — 1. Не подтверждено: Подтвержденный опыт профессиональной деятельности не менее…."
   },
   "V3": {
    "vacancy_id": "V3",
    "rows": [
     {
-     "requirement_id": "V3.req8",
+     "requirement_id": "V3.req3",
      "requirement": "Развитые коммуникативные навыки",
      "modality": "must",
      "vacancy_quote": "Развитые коммуникативные навыки.",
@@ -3980,11 +4584,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет прямых упоминаний коммуникативных навыков.",
      "computed": null
     },
     {
-     "requirement_id": "V3.req9",
+     "requirement_id": "V3.req4",
      "requirement": "Высокий уровень ответственности и самоорганизации",
      "modality": "must",
      "vacancy_quote": "Высокий уровень ответственности и самоорганизации.",
@@ -3992,23 +4596,23 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет прямых упоминаний ответственности или самоорганизации.",
      "computed": null
     },
     {
-     "requirement_id": "V3.req10",
-     "requirement": "Уверенные навыки работы с таблицами и большим объёмом информации",
+     "requirement_id": "V3.req5",
+     "requirement": "Уверенные навыки работы с таблицами и большим объемом информации",
      "modality": "must",
      "vacancy_quote": "Уверенные навыки работы с таблицами и большим объемом информации.",
      "resume_evidence": [],
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Нет информации о работе с таблицами и большим объёмом информации, указаны навыки в области фронтенд-разработки.",
+     "comment": "В резюме нет упоминаний работы с таблицами или большим объемом информации.",
      "computed": null
     },
     {
-     "requirement_id": "V3.req11",
+     "requirement_id": "V3.req6",
      "requirement": "Наличие личного ноутбука или ПК (при дистанционном формате)",
      "modality": "must",
      "vacancy_quote": "Наличие личного ноутбука или ПК (при дистанционном формате).",
@@ -4016,11 +4620,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "В резюме не указано о наличии личного ноутбука или ПК",
+     "comment": "В резюме нет упоминаний о наличии ноутбука или ПК.",
      "computed": null
     },
     {
-     "requirement_id": "V3.req12",
+     "requirement_id": "V3.req7",
      "requirement": "Готовность к регулярному взаимодействию с образовательными организациями и командой проекта",
      "modality": "must",
      "vacancy_quote": "Готовность к регулярному взаимодействию с образовательными организациями и командой проекта.",
@@ -4028,11 +4632,11 @@
      "status": "not_stated",
      "status_ru": "Не указано",
      "evidence_type": null,
-     "comment": "Не указано",
+     "comment": "В резюме нет прямых упоминаний готовности к взаимодействию с образовательными организациями и командой.",
      "computed": null
     },
     {
-     "requirement_id": "V3.req13",
+     "requirement_id": "V3.req8",
      "requirement": "Опыт работы в сфере образования, а также государственных или муниципальных структурах",
      "modality": "nice",
      "vacancy_quote": "Опыт работы в сфере образования, а также государственных или муниципальных структурах.",
@@ -4042,23 +4646,101 @@
        "quote": "Frontendразработчик (Vue + Tailwind), ООО «Образовательные решения»"
       },
       {
-       "fragment_id": "R17",
-       "quote": "Москва, март 2023 — настоящее время (2 года)"
-      },
-      {
        "fragment_id": "R18",
        "quote": "Проекты: внутренние образовательные лендинги и модули для онлайнкурсов."
+      },
+      {
+       "fragment_id": "R26",
+       "quote": "HTMLверстальщик / Junior Frontend, Студия «ВебПрактика»"
+      },
+      {
+       "fragment_id": "R28",
+       "quote": "Проекты: промостраницы и лендинги для образовательных мероприятий."
       }
      ],
      "status": "partial",
      "status_ru": "Частично",
      "evidence_type": "direct",
-     "comment": "Работал в компании «Образовательные решения», разрабатывал образовательные лендинги и модули для онлайн-курсов, но нет опыта в госструктурах",
+     "comment": "Опыт в образовательной сфере подтверждён (R16, R18, R26, R28), но нет упоминаний о работе в государственных или муниципальных структурах.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V3.req10",
+     "requirement": "Готовность к очному формату работы",
+     "modality": "nice",
+     "vacancy_quote": "Готовность к очному формату работы.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R4",
+       "quote": "Не готов к переезду, готов к командировкам"
+      },
+      {
+       "fragment_id": "R45",
+       "quote": "По расположению офиса: Долгопрудный удобен, дорога в среднем занимает 35–45 минут (МЦД1 либо от Алтуфьево)."
+      }
+     ],
+     "status": "partial",
+     "status_ru": "Частично",
+     "evidence_type": "direct",
+     "comment": "В резюме указано, что кандидат готов к командировкам, но не к очному формату; также упоминается удобство дороги до офиса.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V3.req16",
+     "requirement": "Опыт участия в регулярных рабочих созвонах с командой",
+     "modality": "nice",
+     "vacancy_quote": "Участие в регулярных рабочих созвонах с командой.",
+     "resume_evidence": [
+      {
+       "fragment_id": "R33",
+       "quote": "Работа в команде: согласование правок с дизайнером, передача верстки разработчикам, контроль соответствия макету."
+      }
+     ],
+     "status": "partial",
+     "status_ru": "Частично",
+     "evidence_type": "adjacent",
+     "comment": "Указана работа в команде (согласование правок, передача верстки), но нет упоминания регулярных рабочих созвонов.",
      "computed": null
     },
     {
      "requirement_id": "V3.req1",
-     "requirement": "Опыт коммуникации с образовательными организациями, сопровождение от 30 до 40 организаций",
+     "requirement": "Работа с табличными данными: Excel",
+     "modality": "nice",
+     "vacancy_quote": "Работа с табличными данными: Excel, Google Sheets.",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "В резюме нет упоминаний Excel или работы с табличными данными.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V3.req2",
+     "requirement": "Работа с табличными данными: Google Sheets",
+     "modality": "nice",
+     "vacancy_quote": "Работа с табличными данными: Excel, Google Sheets.",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "В резюме нет упоминаний Google Sheets или работы с табличными данными.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V3.req9",
+     "requirement": "Опыт работы в роли делопроизводителя или документоведа",
+     "modality": "nice",
+     "vacancy_quote": "Опыт работы в роли делопроизводителя или документоведа.",
+     "resume_evidence": [],
+     "status": "not_stated",
+     "status_ru": "Не указано",
+     "evidence_type": null,
+     "comment": "В резюме нет упоминаний опыта делопроизводителя или документоведа.",
+     "computed": null
+    },
+    {
+     "requirement_id": "V3.req11",
+     "requirement": "Опыт коммуникации с образовательными организациями: сопровождение от 30 до 40 организаций",
      "modality": "nice",
      "vacancy_quote": "Коммуникация с образовательными организациями: сопровождение от 30 до 40 организаций.",
      "resume_evidence": [],
@@ -4069,8 +4751,8 @@
      "computed": null
     },
     {
-     "requirement_id": "V3.req2",
-     "requirement": "Умение собирать информацию, необходимую для заключения договоров и иных документов",
+     "requirement_id": "V3.req12",
+     "requirement": "Опыт сбора информации, необходимой для заключения договоров и иных документов",
      "modality": "nice",
      "vacancy_quote": "Сбор информации, необходимой для заключения договоров и иных документов.",
      "resume_evidence": [],
@@ -4081,8 +4763,8 @@
      "computed": null
     },
     {
-     "requirement_id": "V3.req3",
-     "requirement": "Умение собирать статистические данные для формирования отчётности",
+     "requirement_id": "V3.req13",
+     "requirement": "Опыт сбора статистических данных для формирования отчетности",
      "modality": "nice",
      "vacancy_quote": "Сбор статистических данных для формирования отчетности.",
      "resume_evidence": [],
@@ -4093,8 +4775,8 @@
      "computed": null
     },
     {
-     "requirement_id": "V3.req4",
-     "requirement": "Умение проводить первичную проверку и контроль комплектности документов (договорных и расчётных)",
+     "requirement_id": "V3.req14",
+     "requirement": "Опыт первичной проверки и контроля комплектности документов (договорных и расчетных)",
      "modality": "nice",
      "vacancy_quote": "Первичная проверка и контроль комплектности документов (договорных и расчетных).",
      "resume_evidence": [],
@@ -4105,8 +4787,8 @@
      "computed": null
     },
     {
-     "requirement_id": "V3.req5",
-     "requirement": "Умение проводить контрольные срезы по успеваемости обучающихся",
+     "requirement_id": "V3.req15",
+     "requirement": "Опыт проведения контрольных срезов по успеваемости обучающихся в рамках набора и обучения",
      "modality": "nice",
      "vacancy_quote": "Проведение контрольных срезов по успеваемости обучающихся в рамках набора и обучения.",
      "resume_evidence": [],
@@ -4115,177 +4797,82 @@
      "evidence_type": null,
      "comment": "Не указано",
      "computed": null
-    },
-    {
-     "requirement_id": "V3.req6",
-     "requirement": "Навыки работы с табличными данными: Excel, Google Sheets",
-     "modality": "nice",
-     "vacancy_quote": "Работа с табличными данными: Excel, Google Sheets.",
-     "resume_evidence": [],
-     "status": "not_stated",
-     "status_ru": "Не указано",
-     "evidence_type": null,
-     "comment": "Не указано",
-     "computed": null
-    },
-    {
-     "requirement_id": "V3.req7",
-     "requirement": "Готовность участвовать в регулярных рабочих созвонах с командой",
-     "modality": "nice",
-     "vacancy_quote": "Участие в регулярных рабочих созвонах с командой.",
-     "resume_evidence": [],
-     "status": "not_stated",
-     "status_ru": "Не указано",
-     "evidence_type": null,
-     "comment": "Не указано",
-     "computed": null
-    },
-    {
-     "requirement_id": "V3.req14",
-     "requirement": "Опыт работы в роли делопроизводителя или документоведа",
-     "modality": "nice",
-     "vacancy_quote": "Опыт работы в роли делопроизводителя или документоведа.",
-     "resume_evidence": [],
-     "status": "not_stated",
-     "status_ru": "Не указано",
-     "evidence_type": null,
-     "comment": "Не указано",
-     "computed": null
-    },
-    {
-     "requirement_id": "V3.req15",
-     "requirement": "Готовность к очному формату работы",
-     "modality": "nice",
-     "vacancy_quote": "Готовность к очному формату работы.",
-     "resume_evidence": [
-      {
-       "fragment_id": "R4",
-       "quote": "Не готов к переезду, готов к командировкам"
-      }
-     ],
-     "status": "not_stated",
-     "status_ru": "Не указано",
-     "evidence_type": null,
-     "comment": "Указано, что не готов к переезду, но готов к командировкам; о готовности к очному формату информации нет",
-     "computed": null
     }
    ],
    "strengths": [],
    "gaps": [],
    "risks": [
     {
-     "text": "Стоит уточнить: в резюме нет сведений — Уверенные навыки работы с таблицами и большим объёмом информации",
+     "text": "Стоит уточнить: в резюме нет сведений — Уверенные навыки работы с таблицами и большим объемом информации",
      "requirement_ids": [
-      "V3.req10"
-     ],
-     "fragment_ids": []
-    },
-    {
-     "text": "Стоит уточнить: в резюме нет сведений — Наличие личного ноутбука или ПК (при дистанционном формате)",
-     "requirement_ids": [
-      "V3.req11"
+      "V3.req5"
      ],
      "fragment_ids": []
     }
    ],
    "questions": [
     {
-     "requirement_id": "V3.req10",
-     "text": "Имеете ли вы опыт работы с таблицами и большим объёмом информации? В каких задачах вы применяли эти навыки?",
+     "requirement_id": "V3.req5",
+     "text": "Расскажите, пожалуйста, приходилось ли вам в рамках профессиональной деятельности или учебы работать с таблицами и большими объемами информации? Если да, опишите, с какими именно задачами и в каком объеме.",
      "kind": "factual",
-     "why": "Необходимо выяснить, есть ли у кандидата опыт работы с таблицами и большим объёмом информации"
+     "why": "В резюме нет упоминаний о работе с таблицами и большими объемами данных, поэтому необходимо уточнить наличие и характер такого опыта."
     },
     {
-     "requirement_id": "V3.req11",
-     "text": "Есть ли у вас личный ноутбук или ПК, который вы сможете использовать для работы в случае выбора дистанционного формата?",
+     "requirement_id": "V3.req3",
+     "text": "Приведите, пожалуйста, пример ситуации, когда вам нужно было донести сложную информацию до коллег или партнеров. Как вы строили коммуникацию и каким был результат?",
+     "kind": "behavioral",
+     "why": "Коммуникативные навыки не отражены в резюме, поведенческий вопрос позволит оценить их на практике."
+    },
+    {
+     "requirement_id": "V3.req4",
+     "text": "Расскажите о ситуации из работы, где проявилось: Высокий уровень ответственности и самоорганизации.",
+     "kind": "behavioral",
+     "why": "по резюме не проверяется"
+    },
+    {
+     "requirement_id": "V3.req6",
+     "text": "Подтвердите, пожалуйста, что у вас есть личный ноутбук или персональный компьютер, который вы готовы использовать для работы в дистанционном формате.",
      "kind": "factual",
-     "why": "Нужно убедиться, что у кандидата есть необходимое оборудование для работы в дистанционном формате"
+     "why": "Наличие оборудования не указано в резюме, это обязательное условие для удаленной работы."
     },
     {
-     "requirement_id": "V3.req8",
-     "text": "Расскажите о ситуации, когда вам пришлось эффективно общаться с несколькими людьми одновременно для решения сложной задачи. Как вы это сделали?",
+     "requirement_id": "V3.req7",
+     "text": "Опишите, пожалуйста, ваш опыт взаимодействия с образовательными организациями или работы в команде проекта. Как вы выстраивали это взаимодействие?",
      "kind": "behavioral",
-     "why": "Необходимо оценить коммуникативные навыки кандидата"
-    },
-    {
-     "requirement_id": "V3.req9",
-     "text": "Приведите пример ситуации, когда вам нужно было самостоятельно организовать свою работу и уложиться в жёсткие сроки. Как вы достигли результата?",
-     "kind": "behavioral",
-     "why": "Нужно оценить уровень ответственности и самоорганизации кандидата"
-    },
-    {
-     "requirement_id": "V3.req12",
-     "text": "Расскажите о своём опыте взаимодействия с образовательными организациями или командой проекта. Как вы налаживали коммуникацию и какие задачи решали?",
-     "kind": "behavioral",
-     "why": "Необходимо выяснить, готов ли кандидат к регулярному взаимодействию с образовательными организациями и командой проекта"
+     "why": "Готовность к взаимодействию с образовательными организациями и командой не отражена в резюме, поведенческий вопрос позволит оценить релевантный опыт."
     }
    ],
-   "beyond_requirements": [
-    {
-     "text": "Опыт разработки внутренних образовательных лендингов и модулей для онлайн-курсов, вёрстка по макетам Figma, разработка компонентов на Vue 3, применение Tailwind CSS, интеграция с API, поддержка и рефакторинг кода.",
-     "requirement_ids": [],
-     "fragment_ids": [
-      "R16",
-      "R18",
-      "R20",
-      "R21",
-      "R22",
-      "R23",
-      "R24"
-     ]
-    },
-    {
-     "text": "Навыки в области HTML5, CSS3, Tailwind CSS, JavaScript (ES6+), Vue 3, работы с Figma, Git и базовые навыки тестирования интерфейсов.",
-     "requirement_ids": [],
-     "fragment_ids": [
-      "R8",
-      "R9",
-      "R10",
-      "R11",
-      "R12",
-      "R13",
-      "R14"
-     ]
-    },
-    {
-     "text": "Готовность работать в небольшой команде, соблюдать кодстайл и процессы ревью, аккуратность в написании кода.",
-     "requirement_ids": [],
-     "fragment_ids": [
-      "R43",
-      "R44"
-     ]
-    }
-   ],
-   "recruiter_recommendation": "Не подходит: закрыто 0 из 5 обязательных требований, балл 50 (от 2 до 98). Не подтверждено: Уверенные навыки работы с таблицами и большим объёмом инфор…; Наличие личного ноутбука или ПК (при дистанционном формате). Следующий шаг: предложить вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)» — по ней метка «подходит».",
-   "candidate_message": "Здравствуйте!\n\nСпасибо за интерес к вакансии «Куратор образовательного процесса». Мы внимательно изучили резюме: сейчас по нему не подтверждаются некоторые обязательные требования.\n\n— Уверенные навыки работы с таблицами и большим объёмом информации\n— Наличие личного ноутбука или ПК (при дистанционном формате)\n\nЕсли у вас есть такой опыт, но он не попал в резюме, напишите нам — мы вернёмся к вашей кандидатуре.\n\nВозможно, вам будет интересна вакансия «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)».\n\nС уважением, команда подбора",
+   "beyond_requirements": [],
+   "recruiter_recommendation": "Не подходит: закрыто 0 из 5 обязательных требований, балл 50 (от 5.8 до 94.2). Не подтверждено: Уверенные навыки работы с таблицами и большим объемом инфор…. Следующий шаг: предложить вакансию «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)» — по ней метка «подходит».",
+   "candidate_message": "Здравствуйте!\n\nСпасибо за интерес к вакансии «Куратор образовательного процесса». Мы внимательно изучили резюме: сейчас по нему не подтверждаются некоторые обязательные требования.\n\n— Уверенные навыки работы с таблицами и большим объемом информации\n\nЕсли у вас есть такой опыт, но он не попал в резюме, напишите нам — мы вернёмся к вашей кандидатуре.\n\nВозможно, вам будет интересна вакансия «Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)».\n\nС уважением, команда подбора",
    "verification": {
-    "quotes_total": 19,
-    "quotes_verified": 19,
-    "generated_entities_total": 28,
+    "quotes_total": 23,
+    "quotes_verified": 23,
+    "generated_entities_total": 0,
     "generated_entities_unverified": 0
    },
-   "summary": "Кандидат не подходит: из 5 обязательных требований подтверждено 0. Не подтверждено: Уверенные навыки работы с таблицами и большим объёмом инфор…; Наличие личного ноутбука или ПК (при дистанционном формате)."
+   "summary": "Кандидат не подходит: из 5 обязательных требований подтверждено 0. Не подтверждено: Уверенные навыки работы с таблицами и большим объемом инфор…."
   }
  },
  "errors": [],
  "warnings": [],
  "outbound_log_path": null,
  "timings_ms": {
-  "ingest": 49,
-  "mask": 413,
-  "extract_profile": 112,
-  "extract_requirements": 311,
-  "match": 3535,
-  "score": 0,
-  "rank": 1,
-  "report": 106,
-  "total": 4898,
-  "llm_requests": 1,
-  "llm_cache_hits": 23,
+  "ingest": 39,
+  "mask": 273,
+  "extract_profile": 75,
+  "extract_requirements": 255,
+  "match": 387,
+  "score": 1,
+  "rank": 0,
+  "report": 80,
+  "total": 1349,
+  "llm_requests": 0,
+  "llm_cache_hits": 25,
   "llm_blocked": 0,
   "llm_fixes": 0,
-  "llm_prompt_tokens": 3269,
-  "llm_completion_tokens": 572,
-  "llm_ms": 2995
+  "llm_prompt_tokens": 0,
+  "llm_completion_tokens": 0,
+  "llm_ms": 0
  }
 }
