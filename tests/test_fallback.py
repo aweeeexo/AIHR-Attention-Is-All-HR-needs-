@@ -87,7 +87,9 @@ def test_requirements_soft_and_language() -> None:
     assert reqs["Высшее образование."].threshold.value == "higher"  # type: ignore[union-attr]
     lang = reqs["Английский язык не ниже B2."]
     assert lang.kind == ReqKind.language and lang.threshold.value == "B2"  # type: ignore[union-attr]
-    assert not reqs["Ответственность и внимание к деталям."].verifiable
+    # «и» между двумя терминами словаря — два атомарных требования
+    assert not reqs["Ответственность"].verifiable
+    assert not reqs["внимание к деталям"].verifiable
     total = reqs["Опыт работы от 2 лет."].threshold
     assert total is not None and total.subject is None  # общий стаж, без темы
 
@@ -157,7 +159,8 @@ def test_match_statuses() -> None:
         "Стерилизация инструментов.\nОпыт работы медицинской сестрой от 5 лет.\n"
         "Высшее образование.\nКоммуникабельность.\nВладение японским языком на уровне B2."
     )
-    blood = v["Забор венозной крови и внутривенные инъекции."]
+    blood = v["Забор венозной крови"]  # перечисление терминов словаря поделено на атомарные
+    assert v["внутривенные инъекции"].status == Status.match
     assert blood.status == Status.match and blood.evidence and blood.decided_by == "fallback"
     assert blood.evidence[0].quote  # цитату подставил код
     listed = v["Стерилизация инструментов."]

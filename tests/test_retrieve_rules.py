@@ -72,8 +72,9 @@ def test_bm25_finds_exact_terms(resume) -> None:
 
 def test_synonyms_via_terms(resume) -> None:
     r = Retriever(resume, embeddings=False)
-    assert _ids(r, "JavaScript") == []  # без словаря синонимов не находится
-    assert _ids(r, "JavaScript", ["JS", "ECMAScript"])[0] == "R4"  # алиасы из T06-A
+    # «JS» в резюме и «JavaScript» в требовании — один канонический термин словаря (T06-A)
+    assert _ids(r, "JavaScript")[0] == "R4"
+    assert _ids(r, "знание ECMAScript")[0] == "R4"
 
 
 def test_section_filter_and_fallback(resume) -> None:

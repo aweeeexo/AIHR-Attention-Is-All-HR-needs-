@@ -26,7 +26,7 @@ from aihr.contracts import (
 )
 from aihr.extract.schemas import ExtractedRequirement, ExtractedRequirements
 from aihr.llm import LLMClient
-from aihr.normalize import canonicalize
+from aihr.normalize import canonicalize, find_terms
 from aihr.normalize.levels import cefr_from_text, education_from_text
 
 log = logging.getLogger(__name__)
@@ -198,9 +198,7 @@ def _build(
         if kind == ReqKind.duty:
             modality = Modality.nice  # обязанность никогда не обязательна (D3)
         verifiable = item.verifiable and kind != ReqKind.soft
-        canonical = [
-            c for c in [canonicalize(item.text), *map(canonicalize, item.alternatives)] if c
-        ]
+        canonical = find_terms(" ".join([item.text, *item.alternatives]))
         out.append(
             (
                 item,
@@ -243,7 +241,7 @@ def split_conjunctions(reqs: list[Requirement]) -> list[Requirement]:
                     update={
                         "text": text,
                         "alternatives": [],
-                        "canonical_terms": [c for c in [canonicalize(alt)] if c],
+                        "canonical_terms": find_terms(alt) or [c for c in [canonicalize(alt)] if c],
                     }
                 )
             )

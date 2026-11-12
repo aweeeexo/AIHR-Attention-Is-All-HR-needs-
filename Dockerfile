@@ -33,6 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-editable
 COPY config ./config
 COPY data/case ./data/case
+COPY data/synonyms.yaml ./data/synonyms.yaml
 COPY examples ./examples
 COPY scripts ./scripts
 COPY tests ./tests
@@ -54,6 +55,7 @@ COPY --from=builder /app/.venv /app/.venv
 COPY config ./config
 COPY ui ./ui
 COPY data/case ./data/case
+COPY data/synonyms.yaml ./data/synonyms.yaml
 COPY examples ./examples
 
 # Модели — на этапе сборки, а не при первом запросе

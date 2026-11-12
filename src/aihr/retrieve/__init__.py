@@ -82,8 +82,12 @@ def _stem(word: str) -> str:
 
 
 def tokens(text: str) -> list[str]:
+    """Основы слов + канонические маркеры терминов словаря синонимов («=autocad»)."""
+    from aihr.normalize.synonyms import find_terms
+
     words = [w.lower().replace("ё", "е") for w in _TOKEN_RE.findall(text)]
-    return [_stem(w) for w in words if w not in _STOP and (len(w) > 1 or w.isdigit())]
+    stems = [_stem(w) for w in words if w not in _STOP and (len(w) > 1 or w.isdigit())]
+    return stems + [f"={c}" for c in find_terms(text)]
 
 
 Encoder = Callable[[Sequence[str]], Any]  # список текстов → матрица векторов (нормированных)

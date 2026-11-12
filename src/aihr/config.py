@@ -51,6 +51,7 @@ class Settings(BaseSettings):
     cache_dir: Path = Path("data/cache")
     case_dir: Path = Path("data/case")
     scoring_config: Path = Path("config/scoring.yaml")
+    synonyms_path: Path = Path("data/synonyms.yaml")
     today: str | None = None  # "2026-11" — фиксированная дата для воспроизводимых тестов
     log_level: str = "INFO"
 

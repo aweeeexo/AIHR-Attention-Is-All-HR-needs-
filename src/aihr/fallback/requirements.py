@@ -13,7 +13,7 @@ from aihr.contracts import (
     Threshold,
     ThresholdKind,
 )
-from aihr.normalize import canonicalize
+from aihr.normalize import canonicalize, find_terms
 from aihr.normalize.levels import cefr_from_text, education_from_text
 
 _REQ_ROLES = {
@@ -168,7 +168,7 @@ def extract_requirements_fallback(vacancy: Document) -> list[Requirement]:
                     modality_reason=(f"маркер «{marker}»" if marker else f"раздел «{section}»")
                     + (" (обязанность — пожелание, D3)" if kind == ReqKind.duty else ""),
                     threshold=_threshold(text, kind),
-                    canonical_terms=[c for c in [canonicalize(text)] if c],
+                    canonical_terms=find_terms(text),
                     verifiable=kind != ReqKind.soft,
                     source_fragment_ids=[frag.id],
                 )
