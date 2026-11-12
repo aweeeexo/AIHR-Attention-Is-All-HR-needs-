@@ -424,7 +424,7 @@ def rank(scores: list[VacancyScore]) -> Ranking
 # report (A)
 def build_report(vacancy: Document, reqs: list[Requirement], verdicts: list[Verdict],
                  score: VacancyScore, profile: CandidateProfile, resume: Document,
-                 llm: LLMClient) -> Report
+                 llm: LLMClient | None, ranking: Ranking | None = None) -> Report
 
 # fallback (B)
 def extract_requirements_fallback(vacancy: Document) -> list[Requirement]

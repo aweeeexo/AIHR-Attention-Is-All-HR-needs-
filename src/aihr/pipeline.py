@@ -271,7 +271,8 @@ def run(
                 scores[vac.id],
                 profile,  # type: ignore[arg-type]
                 resume_doc,  # type: ignore[arg-type]
-                llm,
+                llm if state.mode == "llm" else None,
+                ranking=ranking,
             )
         except Exception as exc:
             log.exception("%s: сбой при сборке отчёта", vac.id)
