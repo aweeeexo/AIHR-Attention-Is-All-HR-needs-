@@ -21,7 +21,7 @@ from aihr.privacy import (
     unmask,
 )
 from aihr.privacy.outbound import OutboundLog
-from tests.conftest import CASE_DIR, FakeOpenAI
+from tests.conftest import CASE_DIR, EchoRequirementsLLM, FakeOpenAI
 from tests.test_llm_client import Ping
 
 SYNTHETIC = """Петрова Анна Сергеевна
@@ -180,7 +180,7 @@ def test_pipeline_guard_violation_falls_back_for_step(
         raise PrivacyViolation("guard: найден email в промпте extract/x")
 
     monkeypatch.setattr(pipeline.extract, "extract_profile", leaky)
-    llm = LLMClient(llm_settings, client=FakeOpenAI([]))
+    llm = LLMClient(llm_settings, client=EchoRequirementsLLM())
     r = pipeline.run(fixture_file("resume_cook.txt"), [fixture_file("vacancy_cook.txt")],
                      settings=llm_settings, llm=llm)  # fmt: skip
     assert r.mode == "llm"  # заблокирован один шаг, а не весь прогон

@@ -186,9 +186,11 @@ def run(
 
     # 2. Маскирование: наружу уходит только masked_text
     with t.step("mask"):
+        # Вакансии — первыми: номера их токенов не зависят от резюме, текст промпта извлечения
+        # одинаков для любого кандидата, и вакансия разбирается один раз (кэш, T04 шаг 9)
+        vac_docs = [mask_document(d, ctx) for d in vac_docs]
         if resume_doc is not None:
             resume_doc = mask_document(resume_doc, ctx)
-        vac_docs = [mask_document(d, ctx) for d in vac_docs]
 
     profile: CandidateProfile | None = None
     requirements: dict[str, list[Requirement]] = {}

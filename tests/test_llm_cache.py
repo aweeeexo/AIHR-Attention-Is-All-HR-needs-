@@ -19,7 +19,7 @@ from aihr.llm.client import _extract_json
 from aihr.llm.prompting import RenderedPrompt
 from aihr.privacy import PrivacyContext
 from aihr.privacy.outbound import OutboundLog
-from tests.conftest import FakeOpenAI, fixture_file
+from tests.conftest import EchoRequirementsLLM, FakeOpenAI, fixture_file
 from tests.test_llm_client import Ping
 
 OK = '{"ok": true, "word": "сосна"}'
@@ -221,7 +221,7 @@ def test_semaphore_limits_parallel_requests(concurrency: int) -> None:
 
 def test_pipeline_parallel_keeps_order_and_reports_llm_stats(llm_settings) -> None:
     s = llm_settings.model_copy(update={"llm_concurrency": 3})
-    llm = LLMClient(s, client=FakeOpenAI([]))
+    llm = LLMClient(s, client=EchoRequirementsLLM())
     vacancies = [fixture_file("vacancy_cook.txt"), fixture_file("vacancy_welder.txt")] * 2
     r = pipeline.run(fixture_file("resume_cook.txt"), vacancies, settings=s, llm=llm)
     assert [v.id for v in r.vacancies] == ["V1", "V2", "V3", "V4"]

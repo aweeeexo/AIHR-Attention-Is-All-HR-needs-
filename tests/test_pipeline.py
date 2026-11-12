@@ -6,7 +6,7 @@ from aihr import pipeline
 from aihr.config import get_settings
 from aihr.contracts import IngestErrorCode, LLMUnavailable, MatchResult, Status
 from aihr.llm import LLMClient
-from tests.conftest import FakeOpenAI, fixture_file
+from tests.conftest import EchoRequirementsLLM, FakeOpenAI, fixture_file
 
 
 def _run(*vacancies: tuple[bytes, str], **kw: object) -> MatchResult:
@@ -87,7 +87,7 @@ def test_llm_unavailable_switches_to_fallback(
 
 
 def test_llm_mode_when_configured(llm_settings) -> None:
-    llm = LLMClient(llm_settings, client=FakeOpenAI([]))
+    llm = LLMClient(llm_settings, client=EchoRequirementsLLM())
     r = _run(fixture_file("vacancy_cook.txt"), settings=llm_settings, llm=llm, save=False)
     assert r.mode == "llm" and not r.warnings
     assert all(v.decided_by == "pass_a" for v in r.verdicts["V1"])

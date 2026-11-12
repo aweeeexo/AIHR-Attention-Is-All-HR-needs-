@@ -1,14 +1,13 @@
-"""Извлечение: требования вакансии (T04) и профиль кандидата (T05). T00 — заглушки."""
+"""Извлечение: требования вакансии (T04) и профиль кандидата (T05; пока заглушка)."""
 
 from __future__ import annotations
 
-from aihr.contracts import CandidateProfile, Document, Requirement
+from aihr.contracts import CandidateProfile, Document
+from aihr.extract.requirements import extract_requirements
 from aihr.llm import LLMClient
-from aihr.stubs import stub_profile, stub_requirements
+from aihr.stubs import stub_profile
 
-
-def extract_requirements(vacancy: Document, llm: LLMClient) -> list[Requirement]:
-    return stub_requirements(vacancy)
+__all__ = ["extract_profile", "extract_requirements"]
 
 
 def extract_profile(resume: Document, llm: LLMClient) -> CandidateProfile:

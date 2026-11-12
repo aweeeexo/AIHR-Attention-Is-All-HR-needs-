@@ -98,3 +98,33 @@ def test_case_resume_outbound_log_is_clean(live_llm: LLMClient, name: str, tmp_p
     assert {fid for i in result.items for fid in i.fragment_ids} <= known
     print(f"\n{name[-14:]}: {len(result.items)} пунктов, журнал {len(sent)} символов, ФИО нет")
     assert re.search(r'"status": "ok"', sent)
+
+
+def test_requirements_against_golden(live_llm: LLMClient) -> None:
+    """T04: полнота и модальность ≥ 90% против ручного эталона на вакансиях кейса."""
+    import json
+    import sys
+
+    sys.path.insert(0, str(REPO_ROOT / "eval"))
+    from requirements_eval import evaluate
+
+    from aihr.extract import extract_requirements
+
+    golden_dir = REPO_ROOT / "eval" / "golden"
+    total = matched = modality_ok = 0
+    for path in sorted(golden_dir.glob("requirements_V*.json")):
+        golden = json.loads(path.read_text(encoding="utf-8"))
+        file = REPO_ROOT / "data" / "case" / golden["vacancy_file"]
+        vid = path.stem.split("_")[-1]
+        doc = mask_document(
+            load_document(file.read_bytes(), file.name, DocKind.vacancy, vid), PrivacyContext()
+        )
+        score = evaluate(golden, extract_requirements(doc, live_llm))
+        total, matched, modality_ok = (
+            total + score.golden,
+            matched + score.matched,
+            modality_ok + score.modality_ok,
+        )
+        assert not [w for w in doc.warnings if "не извлечено" in w], doc.warnings
+    assert matched / total >= 0.9
+    assert modality_ok / matched >= 0.9
