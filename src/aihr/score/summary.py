@@ -80,17 +80,28 @@ def ranking_summary(
         return "Рейтинг не построен: нет ни одной обработанной вакансии."
     by_vac = {vid: {v.requirement_id: v for v in vs} for vid, vs in verdicts.items()}
     good = [s for s in items if s.label != FitLabel.not_fit]
+    cfg = load_scoring_config()
     if good:
         best = good[0]
-        text = (
-            f"Лучше всего подходит {_name(best)}: {LABEL_RU[best.label]}, балл {best.score:g}, "
-            f"закрыто {best.must.match} из {best.must.total} обязательных требований."
+        text = ""
+        top = items[0]
+        if top is not best and top.score >= cfg.caveats_min_score:  # выше по баллу, но мало данных
+            text = (
+                f"Выше всех по баллу {_name(top)} ({top.score:g}, от {top.score_min:g} до "
+                f"{top.score_max:g}), но по ней мало подтверждённых данных: подтверждено "
+                f"{top.must.match + top.must.partial} из {top.must.total} обязательных — стоит "
+                "уточнить у кандидата. Из вакансий с достаточными данными: "
+            )
+        text += (
+            f"{'л' if text else 'Л'}учше всего подходит {_name(best)}: {LABEL_RU[best.label]}, "
+            f"балл {best.score:g}, закрыто {best.must.match} из {best.must.total} обязательных "
+            "требований."
         )
         if len(good) > 1:
             text += (
                 " Также: " + "; ".join(f"{_name(s)} — {LABEL_RU[s.label]}" for s in good[1:]) + "."
             )
-            if is_close(best, good[1], load_scoring_config()):
+            if is_close(best, good[1], cfg):
                 text += (
                     f" {_name(best)} и {_name(good[1])} почти вровень "
                     f"({best.score:g} и {good[1].score:g}): выбор — по таблицам требований."

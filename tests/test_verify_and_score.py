@@ -202,8 +202,10 @@ def test_empty_resume_scores_fifty() -> None:
         [_verdict(Status.not_stated, rid="V1.req1"), _verdict(Status.not_stated, rid="V1.req2")],
     )
     assert (s.score, s.score_min, s.score_max) == (50.0, 0.0, 100.0)
-    assert s.label == FitLabel.fits_with_caveats
-    assert "мало данных" in s.explanation
+    assert s.label == FitLabel.not_fit  # D41: без подтверждений — не «с оговорками»
+    assert "мало данных" in s.explanation and "Мало данных: в резюме подтверждено 0 из 1" in (
+        s.explanation
+    )
 
 
 def test_only_nice_requirements() -> None:

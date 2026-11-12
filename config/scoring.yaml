@@ -7,7 +7,8 @@ partial_default: 0.5   # p, если у требования нет числов
 unknown_value: 0.5     # u, нейтрально — D5. Интервал считается при u = 0 и u = 1
 labels:
   fits:              { min_score: 70, max_blocking_gaps: 0 }
-  fits_with_caveats: { min_score: 45 }
+  # и подтверждена доля обязательных не ниже min_confirmed, либо нижняя граница интервала ≥ min_score (D41)
+  fits_with_caveats: { min_score: 45, min_confirmed: 0.5 }
   # остальное — not_fit
 # Разница баллов меньше этой — «почти вровень»: порядок не надёжен, объяснение об этом говорит (D40)
 close_margin: 3

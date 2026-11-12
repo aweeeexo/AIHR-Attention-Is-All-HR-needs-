@@ -42,6 +42,7 @@ class ScoringConfig:
     fits_max_blocking_gaps: int
     caveats_min_score: float
     close_margin: float = 3.0  # D40
+    caveats_min_confirmed: float = 0.5  # D41
 
     def with_changes(self, **kw: float) -> ScoringConfig:
         return replace(self, **kw)  # type: ignore[arg-type]
@@ -64,6 +65,7 @@ def _load_scoring_config(path: Path) -> ScoringConfig:
         fits_max_blocking_gaps=int(labels["fits"].get("max_blocking_gaps", 0)),
         caveats_min_score=float(labels["fits_with_caveats"]["min_score"]),
         close_margin=float(raw.get("close_margin", 3)),
+        caveats_min_confirmed=float(labels["fits_with_caveats"].get("min_confirmed", 0.5)),
     )
 
 
@@ -155,6 +157,12 @@ def score_vacancy(
     ]
     unknown = must.not_stated + nice.not_stated
     all_unknown = bool(rows) and unknown == len(rows)
+    # D41: «с оговорками» — только если данных достаточно: подтверждена доля обязательных
+    # (без обязательных — всех) или даже при худшем раскладе неуказанного балл не ниже порога
+    base = must if must.total else nice
+    confirmed = base.match + base.partial
+    enough_data = bool(base.total) and confirmed >= cfg.caveats_min_confirmed * base.total
+    low_data = not enough_data and score_min < cfg.caveats_min_score
 
     if (
         score >= cfg.fits_min_score
@@ -162,7 +170,7 @@ def score_vacancy(
         and not all_unknown
     ):
         label = FitLabel.fits
-    elif score >= cfg.caveats_min_score:
+    elif score >= cfg.caveats_min_score and not low_data:
         label = FitLabel.fits_with_caveats
     else:
         label = FitLabel.not_fit
@@ -194,6 +202,13 @@ def score_vacancy(
     if unknown:
         parts.append(
             f"Не указано {unknown} {plural(unknown, _REQ)}, поэтому балл от {score_min:g} "
+            f"до {score_max:g}."
+        )
+    if label == FitLabel.not_fit and score >= cfg.caveats_min_score and low_data:
+        which = "обязательных" if must.total else "требований"
+        parts.append(
+            f"Мало данных: в резюме подтверждено {confirmed} из {base.total} {which}, "
+            "поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл "
             f"до {score_max:g}."
         )
     plus = [k for k in top_plus if gain[k] >= 1]
@@ -284,8 +299,10 @@ def formula_text(cfg: ScoringConfig) -> str:
         f"«Не соответствует» 0, «Не указано» {cfg.unknown_value:g}. Интервал — тот же расчёт, "
         "если все «Не указано» окажутся 0 или 1. Метка «подходит»: балл не ниже "
         f"{cfg.fits_min_score:g} и нет обязательных требований без соответствия; "
-        f"«подходит с оговорками»: не ниже {cfg.caveats_min_score:g}. Веса одинаковы для всех "
-        "вакансий и лежат в config/scoring.yaml."
+        f"«подходит с оговорками»: не ниже {cfg.caveats_min_score:g} и в резюме подтверждено "
+        f"не меньше {cfg.caveats_min_confirmed:.0%} обязательных (или нижняя граница интервала "
+        f"не ниже {cfg.caveats_min_score:g}); иначе «не подходит», мало данных. Веса одинаковы "
+        "для всех вакансий и лежат в config/scoring.yaml."
     )
 
 

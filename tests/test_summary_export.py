@@ -217,3 +217,58 @@ def test_clear_gap_is_not_flagged() -> None:
         }
     )
     assert "почти равны" not in ranking.comparison[0]
+
+
+def test_mostly_unknown_is_not_fit_with_low_data_note() -> None:
+    """D41: балл ~50 из-за «не указано» не даёт «подходит с оговорками»."""
+    ranking, _reqs, _verdicts = _case(
+        {
+            "V1": [
+                ("Навык A", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык B", Modality.must, Status.not_stated),
+                ("Навык C", Modality.must, Status.not_stated),
+                ("Навык D", Modality.must, Status.not_stated),
+            ]
+        }
+    )
+    [s] = ranking.items
+    assert s.score >= 45 and s.score_min < 45
+    assert s.label == FitLabel.not_fit
+    assert "Мало данных: в резюме подтверждено 1 из 4 обязательных" in s.explanation
+
+
+def test_half_confirmed_keeps_caveats() -> None:
+    ranking, _reqs, _verdicts = _case(
+        {
+            "V1": [
+                ("Навык A", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык B", Modality.must, Status.partial, EvidenceType.direct),
+                ("Навык C", Modality.must, Status.not_stated),
+                ("Навык D", Modality.must, Status.mismatch, EvidenceType.direct),
+            ]
+        }
+    )
+    [s] = ranking.items
+    assert s.label == FitLabel.fits_with_caveats and "Мало данных" not in s.explanation
+
+
+def test_top_by_score_with_low_data_is_explained() -> None:
+    ranking, reqs, verdicts = _case(
+        {
+            "V1": [
+                ("Навык A", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык B", Modality.must, Status.not_stated),
+                ("Навык C", Modality.must, Status.not_stated),
+                ("Навык D", Modality.must, Status.not_stated),
+            ],
+            "V2": [
+                ("Навык E", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык F", Modality.must, Status.mismatch, EvidenceType.direct),
+            ],
+        }
+    )
+    assert ranking.items[0].vacancy_id == "V1"  # порядок — по баллу (D11)
+    text = ranking_summary(ranking, reqs, verdicts)
+    assert text.startswith("Выше всех по баллу «Вакансия V1» (V1)")
+    assert "мало подтверждённых данных" in text
+    assert "лучше всего подходит «Вакансия V2» (V2)" in text
