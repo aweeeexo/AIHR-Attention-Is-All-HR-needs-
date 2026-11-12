@@ -20,10 +20,10 @@ from aihr.contracts import (
 )
 from aihr.ingest import load_document
 from aihr.llm import LLMClient
-from aihr.match import apply_rules, match_vacancy
+from aihr.match import apply_rules
+from aihr.match.pass_a import pass_a
 from aihr.normalize import enrich_profile, find_terms
 from aihr.privacy import PrivacyContext, mask_document
-from aihr.retrieve import Retriever
 from tests.conftest import FakeOpenAI
 
 RESUME = """Опыт работы
@@ -100,9 +100,7 @@ def _v(rid: str, status: str, ids: list[str], **kw) -> dict:
 def _run(reqs, profile, resume, verdicts):
     fake = FakeOpenAI([json.dumps({"verdicts": verdicts}, ensure_ascii=False)])
     s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m")  # type: ignore[call-arg]
-    out = match_vacancy(
-        reqs, profile, resume, Retriever(resume, embeddings=False), LLMClient(s, client=fake)
-    )
+    out = pass_a(reqs, profile, resume, LLMClient(s, client=fake))
     return {v.requirement_id: v for v in out}, fake
 
 
@@ -195,9 +193,7 @@ def test_batches_long_vacancy(resume, profile) -> None:
     second = [_v(f"V1.req{i}", "not_stated", []) for i in range(21, 26)]
     fake = FakeOpenAI([json.dumps({"verdicts": first}), json.dumps({"verdicts": second})])
     s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m")  # type: ignore[call-arg]
-    out = match_vacancy(
-        reqs, profile, resume, Retriever(resume, embeddings=False), LLMClient(s, client=fake)
-    )
+    out = pass_a(reqs, profile, resume, LLMClient(s, client=fake))
     assert len(fake.completions.calls) == 2 and len(out) == 25
     assert all(v.status == Status.not_stated for v in out)
 
