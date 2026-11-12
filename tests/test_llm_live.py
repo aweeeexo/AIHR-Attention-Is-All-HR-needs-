@@ -71,7 +71,7 @@ def test_fragment_ids_are_real(live_llm: LLMClient, name: str) -> None:
 @pytest.mark.parametrize(
     "name", sorted(p.name for p in (REPO_ROOT / "data" / "case").glob("*резюме*.docx"))
 )
-def test_case_resume_outbound_log_is_clean(live_llm: LLMClient, name: str, tmp_path) -> None:  # noqa: ANN001
+def test_case_resume_outbound_log_is_clean(live_llm: LLMClient, name: str, tmp_path) -> None:
     """Главный тест T02 вживую: замаскированное резюме кейса уходит в LLM, журнал без ПДн."""
     import re
 
