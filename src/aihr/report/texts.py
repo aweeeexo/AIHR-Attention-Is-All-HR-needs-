@@ -30,6 +30,59 @@ def _short(text: str, n: int = 80) -> str:
     return text if len(text) <= n else text[: n - 1].rstrip() + "…"
 
 
+def none_fits(ranking: Ranking | None) -> bool:
+    return bool(ranking and ranking.items) and all(
+        s.label == FitLabel.not_fit
+        for s in ranking.items  # type: ignore[union-attr]
+    )
+
+
+def closest_other(score: VacancyScore, ranking: Ranking | None) -> VacancyScore | None:
+    """Ближайшая по баллу другая вакансия — когда прямо не подходит ни одна (D35)."""
+    if ranking is None:
+        return None
+    return next((s for s in ranking.items if s.vacancy_id != score.vacancy_id), None)
+
+
+def manager_summary(
+    score: VacancyScore,
+    reqs: list[Requirement],
+    verdicts: dict[str, Verdict],
+    strength: str | None,
+    ranking: Ranking | None,
+) -> str:
+    """2–3 предложения для нанимающего менеджера, без HR-терминов (D36)."""
+    must = score.must
+    verdict_word = {
+        FitLabel.fits: "Кандидат подходит",
+        FitLabel.fits_with_caveats: "Кандидат подходит с оговорками",
+        FitLabel.not_fit: "Кандидат не подходит",
+    }[score.label]
+    parts = [
+        f"{verdict_word}: из {must.total} обязательных требований подтверждено {must.match}"
+        + (f", частично — {must.partial}" if must.partial else "")
+        + "."
+    ]
+    unconfirmed = [
+        _short(r.text, 60)
+        for r in reqs
+        if r.modality == Modality.must
+        and r.verifiable
+        and (v := verdicts.get(r.id))
+        and v.status in (Status.mismatch, Status.not_stated)
+    ]
+    if unconfirmed:
+        parts.append("Не подтверждено: " + "; ".join(unconfirmed[:3]) + ".")
+    if strength:
+        parts.append(f"Главное в пользу кандидата: {_short(strength, 120)}.")
+    if none_fits(ranking):
+        parts.append(
+            "Прямо не подходит ни одна из открытых вакансий — см. итог рейтинга, там "
+            "вакансии, куда кандидат мог бы подойти косвенно."
+        )
+    return " ".join(parts)
+
+
 def better_alternative(score: VacancyScore, ranking: Ranking | None) -> VacancyScore | None:
     """Другая вакансия из рейтинга с меткой лучше — предложить её при отказе."""
     if ranking is None:
@@ -68,16 +121,32 @@ def recommendation(
         step = "Следующий шаг: пригласить на интервью."
     elif score.label == FitLabel.fits_with_caveats:
         n = len(questions)
-        step = f"Следующий шаг: короткий звонок, чтобы уточнить {n} {_questions_word(n)}." if n \
-            else "Следующий шаг: короткий звонок для уточнения деталей."  # fmt: skip
+        step = (
+            f"Следующий шаг: короткий звонок, чтобы уточнить {n} {_questions_word(n)}."
+            if n
+            else "Следующий шаг: короткий звонок для уточнения деталей."
+        )
     else:
         alt = better_alternative(score, ranking)
-        step = (
-            f"Следующий шаг: предложить вакансию «{alt.title or alt.vacancy_id}» — по ней метка "
-            f"«{LABEL_RU[alt.label]}»."
-            if alt
-            else "Следующий шаг: вежливый отказ с обратной связью."
-        )
+        closest = closest_other(score, ranking) if none_fits(ranking) else None
+        if alt:
+            step = (
+                f"Следующий шаг: предложить вакансию «{alt.title or alt.vacancy_id}» — по ней "
+                f"метка «{LABEL_RU[alt.label]}»."
+            )
+        elif closest and closest.score > score.score:
+            step = (
+                "Прямо не подходит ни одна вакансия. Следующий шаг: обсудить с кандидатом "
+                f"ближайшую — «{closest.title or closest.vacancy_id}» (балл {closest.score:g}), "
+                "что можно закрыть обучением, или вежливый отказ."
+            )
+        elif none_fits(ranking):
+            step = (
+                "Прямо не подходит ни одна вакансия; эта — ближайшая из открытых. Следующий шаг: "
+                "обсудить с кандидатом, что можно закрыть обучением, или вежливый отказ."
+            )
+        else:
+            step = "Следующий шаг: вежливый отказ с обратной связью."
     return f"{head}{detail} {step}"
 
 
@@ -125,10 +194,15 @@ def candidate_message(
     ]
     if unconfirmed:
         lines += [""] + [f"— {u}" for u in unconfirmed[:3]]
-        lines += ["", "Если у вас есть такой опыт, но он не попал в резюме, напишите нам — мы "
-                      "вернёмся к вашей кандидатуре."]  # fmt: skip
-    alt = better_alternative(score, ranking)
-    if alt:
+        lines += [
+            "",
+            "Если у вас есть такой опыт, но он не попал в резюме, напишите нам — мы "
+            "вернёмся к вашей кандидатуре.",
+        ]
+    alt = better_alternative(score, ranking) or (
+        closest_other(score, ranking) if none_fits(ranking) else None
+    )
+    if alt and alt.score > score.score:
         lines += ["", f"Возможно, вам будет интересна вакансия «{alt.title or alt.vacancy_id}»."]
     lines += ["", "С уважением, команда подбора"]
     return "\n".join(lines)

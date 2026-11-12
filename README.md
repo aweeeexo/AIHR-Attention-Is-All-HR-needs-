@@ -264,7 +264,7 @@ flowchart LR
 
 | Метод | Путь | Что делает |
 |---|---|---|
-| GET | `/health` | `{"status": "ok", "llm": "configured" \| "none", "contracts_version": 1}` |
+| GET | `/health` | `{"status": "ok", "llm": "configured" \| "none", "contracts_version": 2}` |
 | POST | `/match` | multipart: `resume` (один файл), `vacancies` (несколько) → `MatchResult` |
 | POST | `/match/example` | прогон на `data/case/` → `MatchResult`; `?resume=<часть имени>` выбирает резюме |
 | GET | `/example/files` | файлы примера |

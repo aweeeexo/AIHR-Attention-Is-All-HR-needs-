@@ -46,6 +46,7 @@ from aihr.privacy.outbound import OutboundLog
 from aihr.report import build_report
 from aihr.retrieve import Retriever
 from aihr.score import rank, score_vacancy
+from aihr.score.summary import ranking_summary
 
 log = logging.getLogger(__name__)
 
@@ -260,6 +261,10 @@ def run(
     # 5. Рейтинг считает код (D11)
     with t.step("rank"):
         ranking = rank(list(scores.values())) if resume_doc is not None else None
+        if ranking is not None:  # итог: лучшая вакансия или «прямо не подходит ни одна» (D35)
+            ranking = ranking.model_copy(
+                update={"summary": ranking_summary(ranking, requirements, verdicts)}
+            )
 
     # 6. Отчёт
     def report(vac: Document) -> Report | str:

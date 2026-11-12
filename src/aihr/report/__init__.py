@@ -50,17 +50,21 @@ def build_report(
     stats = generated.EntityStats()
     questions = generated.questions(reqs, by_req, generated.listed_only_terms(profile), llm, stats)
     beyond = generated.beyond_requirements(reqs, by_req, resume, llm, stats)
+    strengths = sections.strengths(reqs, by_req, profile)
 
     return Report(
         vacancy_id=vacancy.id,
         rows=rows,
-        strengths=sections.strengths(reqs, by_req, profile),
+        strengths=strengths,
         gaps=sections.gaps(reqs, by_req),
         risks=sections.risks(reqs, by_req, profile, get_settings().today_ym()),
         questions=questions,
         beyond_requirements=beyond,
         recruiter_recommendation=texts.recommendation(score, reqs, by_req, questions, ranking),
         candidate_message=texts.candidate_message(score, reqs, by_req, questions, ranking),
+        summary=texts.manager_summary(
+            score, reqs, by_req, strengths[0].text if strengths else None, ranking
+        ),
         verification=VerificationStats(
             quotes_total=quotes_total,
             quotes_verified=quotes_verified,

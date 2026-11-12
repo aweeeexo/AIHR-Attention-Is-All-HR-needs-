@@ -224,6 +224,8 @@ def _show_ranking(result: dict[str, Any]) -> None:
                 f"{must['not_stated'] + nice['not_stated']}"
             )
             left.write(s["explanation"])
+    if ranking.get("summary"):
+        st.info(ranking["summary"])
     for line in ranking.get("comparison", []):
         st.caption(line)
     with st.expander("Как посчитано"):
@@ -235,6 +237,22 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
     if report is None:
         st.info("Для этой вакансии отчёт не собран.")
         return
+    if report.get("summary"):
+        st.markdown(f"**Вывод:** {report['summary']}")
+    try:
+        docx_bytes = httpx.get(
+            f"{API_URL}/runs/{result['run_id']}/report/{vacancy_id}.docx", timeout=30
+        ).content
+    except httpx.HTTPError:
+        docx_bytes = None
+    if docx_bytes:
+        st.download_button(
+            "Скачать отчёт (DOCX)",
+            docx_bytes,
+            file_name=f"aihr_{result['run_id']}_{vacancy_id}.docx",
+            mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            key=f"docx_{vacancy_id}",
+        )
     tabs = st.tabs(["Требования", "Профиль кандидата", "Требования вакансии", "Отчёт"])
     with tabs[0]:
         table = requirement_rows(report)

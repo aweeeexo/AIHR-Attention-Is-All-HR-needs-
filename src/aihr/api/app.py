@@ -7,7 +7,7 @@ import logging
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import FastAPI, File, HTTPException, Query, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
 
 from aihr import __version__
@@ -95,6 +95,25 @@ def get_run(run_id: str) -> MatchResult:
     if not path.is_file():
         raise HTTPException(404, "Результат прогона не найден")
     return MatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+@app.get("/runs/{run_id}/report/{vacancy_id}.docx")
+def get_report_docx(run_id: str, vacancy_id: str) -> Response:
+    """Отчёт по вакансии файлом DOCX — для отправки заказчику (D37)."""
+    from aihr.report.export import report_docx
+
+    path = _run_dir(run_id) / "result.json"
+    if not path.is_file():
+        raise HTTPException(404, "Результат прогона не найден")
+    result = MatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+    if vacancy_id not in result.reports:
+        raise HTTPException(404, "Отчёта по этой вакансии нет")
+    filename = f"aihr_{run_id}_{vacancy_id}.docx"
+    return Response(
+        report_docx(result, vacancy_id),
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        headers={"Content-Disposition": f'attachment; filename="{filename}"'},
+    )
 
 
 @app.get("/runs/{run_id}/outbound")

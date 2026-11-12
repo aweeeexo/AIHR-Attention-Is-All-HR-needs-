@@ -1,6 +1,6 @@
-# Контракты v1
+# Контракты v2
 
-Это текст `src/aihr/contracts.py` версии 1. Перенесён в код в задаче T00 (отличия только в форматировании комментариев). Теперь правда — в коде, этот файл обновляем вместе с ним.
+Это текст `src/aihr/contracts.py` версии 2 (v2, 12.11: `Ranking.summary` — D35, `Report.summary` — D36; оба со значением по умолчанию, результаты v1 читаются). Перенесён в код в задаче T00 (отличия только в форматировании комментариев). Теперь правда — в коде, этот файл обновляем вместе с ним.
 
 Изменения — только по согласию обоих: PR с меткой `contracts` и увеличением `CONTRACTS_VERSION`.
 
@@ -25,7 +25,7 @@ from enum import StrEnum
 from typing import Literal
 from pydantic import BaseModel, Field
 
-CONTRACTS_VERSION = 1
+CONTRACTS_VERSION = 2
 
 
 # ---------- 1. Вход ----------
@@ -296,6 +296,7 @@ class Ranking(BaseModel):
     best_vacancy_id: str | None
     comparison: list[str]        # «V1 выше V3 на 31 пункт: ...» — шаблоном
     formula: str                 # человекочитаемая формула и веса из конфига
+    summary: str = ""            # итог: «прямо не подходит ни одна» + косвенные варианты (D35)
 
 
 # ---------- 5. Отчёт ----------
@@ -344,6 +345,7 @@ class Report(BaseModel):
     recruiter_recommendation: str
     candidate_message: str
     verification: VerificationStats
+    summary: str = ""              # вывод для нанимающего менеджера сверху отчёта (D36)
 
 
 # ---------- 6. Итог прогона ----------

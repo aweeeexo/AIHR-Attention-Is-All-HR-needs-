@@ -11,7 +11,7 @@ from typing import Literal
 
 from pydantic import BaseModel, Field
 
-CONTRACTS_VERSION = 1
+CONTRACTS_VERSION = 2
 
 
 # ---------- 1. Вход ----------
@@ -289,6 +289,7 @@ class Ranking(BaseModel):
     best_vacancy_id: str | None
     comparison: list[str]  # «V1 выше V3 на 31 пункт: ...» — шаблоном
     formula: str  # человекочитаемая формула и веса из конфига
+    summary: str = ""  # итог рейтинга; «прямо не подходит ни одна» + косвенные варианты (D35, v2)
 
 
 # ---------- 5. Отчёт ----------
@@ -338,6 +339,7 @@ class Report(BaseModel):
     recruiter_recommendation: str
     candidate_message: str
     verification: VerificationStats
+    summary: str = ""  # вывод для нанимающего менеджера сверху отчёта (D36, v2)
 
 
 # ---------- 6. Итог прогона ----------
