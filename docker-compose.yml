@@ -13,6 +13,9 @@ x-app: &app
   env_file:
     - path: .env
       required: false   # без .env поднимется в режиме без LLM
+  extra_hosts:
+    # LLM-сервер на самой машине (не в Docker): LLM_BASE_URL=http://host.docker.internal:<порт>/v1
+    - "host.docker.internal:host-gateway"
 
 services:
   api:

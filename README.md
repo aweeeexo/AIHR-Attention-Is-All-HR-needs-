@@ -127,6 +127,10 @@ Python 3.12, все версии закреплены в [`pyproject.toml`](pypr
 LLM_PROVIDER=none docker compose up --build
 ```
 
+### LLM-сервер на этой же машине
+
+Если OpenAI-совместимый сервер запущен на хосте, а не в Docker (Ollama, LM Studio, прокси), из контейнера он доступен как `host.docker.internal`: `LLM_BASE_URL=http://host.docker.internal:11434/v1`. В Docker Desktop (Windows, macOS) этого достаточно. В Linux сервер должен слушать не только `127.0.0.1` (например, `OLLAMA_HOST=0.0.0.0`). Без Docker (`uv run`) используйте `http://localhost:<порт>/v1`.
+
 ### Локальная LLM: профиль local
 
 Модель в соседнем контейнере (Ollama), наружу не уходит ничего:
