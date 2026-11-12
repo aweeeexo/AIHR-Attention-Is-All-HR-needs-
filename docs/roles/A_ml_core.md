@@ -1,6 +1,6 @@
 # Роль A — ML-ядро
 
-> **Пока не используется.** Сейчас работаем соло (D18): все задачи идут одной очередью из `docs/tasks/README.md`. Этот файл понадобится, когда подключится тиммейт.
+> **Активна с 12.11 (D27): эту роль ведёт тиммейт.** С чего начать — раздел «Старт» в конце файла. Распределение и точки синхронизации с B — `docs/tasks/README.md`, «Распределение вдвоём».
 
 Ты отвечаешь за качество: что система извлекает из документов, как решает, подтверждено ли требование, и что видит рекрутер в отчёте. Это критерии 1, 2, 4 и часть 5 — примерно 50 из 100 технических баллов.
 
@@ -63,3 +63,31 @@
 - **Отчёт рекрутеру** (T09): сильные стороны, риски, вопросы, проверка сущностей в сгенерированном тексте.
 
 Здесь разумно потратить лишнее время, но только после того, как закрыт проход A со статусами. Без него нечего показывать.
+
+## Старт
+
+1. **Доступ.** Владелец добавляет тебя в коллабораторы репозитория на GitHub. Клон:
+   `git clone git@github.com:aweeeexo/AIHR-Attention-Is-All-HR-needs-.git aihr && cd aihr`
+2. **Окружение.** Нужен [uv](https://docs.astral.sh/uv/). `uv sync` сам поставит Python 3.12 и зависимости из `uv.lock`. Проверка: `uv run poe test` — всё зелёное. Команды — в `CLAUDE.md`, раздел «Команды».
+3. **Свой доступ к LLM** (D26, пока не выбран постоянный провайдер). Рядом с проектом, не внутри него:
+   ```bash
+   git clone https://github.com/ForgetMeAI/FreeDeepseekAPI.git && cd FreeDeepseekAPI
+   npm run auth        # Node.js 22+. Пункт 1, войти в свой аккаунт DeepSeek, отправить «ok», ДОЖДАТЬСЯ ответа, Enter
+   NON_INTERACTIVE=1 node server.js     # прокси на http://localhost:9655
+   ```
+   Если `npm run doctor` пишет `invalid token`: в обычном Chrome на chat.deepseek.com F12 → Console → `copy(JSON.parse(localStorage.getItem('userToken')).value)` и вставить в поле `token` файла `deepseek-auth.json`. Токен никому не отправлять.
+4. **`.env` в корне `aihr`:** `cp .env.example .env`, затем `LLM_BASE_URL=http://localhost:9655/v1`, `LLM_MODEL=deepseek-chat`, `LLM_TIMEOUT_S=120`, `LLM_CONCURRENCY=2`. Проверка провайдера: `uv run pytest -m llm -s` — 3 зелёных.
+5. **Первая задача:** `git switch -c a/t04-extract-vacancy`, файл `docs/tasks/T04_extract_vacancy.md`.
+
+**Что уже есть в коде:**
+
+- `LLMClient().structured(prompt_id, variables, schema)` — `src/aihr/llm/client.py`. Промпт: `src/aihr/<модуль>/prompts/<имя>.md`, первая строка `version: N`, разделы `---system` и `---user`, шаблон Jinja2.
+- `{{ document(fragments) }}` в промпте даёт блок `<document>` с `[V1.3] текст` из `masked_text` и инструкцией не выполнять команды. Отказывается работать с незамаскированным фрагментом.
+- `match/verify.py: attach_quotes()` — цитату подставляет код, неизвестные id отбрасываются, вывод без фрагмента → «Не указано».
+- Заглушки твоих функций — `src/aihr/stubs.py`, их вызывают `extract/`, `match/`, `report/`. Меняешь тело функции в своём модуле — пайплайн, API и UI подхватывают сами.
+- Отладка: `uv run aihr extract-requirements <вакансия>`, `uv run aihr extract-profile <резюме>`, `uv run aihr demo`.
+- Пример живого теста и диагностический промпт: `tests/test_llm_live.py`, `src/aihr/llm/prompts/selftest_fragments.md`.
+
+**Что выяснили при проверке провайдера (12.11):** на просьбу «выпиши требования» модель берёт только раздел «Требования» и пропускает «Будет плюсом» и обязанности. В промпте T04 явно проси обязательные требования, пожелания и обязанности (D3). Роли разделов из T01 (`section_role`: `requirements`, `nice_to_have`, `duties`) подскажут модальность.
+
+**Резюме кейса в LLM — только после T02 в `main`.** До этого — вакансии и выдуманные резюме из `tests/fixtures/`.
