@@ -1,0 +1,12 @@
+{
+  "title": "Сильное совпадение",
+  "description": "Резюме frontend-разработчика из кейса против трёх вакансий кейса: первой в рейтинге должна оказаться вакансия frontend-разработчика, у неё больше закрытых обязательных требований, чем у остальных.",
+  "resume": "data/case/Семенов Алексей _резюме 3.docx",
+  "vacancies": ["data/case/Вакансия 1.docx", "data/case/Вакансия 2.docx", "data/case/Вакансия 3.docx"],
+  "expect": {
+    "ranked": 3,
+    "best_vacancy_file": "Вакансия 1.docx",
+    "best_has_most_must_matched": true,
+    "no_errors": true
+  }
+}

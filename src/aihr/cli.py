@@ -9,11 +9,11 @@ from typing import Annotated
 
 import typer
 
-from aihr import extract, fallback
+from aihr import extract, fallback, usecases
 from aihr.config import get_settings, setup_logging
-from aihr.contracts import DocKind, Document, IngestFailure, MatchResult, Status
+from aihr.contracts import DocKind, Document, IngestFailure, MatchResult
 from aihr.ingest import load_document
-from aihr.inputs import case_files, collect_vacancies, read_files
+from aihr.inputs import collect_vacancies, read_files
 from aihr.llm import LLMClient
 from aihr.pipeline import run
 from aihr.privacy import PrivacyContext, mask_document
@@ -119,52 +119,47 @@ def extract_profile_cmd(
 
 
 def check_result(result: MatchResult, expected_vacancies: int) -> list[tuple[str, bool]]:
-    """Инварианты, которые обязан соблюдать любой результат."""
-    checks: list[tuple[str, bool]] = []
-    restored = MatchResult.model_validate_json(result.model_dump_json())
-    checks.append(("MatchResult проходит схему туда и обратно", restored == result))
-    checks.append(("резюме загружено", result.resume is not None))
-    ranked = len(result.ranking.items) if result.ranking else 0
-    checks.append((f"в рейтинге {expected_vacancies} вакансий", ranked == expected_vacancies))
-    checks.append(("нет ошибок загрузки", not result.errors))
+    """Инварианты результата + ожидаемое число вакансий в рейтинге и отсутствие ошибок."""
+    expect = {"ranked": expected_vacancies, "no_errors": True}
+    return usecases.invariants(result) + usecases.expectations(result, expect)
 
-    frag_text = {f.id: f.text for f in result.resume.fragments} if result.resume else {}
-    quotes_ok = True
-    stated_have_evidence = True
-    for verdicts in result.verdicts.values():
-        for v in verdicts:
-            if v.status != Status.not_stated and not v.evidence:
-                stated_have_evidence = False
-            for ev in v.evidence:
-                quotes_ok &= frag_text.get(ev.fragment_id) == ev.quote
-    checks.append(("каждая цитата совпадает с фрагментом резюме", quotes_ok))
-    checks.append(("вывод без фрагмента только «Не указано»", stated_have_evidence))
-    checks.append(
-        ("отчёт для каждой вакансии в рейтинге", set(result.reports) == set(result.verdicts))
-    )
-    return checks
+
+def _print_checks(checks: list[tuple[str, bool]]) -> bool:
+    for name, ok in checks:
+        typer.echo(f"  [{'ok' if ok else 'FAIL'}] {name}")
+    return all(ok for _, ok in checks)
 
 
 @app.command()
 def demo(
-    resume: Annotated[
-        str | None, typer.Option(help="Часть имени резюме из примера; по умолчанию первое")
+    case: Annotated[
+        str | None, typer.Option(help="Только этот use case из examples/ (имя папки)")
     ] = None,
+    save: Annotated[
+        bool, typer.Option("--save", help="Записать examples/<case>/result.md — пример результата")
+    ] = False,
+    examples: Annotated[Path, typer.Option(help="Папка с use cases")] = Path("examples"),
 ) -> None:
-    """Прогон примера из кейса и проверка результата по схеме."""
-    settings = get_settings()
-    resumes, vacancies = case_files(settings.case_dir)
-    if resume:
-        resumes = [p for p in resumes if resume.lower() in p.name.lower()]
-    if not resumes or not vacancies:
-        typer.echo(f"В {settings.case_dir} нет резюме или вакансий примера.", err=True)
+    """Прогон use cases из examples/ и проверка результата: схема, цитаты, ожидания."""
+    root = Path.cwd()
+    cases = usecases.load_cases(examples, root) if examples.is_dir() else []
+    if case:
+        cases = [c for c in cases if c.name == case]
+    if not cases:
+        typer.echo(f"В {examples} нет use cases (папки с case.json).", err=True)
         raise typer.Exit(2)
-    result = run(read_files(resumes[:1])[0], read_files(vacancies))
-    typer.echo(summary(result))
-    checks = check_result(result, len(vacancies))
-    for name, ok in checks:
-        typer.echo(f"  [{'ok' if ok else 'FAIL'}] {name}")
-    if not all(ok for _, ok in checks):
+    all_ok = True
+    for uc in cases:
+        typer.echo(f"\n== {uc.name}: {uc.title}")
+        result, checks = usecases.run_case(uc)
+        typer.echo(summary(result))
+        all_ok &= _print_checks(checks)
+        if save:
+            out = examples / uc.name / "result.md"
+            out.write_text(usecases.summary_markdown(uc, result), encoding="utf-8", newline="\n")
+            typer.echo(f"  записано: {out}")
+    if not all_ok:
+        typer.echo("demo: есть проваленные проверки")
         raise typer.Exit(1)
     typer.echo("demo: всё в порядке")
 

@@ -1,0 +1,10 @@
+{
+  "title": "Плохой файл",
+  "description": "В наборе вакансий один битый docx: по нему код ошибки E_CORRUPTED с понятным сообщением, рейтинг строится по двум оставшимся вакансиям.",
+  "resume": "data/case/Петрова Лилия_резюме 4.docx",
+  "vacancies": ["data/case/Вакансия 2.docx", "examples/uc3_bad_file/broken.docx", "data/case/Вакансия 3.docx"],
+  "expect": {
+    "ranked": 2,
+    "errors": [{"filename": "broken.docx", "code": "E_CORRUPTED"}]
+  }
+}

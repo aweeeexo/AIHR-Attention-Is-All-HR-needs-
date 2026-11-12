@@ -33,6 +33,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync --frozen --no-editable
 COPY config ./config
 COPY data/case ./data/case
+COPY examples ./examples
 COPY scripts ./scripts
 COPY tests ./tests
 COPY ui ./ui
@@ -53,6 +54,7 @@ COPY --from=builder /app/.venv /app/.venv
 COPY config ./config
 COPY ui ./ui
 COPY data/case ./data/case
+COPY examples ./examples
 
 # Модели — на этапе сборки, а не при первом запросе
 RUN python -m aihr.warmup \
