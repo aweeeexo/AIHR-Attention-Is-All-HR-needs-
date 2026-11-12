@@ -84,7 +84,12 @@ class _Run:
         self.mode: Literal["llm", "fallback"] = "llm" if llm.available else "fallback"
         self.warnings: list[str] = []
         self._lock = threading.Lock()
-        if settings.llm_provider == "openai_compatible" and not llm.available:
+        if settings.llm_provider == "none":
+            self.warnings.append(
+                "Режим без LLM (LLM_PROVIDER=none): требования и сопоставление — по правилам и "
+                "совпадению терминов, результат упрощённый."
+            )
+        elif not llm.available:
             self.warnings.append(
                 "LLM не настроена (нет LLM_BASE_URL или LLM_MODEL): работаем в режиме без LLM."
             )

@@ -13,14 +13,15 @@ def _run(*vacancies: tuple[bytes, str], **kw: object) -> MatchResult:
     return pipeline.run(fixture_file("resume_cook.txt"), list(vacancies), **kw)  # type: ignore[arg-type]
 
 
-def test_end_to_end_on_stubs() -> None:
+def test_end_to_end_without_llm() -> None:
     r = _run(fixture_file("vacancy_cook.txt"), fixture_file("vacancy_welder.txt"))
     assert r.mode == "fallback"  # LLM не настроена
     assert [v.id for v in r.vacancies] == ["V1", "V2"]
     assert r.ranking and len(r.ranking.items) == 2
     assert set(r.reports) == {"V1", "V2"}
     for verdicts in r.verdicts.values():
-        assert {v.status for v in verdicts} == set(Status)  # заглушка: по одному каждого статуса
+        assert verdicts  # режим без LLM (T11): правила и совпадение терминов
+        assert all(v.computed for v in verdicts if v.status == Status.mismatch)
         assert all(v.decided_by == "fallback" for v in verdicts)
     assert {"ingest", "mask", "match", "score", "report", "total"} <= set(r.timings_ms)
 
