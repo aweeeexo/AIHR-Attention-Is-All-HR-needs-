@@ -105,9 +105,19 @@ class EchoRequirementsLLM:
 
     def create(self, **kwargs: Any) -> Any:
         import json
+        import re
 
         self.calls.append(kwargs)
         user = kwargs["messages"][1]["content"]
+        req_ids = re.findall(r"^\[(V\d+\.req\d+)\] \(", user, re.MULTILINE)
+        if req_ids:  # проход A: «Не указано» по каждому требованию
+            verdicts = [
+                {"requirement_id": rid, "reasoning": "заглушка", "status": "not_stated",
+                 "comment": "заглушка"}
+                for rid in req_ids
+            ]  # fmt: skip
+            message = SimpleNamespace(content=json.dumps({"verdicts": verdicts}))
+            return SimpleNamespace(choices=[SimpleNamespace(message=message)])
         items = [
             {"text": m["text"][:150], "kind": "duty" if m["role"] == "Обязанности" else "skill",
              "modality_reason": f"раздел {m['role']}", "modality": self._ROLES[m["role"]],
