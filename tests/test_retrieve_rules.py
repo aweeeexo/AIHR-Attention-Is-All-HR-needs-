@@ -237,3 +237,16 @@ def test_language_not_mentioned_stays_not_stated() -> None:
         apply_rules(req, _verdict(Status.not_stated), _profile(languages=[lang])).status
         == Status.not_stated
     )
+
+
+def test_tokens_are_thread_safe() -> None:
+    """Регрессия: общий стеммер snowball ломался при параллельной обработке вакансий."""
+    from concurrent.futures import ThreadPoolExecutor
+
+    texts = [
+        f"developing interfaces responsibilities requirements {i} разработка" for i in range(400)
+    ]
+    expected = [tokens(t) for t in texts]
+    with ThreadPoolExecutor(max_workers=8) as pool:
+        for _ in range(5):
+            assert list(pool.map(tokens, texts)) == expected

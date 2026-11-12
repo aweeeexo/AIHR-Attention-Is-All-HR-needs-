@@ -11,6 +11,7 @@ from __future__ import annotations
 
 import logging
 import re
+import threading
 from collections.abc import Callable, Sequence
 from functools import lru_cache
 from typing import Any
@@ -43,8 +44,17 @@ _STOP |= _words(
     хорошая понимание готовность требуется требования обязательно желательно лет год года
     experience knowledge skills skill years year ability good strong"""
 )
-_stem_ru = snowballstemmer.stemmer("russian")
-_stem_en = snowballstemmer.stemmer("english")
+# Стеммеры snowball хранят состояние внутри объекта и не потокобезопасны, а вакансии
+# считаются параллельно (T03): у каждого потока свои экземпляры
+_local = threading.local()
+
+
+def _stemmers() -> tuple[Any, Any]:
+    if not hasattr(_local, "ru"):
+        _local.ru = snowballstemmer.stemmer("russian")
+        _local.en = snowballstemmer.stemmer("english")
+    return _local.ru, _local.en
+
 
 # Где искать подтверждение требования данного типа
 _ROLES: dict[ReqKind, list[str]] = {
@@ -63,10 +73,11 @@ def roles_for(kind: ReqKind) -> list[str] | None:
 
 
 def _stem(word: str) -> str:
+    ru, en = _stemmers()
     if re.fullmatch(r"[а-яё]+", word):
-        return _stem_ru.stemWord(word)
+        return ru.stemWord(word)
     if re.fullmatch(r"[a-z]+", word):
-        return _stem_en.stemWord(word)
+        return en.stemWord(word)
     return word  # «1с», «c++», «9001» — как есть
 
 
