@@ -13,6 +13,7 @@ from fastapi.concurrency import run_in_threadpool
 from aihr import __version__
 from aihr.config import get_settings, setup_logging
 from aihr.contracts import CONTRACTS_VERSION, MatchResult
+from aihr.ingest import fix_filename
 from aihr.inputs import case_files, read_files
 from aihr.pipeline import RUN_ID_RE, run
 
@@ -40,7 +41,7 @@ def health() -> dict[str, Any]:
 async def _read(upload: UploadFile, limit: int) -> tuple[bytes, str]:
     # Читаем на байт больше лимита: ingest вернёт E_TOO_LARGE, весь файл в память не берём
     data = await upload.read(limit + 1)
-    return data, upload.filename or "без имени"
+    return data, fix_filename(upload.filename or "без имени")
 
 
 @app.post("/match", response_model=MatchResult)

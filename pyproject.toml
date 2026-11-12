@@ -23,6 +23,7 @@ dependencies = [
     "setuptools==80.10.2",
     "snowballstemmer==3.1.1",
     "streamlit==1.67.0",
+    "striprtf==0.0.35",
     "typer==0.29.1",
     "uvicorn==0.54.0",
 ]
