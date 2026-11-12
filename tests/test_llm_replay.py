@@ -64,3 +64,34 @@ def test_bad_llm_output_on_profile_does_not_crash_run(llm_settings: Settings) ->
     )
     assert result.profile is not None and result.ranking is not None
     assert any("не прошёл проверку схемы" in w for w in result.warnings)
+
+
+def test_single_llm_failure_keeps_llm_mode(llm_settings: Settings) -> None:
+    """Один сбой LLM — только этот шаг без LLM, прогон остаётся в режиме LLM."""
+    import httpx
+    import openai
+
+    from tests.conftest import EchoRequirementsLLM
+
+    echo = EchoRequirementsLLM()
+    calls = {"n": 0}
+    original = echo.create
+
+    def flaky(**kwargs):
+        calls["n"] += 1
+        if calls["n"] == 1:  # профиль кандидата
+            raise openai.APITimeoutError(request=httpx.Request("POST", "http://x/v1"))
+        return original(**kwargs)
+
+    echo.create = flaky
+    s = llm_settings.model_copy(update={"llm_max_retries": 0})
+    result = run(
+        fixture_file("resume_cook.txt"),
+        [fixture_file("vacancy_cook.txt")],
+        settings=s,
+        llm=LLMClient(s, client=echo),
+        save=False,
+    )
+    assert result.mode == "llm"
+    assert any("на одном шаге" in w for w in result.warnings)
+    assert calls["n"] > 1  # дальше шли запросы к LLM

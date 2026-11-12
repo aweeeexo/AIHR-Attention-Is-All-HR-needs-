@@ -51,6 +51,8 @@ from aihr.score.summary import ranking_summary
 
 log = logging.getLogger(__name__)
 
+MAX_LLM_FAILURES = 2  # сколько сбоев LLM терпим, прежде чем весь прогон пойдёт без неё
+
 RUN_ID_RE = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 
 T = TypeVar("T")
@@ -85,6 +87,7 @@ class _Run:
         self.llm = llm
         self.mode: Literal["llm", "fallback"] = "llm" if llm.available else "fallback"
         self.warnings: list[str] = []
+        self.llm_failures = 0
         self._lock = threading.Lock()
         if settings.llm_provider == "none":
             self.warnings.append(
@@ -116,12 +119,19 @@ class _Run:
                 log.warning("невалидный ответ LLM: %s", exc)
                 return without_llm()
             except LLMUnavailable as exc:
+                # Первый сбой — только этот шаг без LLM (у провайдеров бывают единичные таймауты),
+                # второй — дальше весь прогон без LLM, чтобы не ждать таймаут на каждом шаге
                 with self._lock:
-                    switched = self.mode == "llm"
-                    self.mode = "fallback"
+                    self.llm_failures += 1
+                    switched = self.mode == "llm" and self.llm_failures >= MAX_LLM_FAILURES
+                    if switched:
+                        self.mode = "fallback"
                 if switched:
                     self.warn(f"LLM недоступна ({exc}): дальше режим без LLM.")
-                log.warning("LLM недоступна, переход в режим без LLM: %s", exc)
+                    log.warning("LLM недоступна, переход в режим без LLM: %s", exc)
+                else:
+                    self.warn(f"LLM не ответила на одном шаге ({exc}): этот шаг посчитан без LLM.")
+                    log.warning("LLM не ответила, шаг без LLM: %s", exc)
         return without_llm()
 
 

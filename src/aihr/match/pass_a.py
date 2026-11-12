@@ -20,6 +20,7 @@ from aihr.contracts import (
     Evidence,
     EvidenceType,
     Fragment,
+    LLMUnavailable,
     Modality,
     ReqKind,
     Requirement,
@@ -35,7 +36,7 @@ from aihr.normalize.tenure import format_months
 log = logging.getLogger(__name__)
 
 PROMPT_ID = "match/pass_a"
-BATCH = 20  # требований в одном вызове; длинные вакансии идут пачками
+BATCH = 10  # требований в одном вызове: длинный ответ у части провайдеров упирается в таймаут
 MAX_COMMENT = 250
 
 ROLE_RU = {
@@ -173,15 +174,33 @@ def pass_a(
     by_id: dict[str, PassAVerdict] = {}
     fragments = _for_prompt(resume.fragments)
     summary = profile_summary(profile)
-    for start in range(0, len(reqs), BATCH):
-        batch = reqs[start : start + BATCH]
-        result = llm.structured(
-            PROMPT_ID,
-            {"profile": summary, "requirements": requirements_block(batch), "fragments": fragments},
-            PassAResult,
-        )
+
+    def ask(batch: list[Requirement]) -> None:
+        try:
+            result = llm.structured(
+                PROMPT_ID,
+                {
+                    "profile": summary,
+                    "requirements": requirements_block(batch),
+                    "fragments": fragments,
+                },
+                PassAResult,
+            )
+        except LLMUnavailable as exc:
+            # Провайдер не успел выдать длинный ответ — делим пачку пополам. Сеть или ключ
+            # (не таймаут) так не лечатся: пробрасываем сразу
+            if len(batch) < 2 or "Timeout" not in str(exc):
+                raise
+            log.info("проход A: таймаут на %d требованиях, делим пачку", len(batch))
+            half = len(batch) // 2
+            ask(batch[:half])
+            ask(batch[half:])
+            return
         wanted = {r.id for r in batch}
         for v in result.verdicts:
             if v.requirement_id in wanted and v.requirement_id not in by_id:
                 by_id[v.requirement_id] = v
+
+    for start in range(0, len(reqs), BATCH):
+        ask(reqs[start : start + BATCH])
     return [gate(req, by_id.get(req.id), resume) for req in reqs]

@@ -188,14 +188,37 @@ def test_rules_override_years_after_pass_a(resume, profile) -> None:
 
 
 def test_batches_long_vacancy(resume, profile) -> None:
-    reqs = [_req(i, f"Навык номер {i}") for i in range(1, 26)]
-    first = [_v(f"V1.req{i}", "not_stated", []) for i in range(1, 21)]
-    second = [_v(f"V1.req{i}", "not_stated", []) for i in range(21, 26)]
-    fake = FakeOpenAI([json.dumps({"verdicts": first}), json.dumps({"verdicts": second})])
+    from aihr.match.pass_a import BATCH
+
+    n = BATCH * 2 + 5
+    reqs = [_req(i, f"Навык номер {i}") for i in range(1, n + 1)]
+    chunks = [range(1, BATCH + 1), range(BATCH + 1, 2 * BATCH + 1), range(2 * BATCH + 1, n + 1)]
+    replies = [
+        json.dumps({"verdicts": [_v(f"V1.req{i}", "not_stated", []) for i in c]}) for c in chunks
+    ]
+    fake = FakeOpenAI(replies)
     s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m")  # type: ignore[call-arg]
     out = pass_a(reqs, profile, resume, LLMClient(s, client=fake))
-    assert len(fake.completions.calls) == 2 and len(out) == 25
+    assert len(fake.completions.calls) == 3 and len(out) == n
     assert all(v.status == Status.not_stated for v in out)
+
+
+def test_timeout_splits_batch(resume, profile) -> None:
+    """Провайдер не успел с длинным ответом — пачка делится пополам, вердикты не теряются."""
+    import httpx
+    import openai
+
+    reqs = [_req(i, f"Навык номер {i}") for i in range(1, 5)]
+    timeout = openai.APITimeoutError(request=httpx.Request("POST", "http://x/v1"))
+    halves = [
+        json.dumps({"verdicts": [_v(f"V1.req{i}", "not_stated", []) for i in c]})
+        for c in (range(1, 3), range(3, 5))
+    ]
+    fake = FakeOpenAI([timeout, *halves])
+    s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m", llm_max_retries=0)  # type: ignore[call-arg]
+    out = pass_a(reqs, profile, resume, LLMClient(s, client=fake))
+    assert len(fake.completions.calls) == 3 and len(out) == 4
+    assert all(v.comment != "Модель не дала вердикт по этому требованию." for v in out)
 
 
 def test_no_requirements_no_call(resume, profile) -> None:

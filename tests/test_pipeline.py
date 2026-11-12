@@ -78,9 +78,15 @@ def test_llm_unavailable_switches_to_fallback(
     def down(*args, **kwargs):
         raise LLMUnavailable("сеть недоступна")
 
+    import httpx
+    import openai
+
     monkeypatch.setattr(pipeline.extract, "extract_profile", down)
-    llm = LLMClient(llm_settings, client=FakeOpenAI([]))
-    r = _run(fixture_file("vacancy_cook.txt"), settings=llm_settings, llm=llm)
+    # Сеть лежит: каждый запрос — ошибка соединения. Первый сбой — шаг без LLM, второй — весь прогон
+    network = openai.APIConnectionError(request=httpx.Request("POST", "http://x/v1"))
+    s = llm_settings.model_copy(update={"llm_max_retries": 0})
+    llm = LLMClient(s, client=FakeOpenAI([network] * 10))
+    r = _run(fixture_file("vacancy_cook.txt"), settings=s, llm=llm)
     assert r.mode == "fallback"
     assert any("LLM недоступна" in w for w in r.warnings)
     assert r.ranking and len(r.ranking.items) == 1

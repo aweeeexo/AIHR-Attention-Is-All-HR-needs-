@@ -4,7 +4,10 @@
   1. «Ключевые слова» — базовая линия: требование выполнено, если в резюме есть ≥ половины его
      значимых слов; иначе «Не указано». Получает требования эталона.
   2. «Без LLM» — наш режим T11 (правила, поиск, синонимы).
-  3. «С LLM» — полный пайплайн. Считается, если модель отвечает; иначе помечается «не посчитано».
+  3. «Один промпт» — базовая линия с LLM: вакансия и резюме целиком в одном запросе, модель сама
+     выделяет требования, ставит статусы, пишет цитаты и балл. Без номеров фрагментов
+     в доказательствах, проверки цитат и правил кода. Лучшая вакансия — по баллу модели.
+  4. «С LLM» — полный пайплайн. 3 и 4 считаются, если модель отвечает; иначе «не посчитано».
 
 Пары резюме × вакансия без эталона в метрики статусов не входят.
 """
@@ -22,10 +25,13 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "src"))
 sys.path.insert(0, str(ROOT / "eval"))
 
+from typing import Literal  # noqa: E402
+
+from pydantic import BaseModel, Field  # noqa: E402
 from requirements_eval import evaluate  # noqa: E402
 
 from aihr.config import Settings  # noqa: E402
-from aihr.contracts import DocKind, MatchResult, Status  # noqa: E402
+from aihr.contracts import DocKind, LLMBadOutput, LLMUnavailable, MatchResult, Status  # noqa: E402
 from aihr.ingest import load_document  # noqa: E402
 from aihr.inputs import case_files, read_files  # noqa: E402
 from aihr.llm import LLMClient  # noqa: E402
@@ -90,6 +96,12 @@ def golden_requirements() -> dict[str, dict]:
     }
 
 
+def vacancy_id(vfile: str) -> str:
+    """Номер вакансии, как в пайплайне: V{n} по порядку файлов примера (эталон в тех же id)."""
+    _, vacancies = case_files(ROOT / "data" / "case")
+    return f"V{[p.name for p in vacancies].index(vfile) + 1}"
+
+
 def score_pipeline(name: str, settings: Settings, llm: LLMClient | None = None) -> MethodResult:
     res = MethodResult(name)
     gold = golden_pairs()
@@ -146,7 +158,8 @@ def score_keywords() -> MethodResult:
         resume_tokens = set(tokens(" ".join(f.masked_text for f in doc.fragments)))
         vpath = ROOT / "data" / "case" / vfile
         vac = mask_document(
-            load_document(vpath.read_bytes(), vfile, DocKind.vacancy, "V1"), PrivacyContext()
+            load_document(vpath.read_bytes(), vfile, DocKind.vacancy, vacancy_id(vfile)),
+            PrivacyContext(),
         )
         reqs = extract_requirements_fallback(vac)
         score = evaluate(reqs_gold[vfile], reqs)
@@ -156,6 +169,104 @@ def score_keywords() -> MethodResult:
             hit = len(want & resume_tokens) / len(want) if want else 0
             res.pairs.append((item["status"], "match" if hit >= 0.5 else "not_stated"))
     res.note = "требования без LLM, статус по доле слов"
+    return res
+
+
+class OnePromptItem(BaseModel):
+    requirement: str
+    must: bool = True
+    source_fragment_ids: list[str] = []
+    status: Literal["match", "partial", "mismatch", "not_stated"]
+    quote: str = ""
+
+
+class OnePromptResult(BaseModel):
+    items: list[OnePromptItem]
+    score: int = Field(ge=0, le=100)
+
+
+def _norm(text: str) -> str:
+    return " ".join(text.lower().replace("ё", "е").split())
+
+
+def score_one_prompt(settings: Settings) -> MethodResult:
+    """Базовая линия «один промпт»: всё делает модель за один вызов (через тот же LLMClient)."""
+    from aihr.contracts import Modality, ReqKind, Requirement
+
+    res = MethodResult("Один промпт (LLM)")
+    gold = golden_pairs()
+    reqs_gold = golden_requirements()
+    best = json.loads((GOLDEN / "rankings.json").read_text(encoding="utf-8"))["best"]
+    resumes, vacancies = case_files(ROOT / "data" / "case")
+    counted: set[str] = set()
+    failures: list[str] = []
+    for rpath in resumes:
+        started = time.perf_counter()
+        ctx = PrivacyContext()  # как в пайплайне: вакансии маскируются первыми
+        vacs = [
+            mask_document(
+                load_document(v.read_bytes(), v.name, DocKind.vacancy, vacancy_id(v.name)), ctx
+            )
+            for v in vacancies
+        ]
+        resume = mask_document(
+            load_document(rpath.read_bytes(), rpath.name, DocKind.resume, "R"), ctx
+        )
+        llm = LLMClient(settings).for_run(ctx, None)
+        resume_text = _norm(" ".join(f.masked_text for f in resume.fragments))
+        scores: dict[str, int] = {}
+        for vac in vacs:
+            try:
+                out = llm.structured(
+                    "llm/one_prompt",
+                    {"vacancy": vac.fragments, "resume": resume.fragments},
+                    OnePromptResult,
+                )
+            except (LLMUnavailable, LLMBadOutput) as exc:
+                # Длинный ответ «всё за раз» — слабое место подхода: считаем как пустой ответ
+                failures.append(f"{rpath.name[:12]}…×{vac.id}: {type(exc).__name__}")
+                out = OnePromptResult(items=[], score=0)
+            scores[vac.filename] = out.score
+            known = {f.id for f in vac.fragments}
+            reqs = [
+                Requirement(
+                    id=f"{vac.id}.req{i}",
+                    vacancy_id=vac.id,
+                    text=item.requirement[:300],
+                    kind=ReqKind.other,
+                    modality=Modality.must if item.must else Modality.nice,
+                    modality_marker=None,
+                    modality_reason="",
+                    source_fragment_ids=[f for f in item.source_fragment_ids if f in known]
+                    or [vac.fragments[0].id],
+                )
+                for i, item in enumerate(out.items, 1)
+            ]
+            for item in out.items:
+                if item.status != "not_stated":
+                    res.quotes_total += 1
+                    res.quotes_ok += bool(item.quote.strip()) and _norm(item.quote) in resume_text
+            score = evaluate(reqs_gold[vac.filename], reqs)
+            if vac.filename not in counted:
+                counted.add(vac.filename)
+                res.req_total += score.golden
+                res.req_matched += score.matched
+                res.req_modality_ok += score.modality_ok
+            g = gold.get((rpath.name, vac.filename))
+            if g is None:
+                continue
+            for gi, item in enumerate(g["items"]):
+                ri = score.matches.get(gi)
+                res.pairs.append(
+                    (item["status"], out.items[ri].status if ri is not None else "not_stated")
+                )
+        res.seconds.append(time.perf_counter() - started)
+        if rpath.name in best and scores:
+            res.best_total += 1
+            res.best_ok += max(scores, key=lambda k: scores[k]) == best[rpath.name]
+    res.note = "цитаты пишет модель: проверены дословно по резюме"
+    if failures:
+        res.note += f"; без ответа {len(failures)} из {len(resumes) * len(vacancies)} запросов"
     return res
 
 
@@ -178,7 +289,8 @@ def retrieval_recall(k: int = 8, embeddings: bool = False) -> tuple[int, int]:
             return 0, 0
         vpath = ROOT / "data" / "case" / vfile
         vac = mask_document(
-            load_document(vpath.read_bytes(), vfile, DocKind.vacancy, "V1"), PrivacyContext()
+            load_document(vpath.read_bytes(), vfile, DocKind.vacancy, vacancy_id(vfile)),
+            PrivacyContext(),
         )
         reqs = extract_requirements_fallback(vac)
         score = evaluate(reqs_gold[vfile], reqs)
@@ -249,11 +361,11 @@ def main() -> int:
     online = Settings(_env_file=ROOT / ".env", today="2026-11")  # type: ignore[call-arg]
     methods = [score_keywords(), score_pipeline("Без LLM (режим T11)", offline)]
     if llm_available(online):
+        methods.append(score_one_prompt(online))
         methods.append(score_pipeline("С LLM (полный пайплайн)", online, LLMClient(online)))
     else:
-        methods.append(
-            MethodResult("С LLM (полный пайплайн)", note="не посчитано: LLM недоступна при прогоне")
-        )
+        for name in ("Один промпт (LLM)", "С LLM (полный пайплайн)"):
+            methods.append(MethodResult(name, note="не посчитано: LLM недоступна при прогоне"))
 
     golden = golden_pairs()
     n_items = sum(len(g["items"]) for g in golden.values())
@@ -282,8 +394,11 @@ def main() -> int:
             f"| {m.name} | {req} | {mod} | {m.macro_f1():.2f} | {m.accuracy():.0%} | "
             f"{m.wrong_mismatch()} | {quotes} | {best} | {secs} |"
         )
+    notes = [f"- {m.name}: {m.note}." for m in methods if m.pairs and m.note]
+    if notes:
+        out += ["", *notes]
     if methods[-1].pairs:
-        out += ["", f"Модель в строке «С LLM»: `{online.llm_model}`."]
+        out += ["", f"Модель в строках с LLM: `{online.llm_model}`."]
         if online.llm_provider == "replay":
             out[-1] += (
                 " Провайдер replay (D39): ответы модели из файлов. Время — ожидание исполнителя "
