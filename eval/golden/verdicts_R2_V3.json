@@ -5,37 +5,37 @@
  "items": [
   {
    "key": "коммуникация с образовательными организациями сопровождение",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "сбор информации для договоров",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "сбор статистических данных отчетность",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "проверка комплектности документов",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "контрольные срезы успеваемости",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "табличные данные Excel Google Sheets",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -49,49 +49,49 @@
   },
   {
    "key": "коммуникативные навыки",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "ответственность",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "самоорганизация",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "навыки работы с таблицами большой объем информации",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "личный ноутбук ПК",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "готовность к взаимодействию с организациями и командой",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "опыт в сфере образования государственных муниципальных структурах",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "делопроизводитель документовед",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },

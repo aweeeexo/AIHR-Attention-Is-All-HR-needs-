@@ -5,55 +5,55 @@
  "items": [
   {
    "key": "таблица поступления выдачи ОС",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "оклейка ОС инвентарными номерами",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "инвентаризация ОС на объектах",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "документы на перемещение ОС подписи комиссии",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "учет ОС по кабинетам подразделениям",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "список ОС по источникам",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "контроль поступления ОС субсидии гранты списки",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "учет ОС при переезде",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "документы на списание перемещение ОС",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -69,37 +69,37 @@
   },
   {
    "key": "опыт не менее 3 лет направления",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "внимание к деталям",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "системность",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "концентрация монотонная работа",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "коммуникабельность",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "стрессоустойчивость",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   }

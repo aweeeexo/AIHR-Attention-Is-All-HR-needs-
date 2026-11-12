@@ -5,7 +5,7 @@
  "items": [
   {
    "key": "коммуникация с образовательными организациями сопровождение",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -37,7 +37,7 @@
   },
   {
    "key": "контрольные срезы успеваемости",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -51,13 +51,13 @@
   },
   {
    "key": "рабочие созвоны с командой",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "коммуникативные навыки",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -88,13 +88,13 @@
   },
   {
    "key": "личный ноутбук ПК",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "готовность к взаимодействию с организациями и командой",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },

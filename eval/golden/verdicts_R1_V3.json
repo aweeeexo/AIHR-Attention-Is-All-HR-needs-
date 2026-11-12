@@ -39,7 +39,7 @@
   },
   {
    "key": "контрольные срезы успеваемости",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -71,7 +71,7 @@
   },
   {
    "key": "ответственность",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
@@ -95,19 +95,19 @@
   },
   {
    "key": "личный ноутбук ПК",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "готовность к взаимодействию с организациями и командой",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
   {
    "key": "опыт в сфере образования государственных муниципальных структурах",
-   "status": null,
+   "status": "not_stated",
    "fragment_ids": [],
    "evidence_type": null
   },
