@@ -75,3 +75,24 @@ def test_runs_rejects_bad_ids(client: TestClient) -> None:
 
 def test_match_requires_files(client: TestClient) -> None:
     assert client.post("/match").status_code == 422
+
+
+def test_match_fixes_cp1251_filename(client: TestClient) -> None:
+    resume = fixture_file("resume_cook.txt")
+    vac = fixture_file("vacancy_cook.txt")
+    # так имя приходит от curl в Windows: байты cp1251, прочитанные как latin-1
+    broken = "Вакансия повара.txt".encode("cp1251")
+    body = (
+        b'--X\r\nContent-Disposition: form-data; name="resume"; filename="r.txt"\r\n\r\n'
+        + resume[0]
+        + b'\r\n--X\r\nContent-Disposition: form-data; name="vacancies"; filename="'
+        + broken
+        + b'"\r\n\r\n'
+        + vac[0]
+        + b"\r\n--X--\r\n"
+    )
+    r = client.post(
+        "/match", content=body, headers={"Content-Type": "multipart/form-data; boundary=X"}
+    )
+    assert r.status_code == 200, r.text
+    assert r.json()["vacancies"][0]["filename"] == "Вакансия повара.txt"

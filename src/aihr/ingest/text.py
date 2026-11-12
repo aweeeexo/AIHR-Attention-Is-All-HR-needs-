@@ -28,7 +28,7 @@ def strip_bullet(text: str) -> tuple[str, bool]:
 
 
 def split_long(text: str, limit: int = MAX_FRAGMENT_CHARS) -> list[str]:
-    """Режет длинный абзац по предложениям в куски не длиннее limit (если предложение длиннее — целиком)."""
+    """Режет длинный абзац по предложениям в куски до limit; длинное предложение — целиком."""
     if len(text) <= limit:
         return [text]
     chunks: list[str] = []

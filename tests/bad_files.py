@@ -147,7 +147,7 @@ def _rtf_cp1251(text: str) -> str:
     return "".join(ch if ord(ch) < 128 else f"{_BS}'{ch.encode('cp1251')[0]:02x}" for ch in text)
 
 
-# Заголовки — байтами cp1251, остальное — escape-кодами Unicode: в реальных rtf встречается и то и то
+# Заголовки — байтами cp1251, остальное — escape-кодами Unicode: в rtf встречается и то и то
 _PAR = f"{_BS}par "
 RTF_RESUME = (
     f"{{{_BS}rtf1{_BS}ansi{_BS}ansicpg1251{_BS}deff0{{{_BS}fonttbl{{{_BS}f0 Arial;}}}}{_BS}f0 "
@@ -179,32 +179,58 @@ BAD_FILES: list[BadFile] = [
     BadFile("zero_bytes.docx", lambda: b"", DocKind.resume, IngestErrorCode.empty_file),
     BadFile("empty.docx", lambda: make_docx([]), DocKind.resume, IngestErrorCode.no_text),
     BadFile(
-        "broken_zip.docx", lambda: b"PK\x03\x04" + b"\x00junk" * 40, DocKind.resume,
+        "broken_zip.docx",
+        lambda: b"PK\x03\x04" + b"\x00junk" * 40,
+        DocKind.resume,
         IngestErrorCode.corrupted,
     ),
     BadFile("picture.docx", lambda: _PNG, DocKind.resume, IngestErrorCode.type_mismatch),
-    BadFile("program.pdf", lambda: b"MZ\x90\x00" + b"\x00\x01" * 100, DocKind.vacancy,
-            IngestErrorCode.type_mismatch),
-    BadFile("spreadsheet.docx", _zip_without_document, DocKind.vacancy,
-            IngestErrorCode.type_mismatch),
     BadFile(
-        "password.docx", lambda: _OLE + "EncryptedPackage".encode("utf-16-le") + b"\x00" * 64,
-        DocKind.resume, IngestErrorCode.encrypted,
+        "program.pdf",
+        lambda: b"MZ\x90\x00" + b"\x00\x01" * 100,
+        DocKind.vacancy,
+        IngestErrorCode.type_mismatch,
     ),
-    BadFile("old_format.doc", lambda: _OLE + b"\x00" * 128, DocKind.resume,
-            IngestErrorCode.unsupported_type),
+    BadFile(
+        "spreadsheet.docx", _zip_without_document, DocKind.vacancy, IngestErrorCode.type_mismatch
+    ),
+    BadFile(
+        "password.docx",
+        lambda: _OLE + "EncryptedPackage".encode("utf-16-le") + b"\x00" * 64,
+        DocKind.resume,
+        IngestErrorCode.encrypted,
+    ),
+    BadFile(
+        "old_format.doc",
+        lambda: _OLE + b"\x00" * 128,
+        DocKind.resume,
+        IngestErrorCode.unsupported_type,
+    ),
     BadFile("scan.pdf", lambda: make_pdf([]), DocKind.resume, IngestErrorCode.no_text),
     BadFile("truncated.pdf", _truncated_pdf, DocKind.resume, IngestErrorCode.corrupted),
     BadFile("blank.txt", lambda: b"   \n\n\t  ", DocKind.vacancy, IngestErrorCode.no_text),
-    BadFile("archive.zip", _zip_without_document, DocKind.vacancy,
-            IngestErrorCode.unsupported_type),
+    BadFile(
+        "archive.zip", _zip_without_document, DocKind.vacancy, IngestErrorCode.unsupported_type
+    ),
     # ---------- читаются, иногда с предупреждением ----------
-    BadFile("resume_cp1251.txt", lambda: "\n".join(RESUME_LINES).encode("cp1251"),
-            DocKind.resume, note="кодировка cp1251"),
-    BadFile("resume_utf8_bom.txt", lambda: "\n".join(RESUME_LINES).encode("utf-8-sig"),
-            DocKind.resume, note="UTF-8 с BOM"),
-    BadFile("resume_utf16.txt", lambda: "\n".join(RESUME_LINES).encode("utf-16"),
-            DocKind.resume, note="UTF-16"),
+    BadFile(
+        "resume_cp1251.txt",
+        lambda: "\n".join(RESUME_LINES).encode("cp1251"),
+        DocKind.resume,
+        note="кодировка cp1251",
+    ),
+    BadFile(
+        "resume_utf8_bom.txt",
+        lambda: "\n".join(RESUME_LINES).encode("utf-8-sig"),
+        DocKind.resume,
+        note="UTF-8 с BOM",
+    ),
+    BadFile(
+        "resume_utf16.txt",
+        lambda: "\n".join(RESUME_LINES).encode("utf-16"),
+        DocKind.resume,
+        note="UTF-16",
+    ),
     BadFile(
         "resume_two_columns.docx",
         lambda: make_docx(
@@ -216,7 +242,8 @@ BAD_FILES: list[BadFile] = [
                 ["Навыки", "Забор крови, работа с медицинской информационной системой."],
             ],
         ),
-        DocKind.resume, note="резюме таблицей в две колонки",
+        DocKind.resume,
+        note="резюме таблицей в две колонки",
     ),
     BadFile(
         "resume_header_textbox.docx",
@@ -225,16 +252,37 @@ BAD_FILES: list[BadFile] = [
             header="Кузнецова Мария, телефон +7 900 111-22-33",
             textbox="Навыки: забор крови, медицинская информационная система",
         ),
-        DocKind.resume, note="контакты в колонтитуле, навыки в надписи",
+        DocKind.resume,
+        note="контакты в колонтитуле, навыки в надписи",
     ),
     BadFile("resume.rtf", lambda: RTF_RESUME.encode("latin-1"), DocKind.resume, note="rtf"),
     BadFile("resume.pdf", lambda: make_pdf(PDF_RESUME), DocKind.resume, note="pdf"),
-    BadFile("resume_named_pdf.docx", lambda: make_pdf(PDF_RESUME), DocKind.resume,
-            warning="не совпадает с содержимым", note="pdf с расширением docx"),
-    BadFile("vacancy_plain_text.txt", lambda: PLAIN_VACANCY.encode("utf-8"), DocKind.vacancy,
-            warning="не найдены разделы требований", note="вакансия сплошным текстом"),
-    BadFile("resume_long.txt", _long_resume, DocKind.resume, warning="обрезан до 2000",
-            note="очень длинное резюме"),
-    BadFile("contract_instead_of_resume.txt", lambda: CONTRACT.encode("utf-8"), DocKind.resume,
-            warning="не похож на резюме", note="вместо резюме загружен договор"),
+    BadFile(
+        "resume_named_pdf.docx",
+        lambda: make_pdf(PDF_RESUME),
+        DocKind.resume,
+        warning="не совпадает с содержимым",
+        note="pdf с расширением docx",
+    ),
+    BadFile(
+        "vacancy_plain_text.txt",
+        lambda: PLAIN_VACANCY.encode("utf-8"),
+        DocKind.vacancy,
+        warning="не найдены разделы требований",
+        note="вакансия сплошным текстом",
+    ),
+    BadFile(
+        "resume_long.txt",
+        _long_resume,
+        DocKind.resume,
+        warning="обрезан до 2000",
+        note="очень длинное резюме",
+    ),
+    BadFile(
+        "contract_instead_of_resume.txt",
+        lambda: CONTRACT.encode("utf-8"),
+        DocKind.resume,
+        warning="не похож на резюме",
+        note="вместо резюме загружен договор",
+    ),
 ]

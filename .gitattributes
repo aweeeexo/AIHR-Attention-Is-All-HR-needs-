@@ -7,3 +7,4 @@
 *.doc binary
 *.png binary
 *.jpg binary
+tests/fixtures/bad_files/** -text
