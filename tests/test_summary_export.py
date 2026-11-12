@@ -187,3 +187,33 @@ def test_docx_endpoint() -> None:
     assert "attachment" in got.headers["content-disposition"]
     assert client.get(f"/runs/{run_id}/report/V9.docx").status_code == 404
     get_settings.cache_clear()
+
+
+def test_near_tie_is_flagged_in_comparison_and_summary() -> None:
+    ranking, reqs, verdicts = _case(
+        {
+            "V1": [
+                ("Навык A", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык B", Modality.nice, Status.not_stated),
+            ],
+            "V2": [
+                ("Навык C", Modality.must, Status.match, EvidenceType.direct),
+                ("Навык D", Modality.nice, Status.partial, EvidenceType.direct),
+            ],
+        }
+    )
+    a, b = ranking.items
+    assert abs(a.score - b.score) < 3  # 87.5 и 87.5 — вровень
+    assert "Баллы почти равны" in ranking.comparison[0]
+    text = ranking_summary(ranking, reqs, verdicts)
+    assert "почти вровень" in text
+
+
+def test_clear_gap_is_not_flagged() -> None:
+    ranking, _reqs, _verdicts = _case(
+        {
+            "V1": [("Навык A", Modality.must, Status.match, EvidenceType.direct)],
+            "V2": [("Навык B", Modality.must, Status.mismatch, EvidenceType.direct)],
+        }
+    )
+    assert "почти равны" not in ranking.comparison[0]

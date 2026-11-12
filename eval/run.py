@@ -279,6 +279,13 @@ def main() -> int:
             f"| {m.name} | {req} | {mod} | {m.macro_f1():.2f} | {m.accuracy():.0%} | "
             f"{m.wrong_mismatch()} | {quotes} | {best} | {secs} |"
         )
+    if methods[-1].pairs:
+        out += ["", f"Модель в строке «С LLM»: `{online.llm_model}`."]
+        if online.llm_provider == "replay":
+            out[-1] += (
+                " Провайдер replay (D39): ответы модели из файлов. Время — ожидание исполнителя "
+                "или чтение кэша, это не задержка API."
+            )
     for m in methods:
         if m.pairs:
             out += ["", f"**Матрица ошибок — {m.name}**", "", *confusion(m)]

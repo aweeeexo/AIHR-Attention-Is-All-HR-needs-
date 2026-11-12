@@ -17,6 +17,7 @@ from aihr.contracts import (
     VacancyScore,
     Verdict,
 )
+from aihr.score import is_close, load_scoring_config
 
 LABEL_RU = {
     FitLabel.fits: "подходит",
@@ -89,6 +90,11 @@ def ranking_summary(
             text += (
                 " Также: " + "; ".join(f"{_name(s)} — {LABEL_RU[s.label]}" for s in good[1:]) + "."
             )
+            if is_close(best, good[1], load_scoring_config()):
+                text += (
+                    f" {_name(best)} и {_name(good[1])} почти вровень "
+                    f"({best.score:g} и {good[1].score:g}): выбор — по таблицам требований."
+                )
         return text
 
     parts = ["Прямо не подходит ни одна вакансия."]

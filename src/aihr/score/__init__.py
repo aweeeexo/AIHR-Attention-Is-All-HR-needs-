@@ -41,6 +41,7 @@ class ScoringConfig:
     fits_min_score: float
     fits_max_blocking_gaps: int
     caveats_min_score: float
+    close_margin: float = 3.0  # D40
 
     def with_changes(self, **kw: float) -> ScoringConfig:
         return replace(self, **kw)  # type: ignore[arg-type]
@@ -62,6 +63,7 @@ def _load_scoring_config(path: Path) -> ScoringConfig:
         fits_min_score=float(labels["fits"]["min_score"]),
         fits_max_blocking_gaps=int(labels["fits"].get("max_blocking_gaps", 0)),
         caveats_min_score=float(labels["fits_with_caveats"]["min_score"]),
+        close_margin=float(raw.get("close_margin", 3)),
     )
 
 
@@ -233,7 +235,11 @@ def sort_key(s: VacancyScore) -> tuple[float, float, int, str]:
     return (-s.score, -_must_share(s), s.must.not_stated + s.nice.not_stated, s.vacancy_id)
 
 
-def _comparison(upper: VacancyScore, lower: VacancyScore) -> str:
+def is_close(upper: VacancyScore, lower: VacancyScore, cfg: ScoringConfig) -> bool:
+    return upper.score - lower.score < cfg.close_margin
+
+
+def _comparison(upper: VacancyScore, lower: VacancyScore, cfg: ScoringConfig) -> str:
     diff = round(upper.score - lower.score)
     head = (
         f"{upper.vacancy_id} выше {lower.vacancy_id} на {diff} "
@@ -261,7 +267,13 @@ def _comparison(upper: VacancyScore, lower: VacancyScore) -> str:
             f"обязательных закрыто {upper.must.match} из {upper.must.total} против "
             f"{lower.must.match} из {lower.must.total}"
         )
-    return f"{head}: " + "; ".join(reasons) + "."
+    text = f"{head}: " + "; ".join(reasons) + "."
+    if is_close(upper, lower, cfg):
+        text += (
+            f" Баллы почти равны (разница меньше {cfg.close_margin:g}): при других весах порядок "
+            "может поменяться — сравните таблицы требований."
+        )
+    return text
 
 
 def formula_text(cfg: ScoringConfig) -> str:
@@ -283,6 +295,6 @@ def rank(scores: list[VacancyScore], cfg: ScoringConfig | None = None) -> Rankin
     return Ranking(
         items=items,
         best_vacancy_id=items[0].vacancy_id if items else None,
-        comparison=[_comparison(a, b) for a, b in itertools.pairwise(items)],
+        comparison=[_comparison(a, b, cfg) for a, b in itertools.pairwise(items)],
         formula=formula_text(cfg),
     )

@@ -9,3 +9,5 @@ labels:
   fits:              { min_score: 70, max_blocking_gaps: 0 }
   fits_with_caveats: { min_score: 45 }
   # остальное — not_fit
+# Разница баллов меньше этой — «почти вровень»: порядок не надёжен, объяснение об этом говорит (D40)
+close_margin: 3
