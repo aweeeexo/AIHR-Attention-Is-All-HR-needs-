@@ -120,8 +120,14 @@ def default_encoder() -> tuple[Encoder | None, bool]:
 
 class Retriever:
     def __init__(
-        self, doc: Document, encoder: Encoder | None = None, *, e5_prefixes: bool = False
+        self,
+        doc: Document,
+        encoder: Encoder | None = None,
+        *,
+        e5_prefixes: bool = False,
+        embeddings: bool = True,
     ) -> None:
+        """encoder=None — кодировщик по настройкам; embeddings=False — только BM25."""
         from rank_bm25 import BM25Okapi
 
         self.doc = doc
@@ -131,7 +137,9 @@ class Retriever:
         self._tokens = [tokens(t) for t in texts]
         self._sets = [set(t) for t in self._tokens]
         self._bm25 = BM25Okapi([t or ["∅"] for t in self._tokens]) if texts else None
-        if encoder is None:
+        if not embeddings:
+            encoder = None
+        elif encoder is None:
             encoder, e5_prefixes = default_encoder()
         self._encoder = encoder
         self._e5 = e5_prefixes

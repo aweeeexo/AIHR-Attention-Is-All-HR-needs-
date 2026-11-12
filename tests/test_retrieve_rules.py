@@ -63,7 +63,7 @@ def _ids(retriever: Retriever, query: str, terms: list[str] | None = None, **kw)
 
 
 def test_bm25_finds_exact_terms(resume) -> None:
-    r = Retriever(resume, encoder=None)
+    r = Retriever(resume, embeddings=False)
     assert not r.uses_embeddings
     assert _ids(r, "Опыт работы в 1С")[0] == "R8"
     assert _ids(r, "Сертификация ISO 9001")[0] == "R5"
@@ -71,13 +71,13 @@ def test_bm25_finds_exact_terms(resume) -> None:
 
 
 def test_synonyms_via_terms(resume) -> None:
-    r = Retriever(resume, encoder=None)
+    r = Retriever(resume, embeddings=False)
     assert _ids(r, "JavaScript") == []  # без словаря синонимов не находится
     assert _ids(r, "JavaScript", ["JS", "ECMAScript"])[0] == "R4"  # алиасы из T06-A
 
 
 def test_section_filter_and_fallback(resume) -> None:
-    r = Retriever(resume, encoder=None)
+    r = Retriever(resume, embeddings=False)
     edu = _ids(r, "Высшее строительное образование", section_roles=roles_for(ReqKind.education))
     assert edu and all(fid in ("R6", "R7") for fid in edu)
     # в разделе навыков нет «инвентаризации» — ищем по всему документу
@@ -85,7 +85,7 @@ def test_section_filter_and_fallback(resume) -> None:
 
 
 def test_no_overlap_no_result(resume) -> None:
-    assert Retriever(resume, encoder=None).search("пилотирование самолёта", []) == []
+    assert Retriever(resume, embeddings=False).search("пилотирование самолёта", []) == []
 
 
 class FakeEncoder:
@@ -112,14 +112,14 @@ def test_embeddings_find_paraphrase(resume) -> None:
     r = Retriever(resume, encoder=FakeEncoder(), e5_prefixes=True)
     assert r.uses_embeddings
     # в запросе нет ни одного слова из фрагмента R3, BM25 его не найдёт, эмбеддинги — найдут
-    assert "R3" not in _ids(Retriever(resume, encoder=None), "основные средства")
+    assert "R3" not in _ids(Retriever(resume, embeddings=False), "основные средства")
     assert _ids(r, "основные средства")[0] == "R3"
 
 
 def test_index_is_fast(resume) -> None:
     big = resume.model_copy(update={"fragments": resume.fragments * 200})
     started = time.perf_counter()
-    Retriever(big, encoder=None).search("сметы", [])
+    Retriever(big, embeddings=False).search("сметы", [])
     assert time.perf_counter() - started < 2
 
 

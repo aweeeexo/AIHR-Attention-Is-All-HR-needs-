@@ -147,7 +147,7 @@ def _match(vacancy_text: str):
     resume = _resume()
     profile = enrich_profile(extract_profile_fallback(resume), TODAY)
     reqs = extract_requirements_fallback(vac)
-    verdicts = match_vacancy_fallback(reqs, profile, resume, Retriever(resume, encoder=None))
+    verdicts = match_vacancy_fallback(reqs, profile, resume, Retriever(resume, embeddings=False))
     return {r.text: v for r, v in zip(reqs, verdicts, strict=True)}
 
 
