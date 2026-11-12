@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import {
-  ArrowLeft, ArrowRight, BookOpen, ChartNoAxesColumnIncreasing,
-  Files, LayoutGrid, LoaderCircle, ScanLine, ShieldCheck, UserRound,
+  ArrowLeft, ArrowRight, ChartNoAxesColumnIncreasing,
+  FilePlus2, LoaderCircle, ShieldCheck,
 } from 'lucide-react';
 import '@fontsource-variable/inter';
 import './style.css';
@@ -100,13 +100,12 @@ function App() {
     <div className="shell">
       <aside className="sidebar">
         <a className="brand" href="#/" aria-label="AIHR · Новый анализ">
-          <span className="brand-icon"><ScanLine size={22} aria-hidden="true" /></span>
-          <span><strong>AIHR</strong><small>Подбор персонала</small></span>
+          <strong>AIHR<span>.</span></strong>
         </a>
         <div className="side-label">Рабочая область</div>
         <nav aria-label="Рабочая область">
           <a className={initial ? 'active' : ''} href="#/" aria-current={initial ? 'page' : undefined}>
-            <LayoutGrid size={17} aria-hidden="true" /> Новый анализ
+            <FilePlus2 size={16} aria-hidden="true" /> Новый анализ
           </a>
           {route && (
             <a className="active" href={`#/${recordKey}`} aria-current={vacancy ? undefined : 'page'}>
@@ -119,7 +118,7 @@ function App() {
 
       <div className="workspace">
         <header className="topbar">
-          <div className="breadcrumb"><span>Рабочая область</span><span aria-hidden="true">/</span><strong>{initial ? 'Новый анализ' : batch ? 'Пакет резюме' : 'Результат анализа'}</strong></div>
+          <div className="breadcrumb"><strong>{initial ? 'Новый анализ' : batch ? 'Пакет резюме' : 'Результат анализа'}</strong></div>
           <button className="connection" onClick={checkConnection} aria-label="Проверить состояние API" title="Проверить соединение">
             <span className={`dot ${health?.status === 'ok' ? 'online' : health === null ? 'offline' : ''}`} />
             {health ? <><span>{health.llm === 'configured' ? 'LLM подключена' : 'Без LLM'}</span><span className="retrieval">{health.retrieval === 'bm25+embeddings' ? 'BM25 + эмбеддинги' : 'BM25'}</span></> : health === null ? 'API недоступен' : 'Проверяем API'}
@@ -128,37 +127,37 @@ function App() {
 
         <main className="content" id="main">
           {initial ? (
-            <>
+            <div className="analysis-form">
               <div className="page-intro">
-                <div className="page-icon"><ScanLine size={24} aria-hidden="true" /></div>
-                <h1>Сопоставление резюме<br className="intro-break" /> с вакансиями</h1>
-                <p>Загрузите документы, чтобы увидеть рейтинг вакансий и подтверждения из резюме по каждому требованию.</p>
+                <h1>Сопоставление резюме с вакансиями</h1>
+                <p>Загрузите документы, чтобы сравнить вакансии и проверить требования по цитатам из резюме.</p>
               </div>
-              <div className="mode-control" role="group" aria-label="Режим анализа">
-                <button type="button" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}><UserRound size={16} /> Одно резюме</button>
-                <button type="button" aria-pressed={mode === 'batch'} disabled={pending} onClick={() => setMode('batch')}><Files size={16} /> Пакет резюме</button>
+              <div className="analysis-surface">
+                <div className="mode-control" role="group" aria-label="Режим анализа">
+                  <button type="button" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
+                  <button type="button" aria-pressed={mode === 'batch'} disabled={pending} onClick={() => setMode('batch')}>Пакет резюме</button>
+                </div>
+                <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.upload(mode, resumes, vacancies))} />
               </div>
-              <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.upload(mode, resumes, vacancies))} />
               <Notices error={error} />
               {pending && (
-                <section className="progress panel" role="status">
+                <section className="progress" role="status">
                   <LoaderCircle className="spin" size={24} aria-hidden="true" />
-                  <div><strong>Анализируем документы</strong><p>API вернёт результат по завершении. Анализ с LLM может занять несколько минут.</p><ol>{steps.map((step) => <li key={step}>{step}</li>)}</ol></div>
+                  <div><strong>Анализируем документы</strong><p>Анализ с LLM может занять несколько минут.</p><p>Этапы анализа: {steps.join(' → ')}</p></div>
                 </section>
               )}
               <Example mode={mode} files={exampleFiles} pending={pending} run={(resume) => analyze(() => api.example(mode, resume))} />
-            </>
+            </div>
           ) : (
             <>
               {vacancy ? <a className="back" href={`#/${recordKey}`}><ArrowLeft size={16} /> К рейтингу вакансий</a> : <a className="back" href="#/"><ArrowLeft size={16} /> Новый анализ</a>}
               <Notices error={current?.error} />
-              {!current && <div className="progress panel" role="status"><LoaderCircle className="spin" size={21} /> Загружаем результат…</div>}
+              {!current && <div className="progress" role="status"><LoaderCircle className="spin" size={21} aria-hidden="true" /> Загружаем результат…</div>}
               {result && (batch
                 ? <Batch result={result} runUrl={(id) => path('runs', id)} />
                 : <Match result={result} vacancy={vacancy} api={api} reportUrl={(id) => path('runs', result.run_id, id)} />)}
             </>
           )}
-          <footer className="footer"><span>AIHR · Сопоставление резюме</span><span><ShieldCheck size={15} aria-hidden="true" /> Обезличивание документов перед вызовом модели</span></footer>
         </main>
       </div>
     </div>
@@ -168,8 +167,8 @@ function App() {
 function Example({ mode, files, pending, run }) {
   const [resume, setResume] = useState('');
   return (
-    <section className="example panel" aria-labelledby="example-title">
-      <div className="example-info"><div className="icon-box lavender"><BookOpen size={21} aria-hidden="true" /></div>
+    <section className="example" aria-labelledby="example-title">
+      <div className="example-info">
         <div><h2 id="example-title">Пример из кейса</h2><p>{mode === 'batch' ? 'Сравните все резюме и вакансии из кейса МФТИ.' : 'Возьмите готовые документы из кейса МФТИ.'}</p></div>
       </div>
       <div className="example-actions">

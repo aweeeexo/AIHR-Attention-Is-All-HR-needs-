@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react';
-import { ArrowRight, BriefcaseBusiness, FileText, Paperclip, UploadCloud, X } from 'lucide-react';
+import { ArrowRight, FileText, LoaderCircle, Paperclip, X } from 'lucide-react';
 
 const formats = /\.(docx|pdf|rtf|txt)$/i;
 const accepted = '.docx,.pdf,.rtf,.txt';
@@ -33,19 +33,21 @@ export function Upload({ mode, pending, submit }) {
     <form onSubmit={handleSubmit}>
       <fieldset disabled={pending} className="upload-fieldset">
         <div className="upload-grid">
-          <UploadCard id="resume" title={batch ? 'Резюме кандидатов' : 'Резюме кандидата'} icon={FileText}
+          <UploadCard id="resume" title={batch ? 'Резюме кандидатов' : 'Резюме кандидата'}
             description={batch ? 'До 50 файлов, один на кандидата' : 'Один файл с опытом и навыками кандидата'}
             files={batch ? resumes : resumes.slice(0, 1)} setFiles={setResumes} multiple={batch}
             limit={batch ? 50 : 1} canPaste={!batch} source={activeResumeSource} setSource={setResumeSource}
             value={resumeText} setValue={setResumeText} disabled={pending} />
-          <UploadCard id="vacancy" title="Вакансии" icon={BriefcaseBusiness}
+          <UploadCard id="vacancy" title="Вакансии"
             description="Один или несколько файлов с требованиями"
             files={vacancies} setFiles={setVacancies} multiple canPaste source={vacancySource} setSource={setVacancySource}
             value={vacancyText} setValue={setVacancyText} disabled={pending} />
         </div>
         <div className="submit-row">
-          <span><Paperclip size={16} aria-hidden="true" /> {ready ? 'Документы готовы к отправке' : 'Добавьте резюме и хотя бы одну вакансию'}</span>
-          <button className="button primary" type="submit" disabled={!ready || pending}>Начать анализ <ArrowRight size={17} /></button>
+          <span>{pending ? 'Ожидаем ответ API' : ready ? 'Документы готовы к отправке' : 'Добавьте резюме и хотя бы одну вакансию'}</span>
+          <button className="button primary" type="submit" disabled={!ready || pending}>
+            {pending ? <><LoaderCircle className="spin" size={16} aria-hidden="true" /> Обработка…</> : <>Начать анализ <ArrowRight size={16} aria-hidden="true" /></>}
+          </button>
         </div>
       </fieldset>
     </form>
@@ -53,7 +55,7 @@ export function Upload({ mode, pending, submit }) {
 }
 
 function UploadCard({
-  id, title, description, icon: Icon, files, setFiles, multiple, limit,
+  id, title, description, files, setFiles, multiple, limit,
   canPaste, source, setSource, value, setValue, disabled,
 }) {
   const input = useRef(null);
@@ -78,15 +80,14 @@ function UploadCard({
   }
 
   return (
-    <section className="panel upload-card" aria-labelledby={`${id}-title`}>
+    <section className="upload-card" aria-labelledby={`${id}-title`}>
       <div className="upload-head">
-        <div className={`icon-box ${id === 'resume' ? 'lavender' : 'blue'}`}><Icon size={21} aria-hidden="true" /></div>
-        <div><h2 id={`${id}-title`}>{title}</h2><p>{description}</p></div>
+        <h2 id={`${id}-title`}>{title}</h2><p>{description}</p>
       </div>
-      <div className="source-control" role="group" aria-label={`Источник · ${title}`}>
+      {canPaste && <div className="source-control" role="group" aria-label={`Источник · ${title}`}>
         <button type="button" aria-pressed={source === 'file'} onClick={() => setSource('file')}>Файлы</button>
-        {canPaste && <button type="button" aria-pressed={source === 'text'} onClick={() => setSource('text')}>Вставить текст</button>}
-      </div>
+        <button type="button" aria-pressed={source === 'text'} onClick={() => setSource('text')}>Вставить текст</button>
+      </div>}
       {source === 'text' ? (
         <textarea aria-label={`Текст · ${title}`} value={value} onChange={(event) => setValue(event.target.value)}
           placeholder={id === 'resume' ? 'Вставьте текст резюме' : 'Вставьте описание вакансии'} />
@@ -99,9 +100,8 @@ function UploadCard({
             onDragOver={(event) => { event.preventDefault(); if (!disabled) setDragging(true); }}
             onDragLeave={() => setDragging(false)}
             onDrop={(event) => { event.preventDefault(); setDragging(false); add(event.dataTransfer.files); }}>
-            <UploadCloud size={24} aria-hidden="true" />
-            <span><strong>Выберите файл{multiple ? 'ы' : ''}</strong> или перетащите сюда</span>
-            <small>DOCX, PDF, RTF, TXT</small>
+            <Paperclip size={17} aria-hidden="true" />
+            <span><strong>{files.length && !multiple ? 'Заменить файл' : multiple ? 'Выбрать файлы' : 'Выбрать файл'}</strong><small>DOCX, PDF, RTF, TXT · можно перетащить</small></span>
           </button>
           {warning && <p className="input-warning" role="status">{warning}</p>}
           {!!files.length && (
