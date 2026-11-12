@@ -6,21 +6,22 @@ from aihr import pipeline
 from aihr.config import get_settings
 from aihr.contracts import IngestErrorCode, LLMUnavailable, MatchResult, Status
 from aihr.llm import LLMClient
-from tests.conftest import FakeOpenAI, fixture_file
+from tests.conftest import EchoRequirementsLLM, FakeOpenAI, fixture_file
 
 
 def _run(*vacancies: tuple[bytes, str], **kw: object) -> MatchResult:
     return pipeline.run(fixture_file("resume_cook.txt"), list(vacancies), **kw)  # type: ignore[arg-type]
 
 
-def test_end_to_end_on_stubs() -> None:
+def test_end_to_end_without_llm() -> None:
     r = _run(fixture_file("vacancy_cook.txt"), fixture_file("vacancy_welder.txt"))
     assert r.mode == "fallback"  # LLM не настроена
     assert [v.id for v in r.vacancies] == ["V1", "V2"]
     assert r.ranking and len(r.ranking.items) == 2
     assert set(r.reports) == {"V1", "V2"}
     for verdicts in r.verdicts.values():
-        assert {v.status for v in verdicts} == set(Status)  # заглушка: по одному каждого статуса
+        assert verdicts  # режим без LLM (T11): правила и совпадение терминов
+        assert all(v.computed for v in verdicts if v.status == Status.mismatch)
         assert all(v.decided_by == "fallback" for v in verdicts)
     assert {"ingest", "mask", "match", "score", "report", "total"} <= set(r.timings_ms)
 
@@ -77,16 +78,22 @@ def test_llm_unavailable_switches_to_fallback(
     def down(*args, **kwargs):
         raise LLMUnavailable("сеть недоступна")
 
+    import httpx
+    import openai
+
     monkeypatch.setattr(pipeline.extract, "extract_profile", down)
-    llm = LLMClient(llm_settings, client=FakeOpenAI([]))
-    r = _run(fixture_file("vacancy_cook.txt"), settings=llm_settings, llm=llm)
+    # Сеть лежит: каждый запрос — ошибка соединения. Первый сбой — шаг без LLM, второй — весь прогон
+    network = openai.APIConnectionError(request=httpx.Request("POST", "http://x/v1"))
+    s = llm_settings.model_copy(update={"llm_max_retries": 0})
+    llm = LLMClient(s, client=FakeOpenAI([network] * 10))
+    r = _run(fixture_file("vacancy_cook.txt"), settings=s, llm=llm)
     assert r.mode == "fallback"
     assert any("LLM недоступна" in w for w in r.warnings)
     assert r.ranking and len(r.ranking.items) == 1
 
 
 def test_llm_mode_when_configured(llm_settings) -> None:
-    llm = LLMClient(llm_settings, client=FakeOpenAI([]))
+    llm = LLMClient(llm_settings, client=EchoRequirementsLLM())
     r = _run(fixture_file("vacancy_cook.txt"), settings=llm_settings, llm=llm, save=False)
     assert r.mode == "llm" and not r.warnings
     assert all(v.decided_by == "pass_a" for v in r.verdicts["V1"])

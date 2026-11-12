@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from pathlib import Path
 from types import SimpleNamespace
-from typing import Any
+from typing import Any, ClassVar
 
 import pytest
 
@@ -21,6 +21,7 @@ def isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
         monkeypatch.delenv(name.upper(), raising=False)
     monkeypatch.setenv("AIHR_ENV_FILE", "")
     monkeypatch.setenv("RUNS_DIR", str(tmp_path / "runs"))
+    monkeypatch.setenv("CACHE_DIR", str(tmp_path / "cache"))
     monkeypatch.setenv("CASE_DIR", str(CASE_DIR))
     monkeypatch.setenv("SCORING_CONFIG", str(REPO_ROOT / "config" / "scoring.yaml"))
     monkeypatch.setenv("TODAY", "2026-11")
@@ -84,3 +85,49 @@ def make_docx(paragraphs: list[str], table: list[list[str]] | None = None) -> by
     buf = io.BytesIO()
     d.save(buf)
     return buf.getvalue()
+
+
+class EchoRequirementsLLM:
+    """Заглушка LLM для пайплайна: на промпт извлечения требований отвечает требованием на
+    каждую строку разделов требований, пожеланий, обязанностей и навыков — без сети."""
+
+    _LINE = __import__("re").compile(r"^\[(?P<id>[^\]]+)\] \{(?P<role>[^}]+)\} (?P<text>.+)$", 8)
+    _ROLES: ClassVar[dict[str, str]] = {
+        "Требования": "must",
+        "Будет плюсом": "nice",
+        "Обязанности": "nice",
+        "Навыки": "must",
+    }
+
+    def __init__(self) -> None:
+        self.calls: list[dict[str, Any]] = []
+        self.chat = SimpleNamespace(completions=self)
+
+    def create(self, **kwargs: Any) -> Any:
+        import json
+        import re
+
+        self.calls.append(kwargs)
+        user = kwargs["messages"][1]["content"]
+        req_ids = re.findall(r"^\[(V\d+\.req\d+)\] \(", user, re.MULTILINE)
+        if req_ids:  # проход A: «Не указано» по каждому требованию
+            verdicts = [
+                {"requirement_id": rid, "reasoning": "заглушка", "status": "not_stated",
+                 "fragment_ids": [], "comment": "заглушка"}
+                for rid in req_ids
+            ]  # fmt: skip
+            message = SimpleNamespace(content=json.dumps({"verdicts": verdicts}))
+            return SimpleNamespace(choices=[SimpleNamespace(message=message)])
+        items = [
+            {"text": m["text"][:150], "kind": "duty" if m["role"] == "Обязанности" else "skill",
+             "modality_reason": f"раздел {m['role']}", "modality": self._ROLES[m["role"]],
+             "source_fragment_ids": [m["id"]]}
+            for m in self._LINE.finditer(user) if m["role"] in self._ROLES
+        ]  # fmt: skip
+        if not items:  # вакансия без разделов: одно требование на первую строку документа
+            first = next(self._LINE.finditer(user), None)
+            if first:
+                items = [{"text": first["text"][:150], "kind": "other", "modality_reason": "модель",
+                          "modality": "must", "source_fragment_ids": [first["id"]]}]  # fmt: skip
+        message = SimpleNamespace(content=json.dumps({"items": items}, ensure_ascii=False))
+        return SimpleNamespace(choices=[SimpleNamespace(message=message)])

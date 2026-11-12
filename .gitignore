@@ -19,3 +19,6 @@ __pycache__/
 data/runs/
 data/cache/
 scratch/
+
+# ответы модели в режиме replay (D39): обезличенные тексты резюме
+data/llm_replay/
