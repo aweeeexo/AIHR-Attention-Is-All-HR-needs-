@@ -159,6 +159,41 @@ def score_keywords() -> MethodResult:
     return res
 
 
+def retrieval_recall(k: int = 8) -> tuple[int, int]:
+    """Полнота поиска доказательств: доля пунктов эталона с фрагментами, у которых хотя бы один
+    фрагмент эталона есть в первых k результатах поиска по тексту требования (без LLM)."""
+    from aihr.fallback import extract_requirements_fallback
+    from aihr.retrieve import Retriever, roles_for
+
+    hit = total = 0
+    reqs_gold = golden_requirements()
+    for (resume_file, vfile), g in golden_pairs().items():
+        path = ROOT / "data" / "case" / resume_file
+        doc = mask_document(
+            load_document(path.read_bytes(), path.name, DocKind.resume, "R"), PrivacyContext()
+        )
+        retriever = Retriever(doc, embeddings=False)
+        vpath = ROOT / "data" / "case" / vfile
+        vac = mask_document(
+            load_document(vpath.read_bytes(), vfile, DocKind.vacancy, "V1"), PrivacyContext()
+        )
+        reqs = extract_requirements_fallback(vac)
+        score = evaluate(reqs_gold[vfile], reqs)
+        for gi, item in enumerate(g["items"]):
+            if not item["fragment_ids"] or gi not in score.matches:
+                continue
+            req = reqs[score.matches[gi]]
+            found = {
+                fid
+                for fid, _ in retriever.search(
+                    req.text, req.canonical_terms, k=k, section_roles=roles_for(req.kind)
+                )
+            }
+            total += 1
+            hit += bool(found & set(item["fragment_ids"]))
+    return hit, total
+
+
 def fairness(settings: Settings) -> list[tuple[str, float]]:
     """Сдвиг балла при замене имени, пола и возраста в одном и том же резюме (режим без LLM)."""
     base = (ROOT / "tests" / "fixtures" / "resume_cook.txt").read_text(encoding="utf-8")
@@ -247,6 +282,14 @@ def main() -> int:
     for m in methods:
         if m.pairs:
             out += ["", f"**Матрица ошибок — {m.name}**", "", *confusion(m)]
+    hit, total = retrieval_recall()
+    out += [
+        "",
+        "## Поиск доказательств",
+        "",
+        f"Recall@8 (BM25 + синонимы, без эмбеддингов): {hit} из {total} пунктов эталона с "
+        f"фрагментами — {hit / max(total, 1):.0%}. Цель T06 — 90%.",
+    ]
     out += [
         "",
         "## Справедливость",
