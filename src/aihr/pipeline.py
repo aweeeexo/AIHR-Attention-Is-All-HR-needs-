@@ -29,6 +29,7 @@ from aihr.contracts import (
     IngestError,
     IngestErrorCode,
     IngestFailure,
+    LLMBadOutput,
     LLMUnavailable,
     MatchResult,
     PrivacyViolation,
@@ -108,6 +109,11 @@ class _Run:
                 # Запрос не ушёл. Только этот шаг считаем без LLM, прогон продолжается с LLM
                 self.warn(f"Запрос к LLM заблокирован проверкой ПДн ({exc}).")
                 log.warning("guard заблокировал запрос: %s", exc)
+                return without_llm()
+            except LLMBadOutput as exc:
+                # Модель ответила не по схеме и после повторов: этот шаг без LLM, прогон — с LLM
+                self.warn(f"Ответ LLM не прошёл проверку схемы ({exc}); шаг посчитан без LLM.")
+                log.warning("невалидный ответ LLM: %s", exc)
                 return without_llm()
             except LLMUnavailable as exc:
                 with self._lock:

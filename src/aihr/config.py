@@ -32,7 +32,8 @@ class Settings(BaseSettings):
         case_sensitive=False,
     )
 
-    llm_provider: Literal["openai_compatible", "none"] = "openai_compatible"
+    # replay — запросы и ответы через файлы, пока нет API (D39, src/aihr/llm/replay.py)
+    llm_provider: Literal["openai_compatible", "replay", "none"] = "openai_compatible"
     llm_base_url: str | None = None
     llm_api_key: SecretStr | None = None
     llm_model: str | None = None
@@ -43,6 +44,8 @@ class Settings(BaseSettings):
     # auto — пробуем json_schema, при отказе провайдера переходим на json_object
     llm_structured_mode: Literal["auto", "json_schema", "json_object"] = "auto"
     llm_cache: bool = True  # кэш ответов по хэшу запроса (D17)
+    llm_replay_dir: Path = Path("data/llm_replay")
+    llm_replay_wait_s: float = Field(default=0, ge=0)  # сколько ждать ответ в режиме replay
 
     embeddings_model: str | None = "intfloat/multilingual-e5-small"
 
@@ -83,6 +86,8 @@ class Settings(BaseSettings):
 
     @property
     def llm_configured(self) -> bool:
+        if self.llm_provider == "replay":
+            return bool(self.llm_model)
         return self.llm_provider == "openai_compatible" and bool(
             self.llm_base_url and self.llm_model
         )

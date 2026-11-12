@@ -165,6 +165,11 @@ class LLMClient:
         s = self.settings
         if not s.llm_configured:
             raise LLMUnavailable("LLM не настроена: нужны LLM_BASE_URL и LLM_MODEL")
+        if s.llm_provider == "replay":
+            from aihr.llm.replay import ReplayClient
+
+            self._client = ReplayClient(s.llm_replay_dir, s.llm_replay_wait_s)
+            return self._client
         # Локальным серверам ключ не нужен, а SDK требует непустой
         api_key = s.llm_api_key.get_secret_value() if s.llm_api_key else "not-needed"
         self._client = openai.OpenAI(

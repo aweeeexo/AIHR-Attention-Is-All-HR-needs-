@@ -14,7 +14,9 @@ from aihr.contracts import (
     CandidateProfile,
     Document,
     LLMBadOutput,
+    LLMUnavailable,
     Modality,
+    PrivacyViolation,
     Requirement,
     Status,
     Verdict,
@@ -116,9 +118,13 @@ def pass_b(
     for req, previous in disputed(reqs, verdicts):
         try:
             new = ask(req, previous, profile, resume, retriever, llm)
-        except LLMBadOutput as exc:
+        except (LLMBadOutput, PrivacyViolation) as exc:
             log.warning("%s: проход B не дал валидного ответа (%s), остаётся проход A", req.id, exc)
             continue
+        except LLMUnavailable as exc:
+            # Вердикты прохода A уже есть — не теряем их из-за сбоя на уточнении
+            log.warning("проход B прерван, LLM недоступна (%s): остаются вердикты прохода A", exc)
+            break
         if new is previous:
             continue
         changed = new.status != previous.status

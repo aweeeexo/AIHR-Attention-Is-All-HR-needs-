@@ -178,3 +178,15 @@ def test_nothing_found_no_call(resume) -> None:
         llm,
     )
     assert out[0].status == Status.not_stated and fake.completions.calls == []
+
+
+def test_pass_b_unavailable_keeps_pass_a(resume) -> None:
+    import openai
+
+    req = _req(1, "Знание AutoCAD")
+    llm, _ = _llm(openai.APIConnectionError(request=None))  # type: ignore[arg-type]
+    previous = _verdict(req.id, Status.not_stated)
+    out = pass_b(
+        [req], [previous], CandidateProfile(), resume, Retriever(resume, embeddings=False), llm
+    )
+    assert out == [previous]
