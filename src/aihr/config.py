@@ -40,11 +40,15 @@ class Settings(BaseSettings):
     llm_timeout_s: float = Field(default=60, gt=0)
     llm_max_retries: int = Field(default=3, ge=0)
     llm_concurrency: int = Field(default=4, ge=1)
+    # auto — пробуем json_schema, при отказе провайдера переходим на json_object
+    llm_structured_mode: Literal["auto", "json_schema", "json_object"] = "auto"
+    llm_cache: bool = True  # кэш ответов по хэшу запроса (D17)
 
     embeddings_model: str | None = "intfloat/multilingual-e5-small"
 
     max_file_mb: float = Field(default=10, gt=0)
     runs_dir: Path = Path("data/runs")
+    cache_dir: Path = Path("data/cache")
     case_dir: Path = Path("data/case")
     scoring_config: Path = Path("config/scoring.yaml")
     today: str | None = None  # "2026-11" — фиксированная дата для воспроизводимых тестов

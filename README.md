@@ -83,7 +83,10 @@ curl -F resume=@resume.docx -F vacancies=@v1.docx -F vacancies=@v2.pdf localhost
 | `LLM_PROJECT` | — | ID проекта или каталога (Yandex AI Studio) |
 | `LLM_TIMEOUT_S` | `60` | Таймаут запроса, с |
 | `LLM_MAX_RETRIES` | `3` | Повторы при сетевых ошибках |
-| `LLM_CONCURRENCY` | `4` | Параллельных запросов |
+| `LLM_CONCURRENCY` | `4` | Параллельных запросов (и вакансий в обработке) |
+| `LLM_STRUCTURED_MODE` | `auto` | `json_schema`, `json_object` или `auto` (json_schema, при отказе провайдера — json_object) |
+| `LLM_CACHE` | `1` | Кэш ответов LLM по хэшу запроса |
+| `CACHE_DIR` | `data/cache` | Где лежит кэш (в Docker — том `cache`) |
 | `WITH_EMBEDDINGS` | `0` | `1` — собрать образ с sentence-transformers и torch (CPU) |
 | `EMBEDDINGS_MODEL` | `intfloat/multilingual-e5-small` | Пусто — эмбеддинги выключены |
 | `MAX_FILE_MB` | `10` | Лимит размера файла |
@@ -92,6 +95,17 @@ curl -F resume=@resume.docx -F vacancies=@v1.docx -F vacancies=@v2.pdf localhost
 | `LOG_LEVEL` | `INFO` | Уровень логов |
 
 Без `LLM_BASE_URL` и `LLM_MODEL` решение работает в режиме без LLM и пишет об этом предупреждение в результат.
+
+## Без внешнего API: профиль local
+
+Локальная модель в соседнем контейнере (Ollama), наружу не уходит ничего:
+
+```bash
+docker compose --profile local up --build -d
+docker compose --profile local exec llm ollama pull qwen2.5:7b-instruct   # один раз, ~5 ГБ
+```
+
+В `.env`: `LLM_BASE_URL=http://llm:11434/v1`, `LLM_MODEL=qwen2.5:7b-instruct`, `LLM_TIMEOUT_S=600`. Без GPU модель 7B отвечает медленно (порядка 10 токенов в секунду), поэтому профиль — запасной вариант.
 
 ## Внешние сервисы и данные
 
