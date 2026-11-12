@@ -219,7 +219,7 @@ def test_semaphore_limits_parallel_requests(concurrency: int) -> None:
     assert llm.stats.requests == 6
 
 
-def test_pipeline_parallel_keeps_order_and_reports_llm_stats(llm_settings) -> None:  # noqa: ANN001
+def test_pipeline_parallel_keeps_order_and_reports_llm_stats(llm_settings) -> None:
     s = llm_settings.model_copy(update={"llm_concurrency": 3})
     llm = LLMClient(s, client=FakeOpenAI([]))
     vacancies = [fixture_file("vacancy_cook.txt"), fixture_file("vacancy_welder.txt")] * 2
