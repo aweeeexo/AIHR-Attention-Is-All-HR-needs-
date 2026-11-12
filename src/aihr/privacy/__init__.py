@@ -108,6 +108,7 @@ def mask_text(text: str, ctx: PrivacyContext, *, personal_zone: bool = False) ->
         if len(span.split()) >= 2 or (personal_zone and names.is_name_word(span.strip("."))):
             t = t[:start] + ctx.token("PERSON", span) + t[stop:]
 
+    t = _sub(patterns.PERSONAL_FIELDS, t, "")
     if personal_zone:
         t = _sub(patterns.PERSONAL_PHRASES, t, "")
         m = _CITY_PREFIX.search(t)
@@ -115,8 +116,7 @@ def mask_text(text: str, ctx: PrivacyContext, *, personal_zone: bool = False) ->
             near_prefix = m is not None and 0 <= start - m.end() <= 2
             if near_prefix or len(t) <= 40:
                 t = t[:start] + ctx.token("CITY", span) + t[stop:]
-        t = _tidy(t)
-    return t
+    return _tidy(t) if t != text else t
 
 
 def _candidate_names(doc: Document) -> list[str]:

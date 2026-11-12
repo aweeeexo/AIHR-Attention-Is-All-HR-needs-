@@ -40,6 +40,7 @@ class Score:
     extra: list[str]
     missed: list[str]
     wrong_modality: list[str]
+    matches: dict[int, int]  # пункт эталона → индекс извлечённого требования
 
     @property
     def completeness(self) -> float:
@@ -84,6 +85,7 @@ def evaluate(golden: dict, reqs: list[Requirement]) -> Score:
         extra=[reqs[ri].text for ri in range(len(reqs)) if ri not in used_r],
         missed=[items[gi]["key"] for gi in range(len(items)) if gi not in used_g],
         wrong_modality=wrong,
+        matches=matches,
     )
 
 

@@ -212,3 +212,10 @@ def test_case_resume_outbound_has_no_pii(name: str) -> None:
     # смысл на месте: разделы и годы работы не тронуты
     assert "Опыт работы" in prompt
     assert re.search(r"20\d\d", prompt)
+
+
+def test_personal_fields_removed_anywhere_but_not_meaning() -> None:
+    ctx = PrivacyContext()
+    assert "Гражданство" not in mask_text("Гражданство: Россия", ctx)  # не только в контактах
+    assert "Семейное положение" not in mask_text("Семейное положение: женат, двое детей", ctx)
+    assert mask_text("Опыт работы с детьми 3–7 лет", ctx) == "Опыт работы с детьми 3–7 лет"
