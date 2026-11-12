@@ -113,7 +113,7 @@ class EchoRequirementsLLM:
         if req_ids:  # проход A: «Не указано» по каждому требованию
             verdicts = [
                 {"requirement_id": rid, "reasoning": "заглушка", "status": "not_stated",
-                 "comment": "заглушка"}
+                 "fragment_ids": [], "comment": "заглушка"}
                 for rid in req_ids
             ]  # fmt: skip
             message = SimpleNamespace(content=json.dumps({"verdicts": verdicts}))

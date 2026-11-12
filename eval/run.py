@@ -15,6 +15,7 @@
 from __future__ import annotations
 
 import json
+import re
 import sys
 import time
 from collections import Counter
@@ -173,11 +174,12 @@ def score_keywords() -> MethodResult:
 
 
 class OnePromptItem(BaseModel):
+    # Все поля обязательные: иначе часть моделей их пропускает, и сравнить с эталоном нельзя
     requirement: str
-    must: bool = True
-    source_fragment_ids: list[str] = []
+    must: bool
+    source_fragment_ids: list[str] = Field(min_length=1)
     status: Literal["match", "partial", "mismatch", "not_stated"]
-    quote: str = ""
+    quote: str
 
 
 class OnePromptResult(BaseModel):
@@ -398,7 +400,8 @@ def main() -> int:
     if notes:
         out += ["", *notes]
     if methods[-1].pairs:
-        out += ["", f"Модель в строках с LLM: `{online.llm_model}`."]
+        model = re.sub(r"^(\w+://)[^/]+/", r"\1<каталог>/", online.llm_model or "")
+        out += ["", f"Модель в строках с LLM: `{model}`."]
         if online.llm_provider == "replay":
             out[-1] += (
                 " Провайдер replay (D39): ответы модели из файлов. Время — ожидание исполнителя "

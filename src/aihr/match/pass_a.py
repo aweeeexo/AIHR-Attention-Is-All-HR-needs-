@@ -20,6 +20,7 @@ from aihr.contracts import (
     Evidence,
     EvidenceType,
     Fragment,
+    LLMBadOutput,
     LLMUnavailable,
     Modality,
     ReqKind,
@@ -186,6 +187,17 @@ def pass_a(
                 },
                 PassAResult,
             )
+        except LLMBadOutput as exc:
+            # Модель не смогла ответить по схеме и после повторов. Меньшая пачка обычно выходит;
+            # одно требование без ответа — «Не указано» и ручная проверка (gate)
+            if len(batch) < 2:
+                log.warning("проход A: нет валидного вердикта для %s (%s)", batch[0].id, exc)
+                return
+            log.info("проход A: ответ не по схеме на %d требованиях, делим пачку", len(batch))
+            half = len(batch) // 2
+            ask(batch[:half])
+            ask(batch[half:])
+            return
         except LLMUnavailable as exc:
             # Провайдер не успел выдать длинный ответ — делим пачку пополам. Сеть или ключ
             # (не таймаут) так не лечатся: пробрасываем сразу

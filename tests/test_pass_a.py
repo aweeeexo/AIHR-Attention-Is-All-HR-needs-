@@ -246,3 +246,18 @@ def test_soft_skill_by_adjacent_facts_is_not_stated(resume) -> None:
     assert v.status == Status.not_stated and v.evidence == [] and "интервью" in v.comment
     direct = raw.model_copy(update={"evidence_type": "direct", "status": Status.match})
     assert gate(req, direct, resume).status == Status.match
+
+
+def test_missing_fragment_ids_triggers_fix(resume, profile) -> None:
+    """Модель поставила «Соответствует» без номеров — получает ошибку схемы и дописывает их."""
+    fid = resume.fragments[0].id
+    req = _req(1, "Знание AutoCAD")
+    bad = {"requirement_id": req.id, "reasoning": "…", "status": "match", "fragment_ids": [],
+           "comment": "есть"}  # fmt: skip
+    good = {**bad, "fragment_ids": [fid]}
+    fake = FakeOpenAI([json.dumps({"verdicts": [bad]}), json.dumps({"verdicts": [good]})])
+    s = Settings(_env_file=None, llm_base_url="http://x/v1", llm_model="m")  # type: ignore[call-arg]
+    [v] = pass_a([req], profile, resume, LLMClient(s, client=fake))
+    assert v.status == Status.match and v.evidence[0].fragment_id == fid
+    retry = fake.completions.calls[1]["messages"][-1]["content"]
+    assert "fragment_ids" in retry  # модели объяснили, что исправить
