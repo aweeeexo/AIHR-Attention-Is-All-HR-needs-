@@ -128,3 +128,27 @@ def test_requirements_against_golden(live_llm: LLMClient) -> None:
         assert not [w for w in doc.warnings if "не извлечено" in w], doc.warnings
     assert matched / total >= 0.9
     assert modality_ok / matched >= 0.9
+
+
+@pytest.mark.parametrize(
+    "name", sorted(p.name for p in (REPO_ROOT / "data" / "case").glob("*резюме*.docx"))
+)
+def test_profile_on_case_resumes(live_llm: LLMClient, name: str) -> None:
+    """T05-A: профиль резюме кейса — места работы с датами, все ссылки валидны, стаж посчитан."""
+    from aihr.contracts import YearMonth
+    from aihr.extract import extract_profile
+    from aihr.normalize import enrich_profile
+
+    path = REPO_ROOT / "data" / "case" / name
+    ctx = PrivacyContext()
+    doc = mask_document(load_document(path.read_bytes(), name, DocKind.resume, "R"), ctx)
+    profile = enrich_profile(
+        extract_profile(doc, live_llm.for_run(ctx, None)), YearMonth(year=2026, month=11)
+    )
+    known = {f.id for f in doc.fragments}
+    assert profile.positions and profile.skills
+    for item in [*profile.positions, *profile.education, *profile.skills, *profile.languages]:
+        assert set(item.fragment_ids) <= known
+    assert profile.total_experience_months and profile.total_experience_months > 6
+    months = profile.total_experience_months
+    print(f"\n{name[-14:]}: мест работы {len(profile.positions)}, стаж {months} мес.")
