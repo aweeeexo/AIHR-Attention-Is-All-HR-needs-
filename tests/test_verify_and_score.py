@@ -139,7 +139,7 @@ def test_rank_orders_by_score() -> None:
     assert [s.vacancy_id for s in r.items] == ["V2", "V1"]
     assert r.best_vacancy_id == "V2"
     assert r.comparison[0].startswith("V2 выше V1 на 100 пунктов")
-    assert "Веса: обязательное 3" in r.formula
+    assert "обязательное требование 3" in r.formula
 
 
 @pytest.mark.parametrize(
@@ -147,3 +147,102 @@ def test_rank_orders_by_score() -> None:
 )
 def test_plural(n: int, word: str) -> None:
     assert plural(n, ("пункт", "пункта", "пунктов")) == word
+
+
+# ---------- T08: крайние случаи и объяснения ----------
+
+
+def test_manual_calculation_small_example() -> None:
+    reqs = [
+        _req(1, Modality.must),
+        _req(2, Modality.must),
+        _req(3, Modality.nice),
+        _req(4, Modality.nice),
+    ]
+    verdicts = [
+        _verdict(Status.match, "R1", rid="V1.req1"),
+        _verdict(Status.partial, "R1", rid="V1.req2", partial_value=0.25),
+        _verdict(Status.mismatch, "R2", rid="V1.req3"),
+        _verdict(Status.not_stated, rid="V1.req4"),
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    # (3·1 + 3·0.25 + 1·0 + 1·0.5) / 8 = 4.25 / 8
+    assert s.score == round(100 * 4.25 / 8, 1)
+    assert (s.score_min, s.score_max) == (round(100 * 3.75 / 8, 1), round(100 * 4.75 / 8, 1))
+    assert s.top_plus[:2] == ["V1.req1", "V1.req2"]
+    assert s.top_minus[0] == "V1.req2"  # потеря 3 · 0.75 — самая большая
+    assert "«требование 1»" in s.explanation and "частично — 1" in s.explanation
+
+
+def test_no_unknown_means_no_interval() -> None:
+    reqs = [_req(1, Modality.must), _req(2, Modality.nice)]
+    verdicts = [
+        _verdict(Status.match, "R1", rid="V1.req1"),
+        _verdict(Status.mismatch, "R2", rid="V1.req2"),
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    assert s.score_min == s.score == s.score_max == 75.0
+    assert "Не указано" not in s.explanation
+
+
+def test_must_mismatch_never_fits() -> None:
+    reqs = [_req(i, Modality.must) for i in range(1, 21)]
+    verdicts = [_verdict(Status.match, "R1", rid=f"V1.req{i}") for i in range(1, 20)]
+    verdicts.append(_verdict(Status.mismatch, "R2", rid="V1.req20"))
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    assert s.score == 95.0 and s.label != FitLabel.fits
+    assert "решает рекрутер" in s.explanation
+
+
+def test_empty_resume_scores_fifty() -> None:
+    reqs = [_req(1, Modality.must), _req(2, Modality.nice)]
+    s = score_vacancy(
+        VACANCY,
+        reqs,
+        [_verdict(Status.not_stated, rid="V1.req1"), _verdict(Status.not_stated, rid="V1.req2")],
+    )
+    assert (s.score, s.score_min, s.score_max) == (50.0, 0.0, 100.0)
+    assert s.label == FitLabel.not_fit  # D41: без подтверждений — не «с оговорками»
+    assert "мало данных" in s.explanation and "Мало данных: в резюме подтверждено 0 из 1" in (
+        s.explanation
+    )
+
+
+def test_only_nice_requirements() -> None:
+    s = score_vacancy(VACANCY, [_req(1, Modality.nice)], [_verdict(Status.match, "R1")])
+    assert s.score == 100.0 and "нет обязательных требований" in s.explanation
+
+
+def test_rank_tie_breaks_and_comparison_reason() -> None:
+    a_doc = VACANCY.model_copy(update={"id": "V1"})
+    b_doc = VACANCY.model_copy(update={"id": "V2"})
+    reqs_a = [_req(1, Modality.must), _req(2, Modality.nice)]
+    a = score_vacancy(
+        a_doc,
+        reqs_a,
+        [
+            _verdict(Status.match, "R1", rid="V1.req1"),
+            _verdict(Status.mismatch, "R1", rid="V1.req2"),
+        ],
+    )
+    b = score_vacancy(
+        b_doc,
+        reqs_a,
+        [
+            _verdict(Status.mismatch, "R1", rid="V1.req1"),
+            _verdict(Status.match, "R1", rid="V1.req2"),
+        ],
+    )
+    r = rank([b, a])
+    assert [s.vacancy_id for s in r.items] == ["V1", "V2"]
+    assert "не подтверждены 1 из 1 обязательных" in r.comparison[0]
+
+
+def test_score_has_no_case_specific_logic() -> None:
+    import inspect
+
+    import aihr.score as score_module
+
+    source = inspect.getsource(score_module).lower()
+    for word in ("вакансия 1", "вакансия 2", "вакансия 3", "v1.", "v2.", "v3."):
+        assert word not in source
