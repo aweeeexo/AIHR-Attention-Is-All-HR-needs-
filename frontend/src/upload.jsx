@@ -1,11 +1,11 @@
 import React, { useRef, useState } from 'react';
-import { ArrowRight, FileText, LoaderCircle, Paperclip, X } from 'lucide-react';
+import { ArrowRight, FileText, Paperclip, X } from '@phosphor-icons/react';
 
 const formats = /\.(docx|pdf|rtf|txt)$/i;
 const accepted = '.docx,.pdf,.rtf,.txt';
 
-export function Upload({ mode, pending, submit }) {
-  const [resumes, setResumes] = useState([]);
+export function Upload({ mode, pending, submit, initialResumes }) {
+  const [resumes, setResumes] = useState(initialResumes || []);
   const [vacancies, setVacancies] = useState([]);
   const [resumeText, setResumeText] = useState('');
   const [vacancyText, setVacancyText] = useState('');
@@ -43,7 +43,7 @@ export function Upload({ mode, pending, submit }) {
         <div className="submit-row">
           {!ready && !pending && <span>Добавьте резюме и хотя бы одну вакансию.</span>}
           <button className="button primary" type="submit" disabled={!ready || pending}>
-            {pending ? <><LoaderCircle className="spin" size={16} aria-hidden="true" /> Обработка…</> : <>Начать анализ <ArrowRight size={16} aria-hidden="true" /></>}
+            {pending ? 'Анализируем документы' : <>Начать анализ <ArrowRight size={18} aria-hidden="true" /></>}
           </button>
         </div>
       </fieldset>

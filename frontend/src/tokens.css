@@ -1,0 +1,201 @@
+/* Дизайн-токены AIHR. Значения — из скилла landing-page-design: шкала Tailwind,
+   отступы Spacing-0…900, радиусы Tailwind, один шрифт (Manrope), одна кривая анимации. */
+
+:root {
+  --font: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+
+  /* Текстовые стили: «вес размер/высота строки шрифт». Применяются классами ниже
+     или через font: var(--…) в компонентах — новых размеров не вводим. */
+  --heading-1: 600 60px/60px var(--font);
+  --heading-2: 600 48px/48px var(--font);
+  --heading-3: 600 36px/40px var(--font);
+  --heading-4: 600 30px/36px var(--font);
+  --heading-5: 600 24px/32px var(--font);
+  --heading-6: 600 20px/28px var(--font);
+  --title-1: 500 20px/28px var(--font);
+  --title-2: 500 18px/28px var(--font);
+  --title-3: 500 16px/24px var(--font);
+  --title-4: 500 14px/20px var(--font);
+  --title-5: 500 12px/16px var(--font);
+  --body-1: 600 16px/24px var(--font);
+  --body-2: 500 16px/24px var(--font);
+  --body-3: 400 16px/24px var(--font);
+  --body-4: 600 14px/20px var(--font);
+  --body-5: 500 14px/20px var(--font);
+  --body-6: 400 14px/20px var(--font);
+  --button-lg: 600 18px/28px var(--font);
+  --button-md: 600 16px/24px var(--font);
+  --button-sm: 600 14px/20px var(--font);
+  --button-xsm: 600 12px/16px var(--font);
+  --caption-1: 500 14px/20px var(--font);
+  --caption-2: 400 14px/20px var(--font);
+  --caption-3: 600 12px/16px var(--font);
+  --caption-4: 500 12px/16px var(--font);
+  --caption-5: 400 12px/16px var(--font);
+
+  /* Отступы */
+  --s-0: 0;
+  --s-25: 2px;
+  --s-50: 4px;
+  --s-75: 8px;
+  --s-100: 12px;
+  --s-200: 16px;
+  --s-300: 24px;
+  --s-400: 32px;
+  --s-500: 40px;
+  --s-600: 48px;
+  --s-700: 64px;
+  --s-800: 80px;
+  --s-900: 96px;
+
+  /* Радиусы (Tailwind) */
+  --r-sm: 2px;
+  --r: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-3xl: 24px;
+  --r-full: 9999px;
+
+  /* Движение */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-layout: 500ms;
+  --t-color: 300ms;
+
+  /* Ширина контента */
+  --container: 1240px;
+  --measure: 680px;
+}
+
+/* ---------- Цвет: светлая тема — «бумага и чернила» ---------- */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --desk: #f3efe6;
+  --surface: #fffdf8;
+  --surface-subtle: #f8f4ec;
+  --surface-secondary: #ede7db;
+  --surface-hover: #e8e1d3;
+  --surface-nav: rgb(255 253 248 / 0.78);
+  --border: #e2dbcc;
+  --border-strong: #c7bfae;
+  --text: #1d1b17;
+  --text-secondary: #46423a;
+  --text-tertiary: #6a655b;
+  --text-muted: #8c867a;
+  --accent: #2b4fb8;
+  --accent-hover: #213f96;
+  --accent-active: #1a3277;
+  --accent-text: #ffffff;
+  --accent-subtle: #e5eaf6;
+  --focus: #2b4fb8;
+  --heading-from: #000000;
+  --heading-to: #666666;
+  --shadow: 0 1px 2px rgb(84 66 30 / 0.06), 0 8px 24px rgb(84 66 30 / 0.08);
+  --shadow-lift: 0 2px 4px rgb(84 66 30 / 0.08), 0 16px 40px rgb(84 66 30 / 0.12);
+  --grain-opacity: 0.05;
+
+  /* Текстовыделители: цвет статуса всегда идёт вместе с подписью */
+  --mark-match: #c6ecbf;
+  --mark-partial: #ffe69a;
+  --mark-mismatch: #ffc8c6;
+  --mark-unknown: #b3ab9b;
+  --ink-match: #165c35;
+  --ink-partial: #6b4700;
+  --ink-mismatch: #8f1c2a;
+  --ink-unknown: #5b564d;
+
+  --status-match: #1c7a47;
+  --status-partial: #8a5a00;
+  --status-mismatch: #b42335;
+  --status-unknown: #5d5850;
+  --status-match-subtle: #ecf6ea;
+  --status-partial-subtle: #fdf3d9;
+  --status-mismatch-subtle: #fcebea;
+  --status-unknown-subtle: #f1ede4;
+  --highlight: #ffe69a;
+  --highlight-border: #b7861b;
+}
+
+/* ---------- Цвет: тёмная тема (фоны только из списка скилла) ---------- */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --desk: #181818;
+  --surface: #1f1f1f;
+  --surface-subtle: #272727;
+  --surface-secondary: #313131;
+  --surface-hover: #313131;
+  --surface-nav: rgb(31 31 31 / 0.8);
+  --border: #313131;
+  --border-strong: #4a4a4a;
+  --text: #f2f0ea;
+  --text-secondary: #d2cec5;
+  --text-tertiary: #aaa59b;
+  --text-muted: #8e897f;
+  --accent: #8fa9f0;
+  --accent-hover: #a9bdf4;
+  --accent-active: #7895e8;
+  --accent-text: #10172b;
+  --accent-subtle: #272727;
+  --focus: #8fa9f0;
+  --heading-from: #ffffff;
+  --heading-to: #9b9b9b;
+  --shadow: 0 1px 2px rgb(0 0 0 / 0.3), 0 8px 24px rgb(0 0 0 / 0.35);
+  --shadow-lift: 0 2px 4px rgb(0 0 0 / 0.35), 0 16px 40px rgb(0 0 0 / 0.45);
+  --grain-opacity: 0.06;
+
+  --mark-match: rgb(111 212 156 / 0.26);
+  --mark-partial: rgb(240 193 92 / 0.28);
+  --mark-mismatch: rgb(255 143 154 / 0.26);
+  --mark-unknown: #6e6a62;
+  --ink-match: #a6ecc2;
+  --ink-partial: #f5d48a;
+  --ink-mismatch: #ffb3bb;
+  --ink-unknown: #c7c2b8;
+
+  --status-match: #6fd49c;
+  --status-partial: #f0c15c;
+  --status-mismatch: #ff8f9a;
+  --status-unknown: #aaa59b;
+  --status-match-subtle: #272727;
+  --status-partial-subtle: #272727;
+  --status-mismatch-subtle: #272727;
+  --status-unknown-subtle: #272727;
+  --highlight: rgb(240 193 92 / 0.28);
+  --highlight-border: #e0b44d;
+}
+
+/* ---------- Классы текстовых стилей (имена из скилла, kebab-case) ---------- */
+.heading-1 { font: var(--heading-1); }
+.heading-2 { font: var(--heading-2); }
+.heading-3 { font: var(--heading-3); }
+.heading-4 { font: var(--heading-4); }
+.heading-5 { font: var(--heading-5); }
+.heading-6 { font: var(--heading-6); }
+.title-1 { font: var(--title-1); }
+.title-2 { font: var(--title-2); }
+.title-3 { font: var(--title-3); }
+.title-4 { font: var(--title-4); }
+.title-5 { font: var(--title-5); }
+.body-1 { font: var(--body-1); }
+.body-2 { font: var(--body-2); }
+.body-3 { font: var(--body-3); }
+.body-4 { font: var(--body-4); }
+.body-5 { font: var(--body-5); }
+.body-6 { font: var(--body-6); }
+.button-lg { font: var(--button-lg); }
+.button-md { font: var(--button-md); }
+.button-sm { font: var(--button-sm); }
+.button-xsm { font: var(--button-xsm); }
+.caption-1 { font: var(--caption-1); }
+.caption-2 { font: var(--caption-2); }
+.caption-3 { font: var(--caption-3); }
+.caption-4 { font: var(--caption-4); }
+.caption-5 { font: var(--caption-5); }
+
+:where(.heading-1, .heading-2, .heading-3, .heading-4, .heading-5, .heading-6) {
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+:where(.body-1, .body-2, .body-3, .body-4, .body-5, .body-6, p) { text-wrap: pretty; }

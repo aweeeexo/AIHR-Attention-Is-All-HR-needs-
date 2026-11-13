@@ -214,6 +214,17 @@ def job_match_example(
     return _jobs().submit("match", lambda p: run(files[0], files[1], progress=p))
 
 
+@app.post("/jobs/match/case", response_model=JobStatus, status_code=202)
+async def job_match_case(
+    resume: Annotated[UploadFile, File(description="Своё резюме: docx, pdf, rtf или txt")],
+) -> JobStatus:
+    """Своё резюме против вакансий из примера кейса — первый экран интерфейса."""
+    _, vacancies = _example()
+    resume_file = await _read(resume, get_settings().max_file_bytes)
+    vacancy_files = read_files(vacancies)
+    return _jobs().submit("match", lambda p: run(resume_file, vacancy_files, progress=p))
+
+
 @app.post("/jobs/batch", response_model=JobStatus, status_code=202)
 async def job_batch(
     resumes: Annotated[list[UploadFile], File(description="Несколько резюме")],

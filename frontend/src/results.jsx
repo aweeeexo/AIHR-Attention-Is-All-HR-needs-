@@ -1,5 +1,5 @@
 import React from 'react';
-import { ArrowUpRight, CircleAlert, FileWarning } from 'lucide-react';
+import { ArrowUpRight, FileX as FileWarning, WarningCircle as CircleAlert } from '@phosphor-icons/react';
 import { Report } from './report.jsx';
 import { Tag } from './tag.jsx';
 

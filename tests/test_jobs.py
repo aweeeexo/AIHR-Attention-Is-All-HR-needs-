@@ -76,3 +76,15 @@ def test_job_batch_example_and_errors() -> None:
     assert client.get("/jobs/not-a-job").status_code == 400
     assert client.get("/jobs/0123456789abcdef").status_code == 404
     get_settings.cache_clear()
+
+
+def test_job_own_resume_against_case_vacancies() -> None:
+    client = TestClient(app)
+    data, name = fixture_file("resume_cook.txt")
+    r = client.post("/jobs/match/case", files=[("resume", (name, data))])
+    assert r.status_code == 202
+    job = _wait(client, r.json()["job_id"])
+    assert job["status"] == "done"
+    result = client.get(f"/runs/{job['run_id']}").json()
+    assert len(result["vacancies"]) == 3  # три вакансии кейса
+    get_settings.cache_clear()

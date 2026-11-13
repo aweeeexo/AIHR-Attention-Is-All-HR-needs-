@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Calculator, ClipboardCheck } from 'lucide-react';
+import { Calculator, ListChecks as ClipboardCheck } from '@phosphor-icons/react';
 
 const issueLabels = {
   discriminatory: 'Похоже на дискриминацию',
