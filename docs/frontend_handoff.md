@@ -110,6 +110,7 @@ curl -X POST localhost:8000/match/batch/example
 - **Скачать DOCX** — ссылка на `/runs/{run_id}/report/{vacancy_id}.docx`.
 - **Профиль кандидата** — `profile`: `positions[]` (должность, организация, `raw_dates`, `duration_months`), `education[]`, `skills[]`, `languages[]`, `total_experience_months`.
 - **Требования вакансии** — `requirements[vacancy_id][]`: `text`, `modality`, `threshold`.
+- **Качество вакансии** (D51) — `GET /runs/{run_id}/vacancy-check`: по каждой вакансии `summary` и `issues[]` (`kind`: `unverifiable` / `vague` / `too_many_must` / `discriminatory` / `duplicate`, `requirement`, `text`, `hint`). Показать блоком над требованиями вакансии.
 - **Что если** (D50) — для строк со статусом `not_stated` и `partial` выбор ответа кандидата (Соответствует / Частично / Не соответствует), кнопка «Пересчитать» → `POST /runs/{run_id}/whatif` с `{"answers": [{"vacancy_id", "requirement_id", "status"}]}`. В ответе `changes[]` (`score_before/after`, `interval_after`, `label_before/after`, `place_before/after`) и новый `ranking`. Показывать «балл 52 → 78, место 2 → 1». Ничего не сохраняется.
 - **Что ушло наружу** — `/runs/{run_id}/outbound` в раскрывашке: доказывает жюри, что во внешний API уходят только обезличенные данные.
 

@@ -366,6 +366,7 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
             gaps = ", ".join(f"{ym_text(a)} – {ym_text(b)}" for a, b in profile["gaps_months"])
             st.caption(f"Перерывы больше 6 месяцев: {gaps}")
     with tabs[2]:
+        _vacancy_quality(result["run_id"], vacancy_id)
         reqs = result["requirements"].get(vacancy_id, [])
         st.dataframe(
             pd.DataFrame(
@@ -417,6 +418,31 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
         )
     with tabs[4]:
         _what_if(result, vacancy_id, report)
+
+
+ISSUE_RU = {
+    "discriminatory": "похоже на дискриминацию",
+    "unverifiable": "не проверить по резюме",
+    "vague": "расплывчато",
+    "too_many_must": "слишком много обязательных",
+    "duplicate": "дубль",
+}
+
+
+def _vacancy_quality(run_id: str, vacancy_id: str) -> None:
+    """Проверка качества вакансии (D51)."""
+    try:
+        checks = httpx.get(f"{API_URL}/runs/{run_id}/vacancy-check", timeout=30).json()
+    except (httpx.HTTPError, ValueError):
+        return
+    check = next((c for c in checks if c["vacancy_id"] == vacancy_id), None)
+    if check is None:
+        return
+    with st.container(border=True):
+        st.markdown(f"**Качество вакансии.** {check['summary']}")
+        for issue in check["issues"]:
+            req = f" «{issue['requirement']}»" if issue.get("requirement") else ""
+            st.caption(f"{ISSUE_RU[issue['kind']]}{req}: {issue['text']} → {issue['hint']}")
 
 
 ANSWER_OPTIONS = {"не отвечал": None, "Соответствует": "match", "Частично": "partial",

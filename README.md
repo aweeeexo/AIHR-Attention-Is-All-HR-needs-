@@ -297,6 +297,7 @@ flowchart LR
 | GET | `/runs/{run_id}` | сохранённый результат прогона |
 | GET | `/runs/{run_id}/outbound` | журнал запросов к внешней LLM |
 | GET | `/runs/{run_id}/report/{vacancy_id}.docx` | отчёт по вакансии в DOCX (D37) |
+| GET | `/runs/{run_id}/vacancy-check` | качество вакансий (D51): что не проверить по резюме (→ интервью), расплывчатые формулировки, «вакансия-единорог», похожее на дискриминацию, дубли |
 | POST | `/runs/{run_id}/whatif` | «что если» (D50): `{"answers": [{"vacancy_id", "requirement_id", "status"}]}` — ответы кандидата меняют статусы, код пересчитывает балл, интервал, метку и рейтинг без LLM |
 
 ```bash

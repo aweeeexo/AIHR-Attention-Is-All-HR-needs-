@@ -23,6 +23,7 @@ from aihr.ingest import fix_filename
 from aihr.inputs import case_files, read_files
 from aihr.jobs import JobStatus, registry
 from aihr.pipeline import RUN_ID_RE, run
+from aihr.report.vacancy_check import VacancyCheck, check_vacancy
 from aihr.retrieve import default_encoder
 from aihr.score.whatif import WhatIfAnswer, WhatIfError, WhatIfResult, what_if
 
@@ -277,6 +278,20 @@ def run_what_if(run_id: str, body: WhatIfRequest) -> WhatIfResult:
         return what_if(result, body.answers)
     except WhatIfError as exc:
         raise HTTPException(422, str(exc)) from exc
+
+
+@app.get("/runs/{run_id}/vacancy-check", response_model=list[VacancyCheck])
+def run_vacancy_check(run_id: str) -> list[VacancyCheck]:
+    """Качество вакансий (D51): непроверяемое, расплывчатое, «единорог», дискриминация, дубли."""
+    path = _run_dir(run_id) / "result.json"
+    if not path.is_file():
+        raise HTTPException(404, "Результат прогона не найден")
+    result = MatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+    return [
+        check_vacancy(v.id, result.requirements[v.id], v.title)
+        for v in result.vacancies
+        if v.id in result.requirements
+    ]
 
 
 @app.get("/runs/{run_id}/report/{vacancy_id}.docx")
