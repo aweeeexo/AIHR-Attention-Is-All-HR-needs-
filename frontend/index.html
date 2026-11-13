@@ -10,17 +10,14 @@
     <meta property="og:description" content="Сопоставление резюме с вакансиями: цитата к каждому выводу, балл по одной формуле, вопросы кандидату." />
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/og.svg" />
-    <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#181818" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#181818" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <script>
-      // Тема до первой отрисовки: выбор пользователя или системная настройка
+      // Тема до первой отрисовки: тёмная, если пользователь не выбрал светлую
       (function () {
         var theme = null;
         try { theme = localStorage.getItem('aihr-theme'); } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
+        if (theme !== 'light') theme = 'dark';
         document.documentElement.dataset.theme = theme;
       })();
     </script>

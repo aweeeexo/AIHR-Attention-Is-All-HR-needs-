@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { ArrowsClockwise, List, X } from '@phosphor-icons/react';
-import { applyMode, followSystem, storedMode } from './theme.js';
+import { applyMode, storedMode } from './theme.js';
 
 const links = [
   { href: '#/', label: 'О системе', match: (page) => page === 'landing' },
@@ -25,14 +25,12 @@ function Status({ health, onRefresh }) {
 
 function ThemeSelect() {
   const [mode, setMode] = useState(storedMode);
-  useEffect(() => followSystem(), []);
   return (
     <label className="theme-select">
       <span className="sr-only">Тема оформления</span>
       <select className="caption-4" value={mode} onChange={(event) => { applyMode(event.target.value); setMode(event.target.value); }}>
-        <option value="system">Системная тема</option>
-        <option value="light">Светлая тема</option>
         <option value="dark">Тёмная тема</option>
+        <option value="light">Светлая тема</option>
       </select>
     </label>
   );
