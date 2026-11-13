@@ -74,6 +74,7 @@ def test_ui_example_flow(api: TestClient) -> None:
         "Профиль кандидата",
         "Требования вакансии",
         "Отчёт",
+        "Что если",
     ]
     assert any("упрощённый режим" in w.value for w in at.warning)
     radio = at.radio[1]  # [0] — режим «одно резюме / пакет»
@@ -125,3 +126,22 @@ def test_ui_batch_example_flow(api: TestClient) -> None:
     assert len(at.dataframe) >= 1
     at = at.selectbox[0].set_value("C2").run()
     assert not at.exception
+
+
+def test_what_if_text() -> None:
+    change = {"score_before": 52.5, "score_after": 78.0, "interval_after": [70.0, 86.0],
+              "label_before": "not_fit", "label_after": "fits", "place_before": 2,
+              "place_after": 1}  # fmt: skip
+    text = ui.what_if_text(change)
+    assert "52.5 → **78**" in text and "место 2 → 1" in text and "подходит**" in text
+
+
+def test_ui_what_if_flow(api: TestClient) -> None:
+    at = AppTest.from_file(str(UI_PATH), default_timeout=120).run()
+    at = next(b for b in at.button if b.label == "Пример из кейса").click().run()
+    boxes = [s for s in at.selectbox if s.label.endswith("сейчас «Не указано»")]
+    assert boxes, "нет требований «Не указано» для «что если»"
+    at = boxes[0].set_value("Соответствует").run()
+    at = next(b for b in at.button if b.label == "Пересчитать").click().run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert any("Балл" in s.value and "→" in s.value for s in at.success)

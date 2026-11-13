@@ -310,7 +310,7 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
             mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
             key=f"docx_{vacancy_id}",
         )
-    tabs = st.tabs(["Требования", "Профиль кандидата", "Требования вакансии", "Отчёт"])
+    tabs = st.tabs(["Требования", "Профиль кандидата", "Требования вакансии", "Отчёт", "Что если"])
     with tabs[0]:
         table = requirement_rows(report)
         left, right = st.columns([3, 2])
@@ -415,6 +415,71 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
             f"Проверка: цитат {stats['quotes_verified']} из {stats['quotes_total']} совпадают с "
             f"резюме; непроверенных сущностей в тексте: {stats['generated_entities_unverified']}"
         )
+    with tabs[4]:
+        _what_if(result, vacancy_id, report)
+
+
+ANSWER_OPTIONS = {"не отвечал": None, "Соответствует": "match", "Частично": "partial",
+                  "Не соответствует": "mismatch"}  # fmt: skip
+
+
+def what_if_text(change: dict[str, Any]) -> str:
+    """Строка итога «что если» для одной вакансии."""
+    lo, hi = change["interval_after"]
+    place = (
+        f"место {change['place_before']} → {change['place_after']}"
+        if change["place_before"] != change["place_after"]
+        else f"место {change['place_after']} не изменилось"
+    )
+    return (
+        f"Балл {change['score_before']:g} → **{change['score_after']:g}** (от {lo:g} до {hi:g}), "
+        f"{LABEL_RU[change['label_before']]} → **{LABEL_RU[change['label_after']]}**, {place}."
+    )
+
+
+def _what_if(result: dict[str, Any], vacancy_id: str, report: dict[str, Any]) -> None:
+    open_rows = [r for r in report["rows"] if r["status"] in ("not_stated", "partial")]
+    if not open_rows:
+        st.info("Все требования уже подтверждены или опровергнуты резюме — уточнять нечего.")
+        return
+    st.caption(
+        "Кандидат ответил на уточняющий вопрос — отметьте ответ, и балл с рейтингом пересчитаются "
+        "той же формулой, без LLM. Сам результат прогона не меняется."
+    )
+    answers = []
+    for row in open_rows:
+        choice = st.selectbox(
+            f"{row['requirement']} · сейчас «{row['status_ru']}»",
+            list(ANSWER_OPTIONS),
+            key=f"whatif_{result['run_id']}_{row['requirement_id']}",
+        )
+        if ANSWER_OPTIONS[choice]:
+            answers.append(
+                {
+                    "vacancy_id": vacancy_id,
+                    "requirement_id": row["requirement_id"],
+                    "status": ANSWER_OPTIONS[choice],
+                }
+            )
+    if not st.button("Пересчитать", key=f"whatif_btn_{vacancy_id}", disabled=not answers):
+        return
+    try:
+        response = httpx.post(
+            f"{API_URL}/runs/{result['run_id']}/whatif", json={"answers": answers}, timeout=30
+        )
+    except httpx.HTTPError as exc:
+        st.error(f"API недоступен: {type(exc).__name__}")
+        return
+    if response.status_code != 200:
+        st.error(f"Ошибка API {response.status_code}: {response.text[:300]}")
+        return
+    data = response.json()
+    change = next(c for c in data["changes"] if c["vacancy_id"] == vacancy_id)
+    st.success(what_if_text(change))
+    order = " → ".join(s["vacancy_id"] for s in data["ranking"]["items"])
+    st.caption(f"Новый порядок вакансий: {order}")
+    if data["ranking"].get("summary"):
+        st.info(data["ranking"]["summary"])
 
 
 def _show_outbound(run_id: str) -> None:

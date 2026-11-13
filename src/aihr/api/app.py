@@ -13,6 +13,7 @@ from typing import Annotated, Any
 from fastapi import FastAPI, File, HTTPException, Query, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
 
 from aihr import __version__
 from aihr.batch import run_batch
@@ -23,6 +24,7 @@ from aihr.inputs import case_files, read_files
 from aihr.jobs import JobStatus, registry
 from aihr.pipeline import RUN_ID_RE, run
 from aihr.retrieve import default_encoder
+from aihr.score.whatif import WhatIfAnswer, WhatIfError, WhatIfResult, what_if
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -258,6 +260,23 @@ def get_run(run_id: str) -> MatchResult:
     if not path.is_file():
         raise HTTPException(404, "Результат прогона не найден")
     return MatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+class WhatIfRequest(BaseModel):
+    answers: list[WhatIfAnswer]
+
+
+@app.post("/runs/{run_id}/whatif", response_model=WhatIfResult)
+def run_what_if(run_id: str, body: WhatIfRequest) -> WhatIfResult:
+    """«Что если» (D50): ответы кандидата меняют статусы — балл и рейтинг пересчитывает код."""
+    path = _run_dir(run_id) / "result.json"
+    if not path.is_file():
+        raise HTTPException(404, "Результат прогона не найден")
+    result = MatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+    try:
+        return what_if(result, body.answers)
+    except WhatIfError as exc:
+        raise HTTPException(422, str(exc)) from exc
 
 
 @app.get("/runs/{run_id}/report/{vacancy_id}.docx")
