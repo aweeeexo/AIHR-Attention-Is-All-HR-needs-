@@ -192,6 +192,54 @@ def test_provider_none_runs_fallback_with_warning(monkeypatch: pytest.MonkeyPatc
     assert r.ranking and r.ranking.items and r.reports
 
 
+def test_removed_resume_section_yields_not_stated_instead_of_mismatch() -> None:
+    settings = Settings(_env_file=None, llm_provider="none")  # type: ignore[call-arg]
+    education = "Образование\n2015, Медицинский колледж № 1, сестринское дело.\n"
+    assert education in RESUME
+    vacancy = (
+        "Медсестра процедурного кабинета\nТребования:\n"
+        "Высшее образование.\nСтерилизация инструментов.\n"
+    )
+
+    for text, expected_status in [
+        (RESUME, Status.mismatch),
+        (RESUME.replace(education, ""), Status.not_stated),
+    ]:
+        result = pipeline.run(
+            (text.encode(), "resume.txt"),
+            [(vacancy.encode(), "vacancy.txt")],
+            settings=settings,
+            save=False,
+        )
+        assert result.mode == "fallback"
+        rows = {row.requirement: row for row in result.reports["V1"].rows}
+        education_row = rows["Высшее образование."]
+        assert education_row.status == expected_status
+        if expected_status == Status.mismatch:
+            assert education_row.resume_evidence
+            assert education_row.computed
+        else:
+            assert not education_row.resume_evidence
+        assert rows["Стерилизация инструментов."].status == Status.match
+
+
+def test_fallback_preserves_verdicts_and_ranking_between_runs() -> None:
+    settings = Settings(_env_file=None, llm_provider="none")  # type: ignore[call-arg]
+    resume = (RESUME.encode(), "resume.txt")
+    vacancies = [
+        fixture_file("vacancy_cook.txt"),
+        ((FIXTURES / "vacancies_other" / "nurse.txt").read_bytes(), "nurse.txt"),
+    ]
+
+    first = pipeline.run(resume, vacancies, settings=settings, save=False)
+    second = pipeline.run(resume, vacancies, settings=settings, save=False)
+
+    assert first.mode == second.mode == "fallback"
+    assert first.ranking and len(first.ranking.items) == 2
+    assert first.ranking == second.ranking
+    assert first.verdicts == second.verdicts
+
+
 def test_case_fallback_mismatch_only_with_code_proof() -> None:
     settings = Settings(_env_file=None, llm_provider="none")  # type: ignore[call-arg]
     resumes, vacancies = case_files(CASE_DIR)
