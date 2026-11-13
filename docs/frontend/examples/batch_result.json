@@ -1,0 +1,201 @@
+{
+ "contracts_version": 3,
+ "batch_id": "b20261112-211100-854afc",
+ "resumes": [
+  {
+   "resume_id": "C1",
+   "filename": "Иванов Алексей_резюме 1.docx",
+   "run_id": "20261112-211100-fb6fce",
+   "mode": "llm",
+   "best_vacancy_id": "V1",
+   "error": null
+  },
+  {
+   "resume_id": "C2",
+   "filename": "Петров Иван_резюме 2.docx",
+   "run_id": "20261112-211555-567e95",
+   "mode": "llm",
+   "best_vacancy_id": "V1",
+   "error": null
+  },
+  {
+   "resume_id": "C3",
+   "filename": "Петрова Лилия_резюме 4.docx",
+   "run_id": "20261112-211556-f90758",
+   "mode": "llm",
+   "best_vacancy_id": "V2",
+   "error": null
+  },
+  {
+   "resume_id": "C4",
+   "filename": "Семенов Алексей _резюме 3.docx",
+   "run_id": "20261112-211558-d3519e",
+   "mode": "llm",
+   "best_vacancy_id": "V1",
+   "error": null
+  }
+ ],
+ "vacancies": [
+  {
+   "vacancy_id": "V1",
+   "filename": "Вакансия 1.docx",
+   "title": "Middle Frontend-разработчик / HTML-верстальщик (Vue 3, Tailwind CSS)",
+   "candidates": [
+    "C4",
+    "C2",
+    "C1",
+    "C3"
+   ],
+   "summary": "Лучший кандидат — Семенов Алексей _резюме 3.docx (C4): подходит, балл 97.1, закрыто 15 из 15 обязательных. Подходят ещё: 2."
+  },
+  {
+   "vacancy_id": "V2",
+   "filename": "Вакансия 2.docx",
+   "title": "Специалист по учёту и движению основных средств",
+   "candidates": [
+    "C3",
+    "C2",
+    "C1",
+    "C4"
+   ],
+   "summary": "Лучший кандидат — Петрова Лилия_резюме 4.docx (C3): подходит, балл 70, закрыто 4 из 7 обязательных."
+  },
+  {
+   "vacancy_id": "V3",
+   "filename": "Вакансия 3.docx",
+   "title": "Куратор образовательного процесса",
+   "candidates": [
+    "C1",
+    "C3",
+    "C2",
+    "C4"
+   ],
+   "summary": "Прямо не подходит ни один кандидат. Ближе всех Иванов Алексей_резюме 1.docx (C1): балл 61.5, закрыто 1 из 5 обязательных — смотрите отчёт кандидата."
+  }
+ ],
+ "cells": [
+  {
+   "resume_id": "C1",
+   "vacancy_id": "V1",
+   "score": 64.4,
+   "score_min": 47.1,
+   "score_max": 81.7,
+   "label": "fits_with_caveats",
+   "must_match": 6,
+   "must_total": 15
+  },
+  {
+   "resume_id": "C1",
+   "vacancy_id": "V3",
+   "score": 61.5,
+   "score_min": 28.8,
+   "score_max": 94.2,
+   "label": "not_fit",
+   "must_match": 1,
+   "must_total": 5
+  },
+  {
+   "resume_id": "C1",
+   "vacancy_id": "V2",
+   "score": 55.0,
+   "score_min": 20.0,
+   "score_max": 90.0,
+   "label": "not_fit",
+   "must_match": 2,
+   "must_total": 7
+  },
+  {
+   "resume_id": "C2",
+   "vacancy_id": "V1",
+   "score": 89.4,
+   "score_min": 82.7,
+   "score_max": 96.2,
+   "label": "fits",
+   "must_match": 12,
+   "must_total": 15
+  },
+  {
+   "resume_id": "C2",
+   "vacancy_id": "V2",
+   "score": 60.0,
+   "score_min": 20.0,
+   "score_max": 100.0,
+   "label": "not_fit",
+   "must_match": 2,
+   "must_total": 7
+  },
+  {
+   "resume_id": "C2",
+   "vacancy_id": "V3",
+   "score": 51.9,
+   "score_min": 5.8,
+   "score_max": 98.1,
+   "label": "not_fit",
+   "must_match": 0,
+   "must_total": 5
+  },
+  {
+   "resume_id": "C3",
+   "vacancy_id": "V2",
+   "score": 70.0,
+   "score_min": 43.3,
+   "score_max": 96.7,
+   "label": "fits",
+   "must_match": 4,
+   "must_total": 7
+  },
+  {
+   "resume_id": "C3",
+   "vacancy_id": "V3",
+   "score": 59.6,
+   "score_min": 34.6,
+   "score_max": 84.6,
+   "label": "not_fit",
+   "must_match": 0,
+   "must_total": 5
+  },
+  {
+   "resume_id": "C3",
+   "vacancy_id": "V1",
+   "score": 52.9,
+   "score_min": 5.8,
+   "score_max": 100.0,
+   "label": "not_fit",
+   "must_match": 1,
+   "must_total": 15
+  },
+  {
+   "resume_id": "C4",
+   "vacancy_id": "V1",
+   "score": 97.1,
+   "score_min": 95.2,
+   "score_max": 99.0,
+   "label": "fits",
+   "must_match": 15,
+   "must_total": 15
+  },
+  {
+   "resume_id": "C4",
+   "vacancy_id": "V3",
+   "score": 50.0,
+   "score_min": 5.8,
+   "score_max": 94.2,
+   "label": "not_fit",
+   "must_match": 0,
+   "must_total": 5
+  },
+  {
+   "resume_id": "C4",
+   "vacancy_id": "V2",
+   "score": 50.0,
+   "score_min": 5.0,
+   "score_max": 95.0,
+   "label": "not_fit",
+   "must_match": 0,
+   "must_total": 7
+  }
+ ],
+ "errors": [],
+ "warnings": [],
+ "summary": "Обработано резюме: 4 из 4, вакансий: 3. Хотя бы на одну вакансию подходят (с оговорками или без): 4."
+}

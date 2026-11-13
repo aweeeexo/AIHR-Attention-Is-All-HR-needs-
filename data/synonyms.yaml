@@ -1,0 +1,267 @@
+# Словарь синонимов (D14, T06-A). Общий для многих областей, не под конкретные вакансии (D12).
+# Только точные синонимы, сокращения, транслитерации и частые написания одного и того же.
+# Смежные навыки («React» и «Vue», «Excel» и «Google Sheets») — НЕ синонимы: у них общий class.
+# Формат: канон: {aliases: [...], class: ...}. Сравнение без регистра, ё = е.
+# Омонимы — в разделе homonyms: canonicalize() для них возвращает None, смысл решает LLM.
+
+homonyms: ["ос", "ui", "ит", "пк", "ба", "сб", "бд", "ад", "пм"]
+
+terms:
+  # ---------- языки программирования ----------
+  javascript: {aliases: [js, javascript, java script, джаваскрипт, яваскрипт, ecmascript, es6, "es6+", es2015], class: programming_language}
+  typescript: {aliases: [ts, typescript, тайпскрипт], class: programming_language}
+  python: {aliases: [python, python3, пайтон, питон], class: programming_language}
+  java: {aliases: [java, джава, ява], class: programming_language}
+  kotlin: {aliases: [kotlin, котлин], class: programming_language}
+  csharp: {aliases: ["c#", "c sharp", "си шарп", csharp], class: programming_language}
+  cpp: {aliases: ["c++", cpp, "си++", "си плюс плюс"], class: programming_language}
+  c_lang: {aliases: ["язык c", "язык си", ansi c], class: programming_language}
+  go: {aliases: [golang, "go lang", "язык go"], class: programming_language}
+  php: {aliases: [php, пхп], class: programming_language}
+  ruby: {aliases: [ruby, руби], class: programming_language}
+  swift: {aliases: [swift], class: programming_language}
+  rust: {aliases: [rust, раст], class: programming_language}
+  r_lang: {aliases: ["язык r", "r language", rstudio], class: programming_language}
+  sql: {aliases: [sql, эскьюэль, "язык sql", "запросы sql"], class: query_language}
+  bash: {aliases: [bash, shell, "shell-скрипты"], class: scripting}
+  vba: {aliases: [vba, "visual basic for applications", макросы excel], class: scripting}
+  matlab: {aliases: [matlab, матлаб], class: scientific_tool}
+
+  # ---------- веб ----------
+  html: {aliases: [html, html5, "язык разметки html"], class: markup}
+  css: {aliases: [css, css3, "каскадные таблицы стилей"], class: styling}
+  sass: {aliases: [sass, scss], class: styling}
+  less: {aliases: [less css], class: styling}
+  tailwind: {aliases: [tailwind, tailwindcss, tailwind css], class: css_framework}
+  bootstrap: {aliases: [bootstrap, бутстрап], class: css_framework}
+  react: {aliases: [react, reactjs, react.js, реакт], class: frontend_framework}
+  vue: {aliases: [vue, vuejs, vue.js, vue 2, vue 3, vue2, vue3, вью], class: frontend_framework}
+  angular: {aliases: [angular, angularjs, ангуляр], class: frontend_framework}
+  svelte: {aliases: [svelte], class: frontend_framework}
+  nextjs: {aliases: [next.js, nextjs, next js], class: ssr_framework}
+  nuxt: {aliases: [nuxt, nuxtjs, nuxt.js, nuxt 3], class: ssr_framework}
+  redux: {aliases: [redux, redux toolkit, rtk], class: state_management}
+  pinia: {aliases: [pinia], class: state_management}
+  vuex: {aliases: [vuex], class: state_management}
+  jquery: {aliases: [jquery, джейквери], class: js_library}
+  webpack: {aliases: [webpack, вебпак], class: bundler}
+  vite: {aliases: [vite], class: bundler}
+  nodejs: {aliases: [nodejs, node.js, нода], class: backend_runtime}
+  rest_api: {aliases: [rest api, restful, restful api, "rest-api"], class: api_style}
+  graphql: {aliases: [graphql], class: api_style}
+  figma: {aliases: [figma, фигма], class: design_tool}
+  sketch: {aliases: [sketch app], class: design_tool}
+  photoshop: {aliases: [photoshop, adobe photoshop, фотошоп, ps cc], class: design_tool}
+  illustrator: {aliases: [illustrator, adobe illustrator, иллюстратор], class: design_tool}
+  responsive: {aliases: [адаптивная верстка, адаптивная вёрстка, responsive design, адаптив], class: web_layout}
+  cross_browser: {aliases: [кроссбраузерная верстка, кроссбраузерность, cross-browser], class: web_layout}
+  ssr: {aliases: [ssr, server side rendering, серверный рендеринг], class: rendering}
+  spa: {aliases: [spa, single page application, одностраничное приложение], class: rendering}
+  seo: {aliases: [seo, поисковая оптимизация, сео], class: marketing_channel}
+  a11y: {aliases: [a11y, доступность веб, accessibility, wcag], class: web_quality}
+
+  # ---------- бэкенд, данные, инфраструктура ----------
+  django: {aliases: [django, джанго], class: backend_framework}
+  flask: {aliases: [flask], class: backend_framework}
+  fastapi: {aliases: [fastapi, fast api], class: backend_framework}
+  spring: {aliases: [spring, spring boot, springboot], class: backend_framework}
+  dotnet: {aliases: [".net", dotnet, "asp.net", "дот нет"], class: backend_framework}
+  laravel: {aliases: [laravel], class: backend_framework}
+  postgresql: {aliases: [postgresql, postgres, постгрес, pg], class: sql_db}
+  mysql: {aliases: [mysql, май эскьюэль], class: sql_db}
+  mssql: {aliases: [ms sql, mssql, sql server, microsoft sql server], class: sql_db}
+  oracle_db: {aliases: [oracle database, oracle db, oracle sql], class: sql_db}
+  clickhouse: {aliases: [clickhouse, кликхаус], class: analytic_db}
+  mongodb: {aliases: [mongodb, mongo, монго], class: nosql_db}
+  redis: {aliases: [redis, редис], class: nosql_db}
+  elasticsearch: {aliases: [elasticsearch, elastic, эластик], class: search_engine}
+  kafka: {aliases: [kafka, apache kafka, кафка], class: message_broker}
+  rabbitmq: {aliases: [rabbitmq, rabbit mq], class: message_broker}
+  docker: {aliases: [docker, докер], class: containers}
+  kubernetes: {aliases: [kubernetes, k8s, кубернетес], class: containers}
+  git: {aliases: [git, гит, github, gitlab, bitbucket], class: version_control}
+  ci_cd: {aliases: ["ci/cd", ci cd, cicd, непрерывная интеграция, jenkins, github actions, gitlab ci], class: devops_practice}
+  linux: {aliases: [linux, линукс, ubuntu, debian, centos], class: operating_system}
+  windows_os: {aliases: [windows, виндовс, windows server], class: operating_system}
+  aws: {aliases: [aws, amazon web services], class: cloud}
+  yandex_cloud: {aliases: [yandex cloud, яндекс облако, яндекс.облако], class: cloud}
+  unit_testing: {aliases: [unit-тесты, юнит-тесты, unit testing, модульное тестирование, pytest, jest, junit], class: testing}
+  manual_testing: {aliases: [ручное тестирование, manual testing, функциональное тестирование], class: testing}
+  test_automation: {aliases: [автоматизация тестирования, автотесты, selenium, playwright, cypress], class: testing}
+
+  # ---------- аналитика и ML ----------
+  pandas: {aliases: [pandas, пандас], class: data_library}
+  numpy: {aliases: [numpy, нампай], class: data_library}
+  scikit_learn: {aliases: [scikit-learn, sklearn, scikit learn], class: ml_library}
+  pytorch: {aliases: [pytorch, torch, пайторч], class: ml_framework}
+  tensorflow: {aliases: [tensorflow, тензорфлоу], class: ml_framework}
+  machine_learning: {aliases: [машинное обучение, machine learning, ml], class: data_science}
+  nlp: {aliases: [nlp, обработка естественного языка, natural language processing], class: data_science}
+  power_bi: {aliases: [power bi, powerbi, пауэр би], class: bi_tool}
+  tableau: {aliases: [tableau, табло], class: bi_tool}
+  datalens: {aliases: [datalens, yandex datalens, даталенс], class: bi_tool}
+  superset: {aliases: [superset, apache superset], class: bi_tool}
+  google_analytics: {aliases: [google analytics, гугл аналитикс, ga4], class: web_analytics}
+  yandex_metrika: {aliases: [яндекс метрика, яндекс.метрика, yandex metrica], class: web_analytics}
+  ab_testing: {aliases: [a/b тестирование, ab-тесты, a/b-тесты, a/b testing, сплит-тестирование], class: analytics_method}
+
+  # ---------- офисные инструменты ----------
+  excel: {aliases: [excel, ms excel, microsoft excel, эксель, ексель, "excel (впр)", впр, vlookup, сводные таблицы, pivot tables], class: spreadsheet}
+  google_sheets: {aliases: [google sheets, google таблицы, гугл таблицы, гугл-таблицы, google spreadsheets], class: spreadsheet}
+  libreoffice_calc: {aliases: [libreoffice calc, openoffice calc], class: spreadsheet}
+  word: {aliases: [word, ms word, microsoft word, ворд], class: text_editor}
+  google_docs: {aliases: [google docs, гугл документы, google документы], class: text_editor}
+  powerpoint: {aliases: [powerpoint, power point, пауэрпоинт, ms powerpoint], class: presentation_tool}
+  ms_office: {aliases: [ms office, microsoft office, пакет ms office, офисный пакет, мс офис], class: office_suite}
+  outlook: {aliases: [outlook, ms outlook, аутлук], class: email_client}
+  jira: {aliases: [jira, джира], class: task_tracker}
+  confluence: {aliases: [confluence, конфлюенс], class: wiki}
+  trello: {aliases: [trello, трелло], class: task_tracker}
+  yandex_tracker: {aliases: [яндекс трекер, яндекс.трекер, yandex tracker], class: task_tracker}
+  bitrix24: {aliases: [битрикс24, bitrix24, битрикс 24, bitrix 24], class: crm}
+  amocrm: {aliases: [amocrm, амоcrm, амо срм, amo crm], class: crm}
+  salesforce: {aliases: [salesforce, сейлсфорс], class: crm}
+  crm: {aliases: [crm, срм, crm-система, crm-системы], class: crm}
+  edo: {aliases: [эдо, электронный документооборот, диадок, сбис, контур.диадок], class: document_flow}
+  sed: {aliases: [сэд, система электронного документооборота, directum, тезис, docsvision], class: document_flow}
+  typing: {aliases: [слепая печать, скоропечатание, десятипальцевый метод], class: office_skill}
+
+  # ---------- учёт, финансы, экономика ----------
+  one_c: {aliases: ["1с", "1c", "1с:предприятие", "1с предприятие", "1с:бухгалтерия", "1с бухгалтерия", "1с:бп", "1с: бухгалтерия"], class: accounting_software}
+  one_c_zup: {aliases: ["1с:зуп", "1с зуп", "зарплата и управление персоналом"], class: hr_software}
+  one_c_ut: {aliases: ["1с:ут", "1с ут", "1с:управление торговлей", "1с управление торговлей"], class: erp}
+  sap: {aliases: [sap, sap erp, sap r/3, сап], class: erp}
+  oracle_ebs: {aliases: [oracle ebs, oracle e-business suite], class: erp}
+  fixed_assets: {aliases: [основные средства, основных средств, основными средствами, внеоборотные активы, "учет ос", "учёт ос"], class: accounting_object}
+  inventory_items: {aliases: [тмц, товарно-материальные ценности, материальные ценности], class: accounting_object}
+  inventory_count: {aliases: [инвентаризация, инвентаризации, инвентаризацию, stocktaking, переучет, переучёт], class: accounting_procedure}
+  ifrs: {aliases: [мсфо, ifrs, международные стандарты финансовой отчетности], class: accounting_standard}
+  ras: {aliases: [рсбу, российские стандарты бухгалтерского учета, ras], class: accounting_standard}
+  gaap: {aliases: [gaap, us gaap], class: accounting_standard}
+  vat: {aliases: [ндс, налог на добавленную стоимость, vat], class: tax}
+  personal_income_tax: {aliases: [ндфл, налог на доходы физических лиц], class: tax}
+  accounting: {aliases: [бухгалтерский учет, бухгалтерский учёт, бухучет, бухучёт, accounting], class: finance_function}
+  tax_accounting: {aliases: [налоговый учет, налоговый учёт, налоговая отчетность, налоговая отчётность], class: finance_function}
+  financial_reporting: {aliases: [финансовая отчетность, финансовая отчётность, бухгалтерская отчетность, бухгалтерская отчётность], class: finance_function}
+  budgeting: {aliases: [бюджетирование, budgeting, составление бюджета], class: finance_function}
+  financial_analysis: {aliases: [финансовый анализ, financial analysis, анализ финансовой отчетности], class: finance_function}
+  management_accounting: {aliases: [управленческий учет, управленческий учёт, management accounting], class: finance_function}
+  treasury: {aliases: [казначейство, treasury, платежный календарь, платёжный календарь], class: finance_function}
+  primary_documents: {aliases: [первичная документация, первичные документы, первичка, первичной документации], class: accounting_document}
+  reconciliation: {aliases: [акт сверки, акты сверки, сверка взаиморасчетов, сверка взаиморасчётов], class: accounting_document}
+  payroll: {aliases: [расчет заработной платы, расчёт заработной платы, начисление зарплаты, расчет зарплаты, payroll], class: finance_function}
+  audit: {aliases: [аудит, audit, аудиторская проверка], class: control_function}
+  internal_control: {aliases: [внутренний контроль, internal control], class: control_function}
+  procurement_44fz: {aliases: [44-фз, "44 фз", фз-44, госзакупки, государственные закупки], class: procurement_law}
+  procurement_223fz: {aliases: [223-фз, "223 фз", фз-223], class: procurement_law}
+  kpi: {aliases: [kpi, ключевые показатели эффективности, кпи], class: management_metric}
+
+  # ---------- кадры ----------
+  recruitment: {aliases: [подбор персонала, рекрутинг, recruitment, recruiting, найм], class: hr_function}
+  hr_records: {aliases: [кадровое делопроизводство, кадровый учет, кадровый учёт, кадровое администрирование], class: hr_function}
+  onboarding: {aliases: [адаптация персонала, онбординг, onboarding], class: hr_function}
+  labor_code: {aliases: [тк рф, трудовой кодекс, трудового кодекса], class: law}
+  hh_ru: {aliases: [hh.ru, headhunter, хедхантер], class: job_board}
+  interviewing: {aliases: [проведение собеседований, собеседования, интервьюирование], class: hr_function}
+
+  # ---------- продажи, маркетинг, клиенты ----------
+  b2b: {aliases: [b2b, бизнес для бизнеса, корпоративные продажи], class: sales_segment}
+  b2c: {aliases: [b2c, розничные продажи, продажи физлицам], class: sales_segment}
+  cold_calls: {aliases: [холодные звонки, cold calling, cold calls], class: sales_technique}
+  negotiation: {aliases: [ведение переговоров, переговоры, negotiations], class: business_skill}
+  commercial_offer: {aliases: [коммерческое предложение, коммерческие предложения], class: sales_document}
+  smm: {aliases: [smm, ведение соцсетей, социальные сети, social media marketing], class: marketing_channel}
+  context_ads: {aliases: [контекстная реклама, яндекс директ, яндекс.директ, google ads, adwords], class: marketing_channel}
+  email_marketing: {aliases: [email-маркетинг, email маркетинг, e-mail рассылки, рассылки], class: marketing_channel}
+  customer_service: {aliases: [клиентский сервис, обслуживание клиентов, customer service, работа с клиентами], class: business_skill}
+  merchandising: {aliases: [мерчендайзинг, мерчандайзинг, выкладка товара], class: retail_skill}
+  cash_register: {aliases: [работа с кассой, кассовый аппарат, онлайн-касса, ккт], class: retail_skill}
+
+  # ---------- логистика, склад, производство ----------
+  wms: {aliases: [wms, wms-система, система управления складом], class: logistics_software}
+  tms: {aliases: [tms, tms-система, система управления транспортом], class: logistics_software}
+  route_planning: {aliases: [маршрутизация, построение маршрутов, составление маршрутов, планирование маршрутов], class: logistics_function}
+  customs: {aliases: [таможенное оформление, растаможка, вэд, внешнеэкономическая деятельность], class: logistics_function}
+  incoterms: {aliases: [incoterms, инкотермс], class: trade_terms}
+  cold_chain: {aliases: [холодовая цепь, холодовой цепи, cold chain, температурный режим перевозки], class: logistics_function}
+  forklift: {aliases: [погрузчик, вилочный погрузчик, электропогрузчик, ричтрак], class: warehouse_equipment}
+  lean: {aliases: [бережливое производство, lean, кайдзен, kaizen, 5s], class: production_method}
+  six_sigma: {aliases: [six sigma, шесть сигм, 6 сигм], class: production_method}
+  iso_9001: {aliases: [iso 9001, исо 9001, смк, система менеджмента качества], class: quality_standard}
+  gmp: {aliases: [gmp, надлежащая производственная практика], class: quality_standard}
+  gdp_pharma: {aliases: [надлежащая дистрибьюторская практика, good distribution practice], class: quality_standard}
+  haccp: {aliases: [haccp, хассп, хасп], class: quality_standard}
+
+  # ---------- инженерия и строительство ----------
+  autocad: {aliases: [autocad, автокад, авткад, acad], class: cad}
+  revit: {aliases: [revit, ревит], class: bim}
+  archicad: {aliases: [archicad, архикад], class: bim}
+  kompas: {aliases: [компас, компас-3d, компас 3d, kompas-3d], class: cad}
+  solidworks: {aliases: [solidworks, солидворкс, solid works], class: cad}
+  bim: {aliases: [bim, информационное моделирование зданий], class: bim}
+  ansys: {aliases: [ansys, ансис], class: cae}
+  fea: {aliases: [fea, мкэ, метод конечных элементов, finite element analysis], class: cae}
+  gost: {aliases: [гост, госты, гостов, ескд, спдс], class: standards}
+  snip: {aliases: [снип, свод правил, строительные нормы и правила], class: standards}
+  estimates: {aliases: [сметы, сметное дело, составление смет, сметчик, гранд-смета, гранд смета], class: construction_function}
+  technical_supervision: {aliases: [технадзор, технический надзор, строительный контроль, стройконтроль], class: construction_function}
+  welding_mma: {aliases: [ручная дуговая сварка, mma, рдс], class: welding}
+  naks: {aliases: [накс, аттестация накс, удостоверение накс], class: certificate}
+  drawing_reading: {aliases: [чтение чертежей, умение читать чертежи, работа с чертежами], class: engineering_skill}
+  electrical_safety: {aliases: [группа допуска по электробезопасности, допуск по электробезопасности, электробезопасность], class: certificate}
+
+  # ---------- медицина ----------
+  nursing: {aliases: [сестринское дело, медсестра, медицинская сестра, медбрат], class: medical_profession}
+  injections: {aliases: [инъекции, уколы, внутривенные инъекции, внутримышечные инъекции], class: medical_procedure}
+  venipuncture: {aliases: [забор крови, венепункция, забор венозной крови], class: medical_procedure}
+  mis: {aliases: [мис, медицинская информационная система, медицинская информационная система мис], class: medical_software}
+  accreditation_med: {aliases: [аккредитация, свидетельство об аккредитации, сертификат специалиста], class: medical_permit}
+  sanitary_book: {aliases: [санитарная книжка, медкнижка, медицинская книжка, санкнижка], class: permit}
+
+  # ---------- право ----------
+  civil_code: {aliases: [гк рф, гражданский кодекс, гражданского кодекса], class: law}
+  tax_code: {aliases: [нк рф, налоговый кодекс], class: law}
+  contract_work: {aliases: [договорная работа, договорной работы, составление договоров, сопровождение договоров], class: legal_function}
+  claims_work: {aliases: [претензионная работа, претензионно-исковая работа], class: legal_function}
+  litigation: {aliases: [судебная работа, представительство в суде, представительство в арбитражных судах, арбитраж], class: legal_function}
+  corporate_law: {aliases: [корпоративное право, корпоративные процедуры], class: legal_function}
+  personal_data_law: {aliases: [152-фз, "152 фз", закон о персональных данных], class: law}
+
+  # ---------- образование и наука ----------
+  lms: {aliases: [lms, система управления обучением, moodle, мудл, getcourse, геткурс], class: edtech}
+  teaching: {aliases: [преподавание, преподавательская деятельность, ведение занятий, проведение уроков], class: education_function}
+  curriculum: {aliases: [учебный план, учебные программы, образовательные программы, рабочие программы], class: education_document}
+  methodology: {aliases: [методическая работа, методическое сопровождение, методист], class: education_function}
+  tutoring: {aliases: [кураторство, наставничество, тьюторство, менторство, mentoring], class: education_function}
+  fgos: {aliases: [фгос, федеральный государственный образовательный стандарт], class: education_standard}
+  scientific_publications: {aliases: [научные публикации, статьи вак, публикации scopus, публикации в scopus], class: research_output}
+
+  # ---------- управление и общие деловые навыки ----------
+  project_management: {aliases: [управление проектами, project management, проектное управление, ведение проектов], class: management}
+  agile: {aliases: [agile, аджайл, гибкие методологии], class: management_method}
+  scrum: {aliases: [scrum, скрам], class: management_method}
+  kanban: {aliases: [kanban, канбан], class: management_method}
+  pmbok: {aliases: [pmbok, pmp], class: management_standard}
+  team_management: {aliases: [управление командой, руководство командой, управление персоналом, руководство отделом, team lead, тимлид], class: management}
+  business_correspondence: {aliases: [деловая переписка, деловая корреспонденция, business correspondence], class: office_skill}
+  office_work: {aliases: [делопроизводство, документооборот, ведение документации, документационное обеспечение], class: office_skill}
+  reporting: {aliases: [подготовка отчетов, подготовка отчётов, формирование отчетности, формирование отчётности, отчетность, отчётность], class: office_skill}
+  presentations: {aliases: [подготовка презентаций, создание презентаций, презентации], class: office_skill}
+  public_speaking: {aliases: [публичные выступления, выступления перед аудиторией, public speaking], class: soft_skill}
+  communication: {aliases: [коммуникабельность, коммуникативные навыки, коммуникативность, communication skills], class: soft_skill}
+  stress_resistance: {aliases: [стрессоустойчивость, стрессоустойчивый, stress resistance], class: soft_skill}
+  responsibility: {aliases: [ответственность, ответственный, responsibility], class: soft_skill}
+  attention_to_detail: {aliases: [внимание к деталям, внимательность, внимательный, attention to detail], class: soft_skill}
+  self_organization: {aliases: [самоорганизация, самоорганизованность, самодисциплина], class: soft_skill}
+  teamwork: {aliases: [работа в команде, командная работа, умение работать в команде, teamwork, team player], class: soft_skill}
+  learnability: {aliases: [обучаемость, быстрая обучаемость, быстро обучаюсь], class: soft_skill}
+  driver_license_b: {aliases: [права категории b, водительские права категории b, ву категории b, права кат. b], class: driver_license}
+  driver_license_c: {aliases: [права категории c, водительские права категории c, ву категории c, права кат. c], class: driver_license}
+
+  # ---------- языки ----------
+  english: {aliases: [английский, английский язык, english, англ.], class: foreign_language}
+  german: {aliases: [немецкий, немецкий язык, german, deutsch], class: foreign_language}
+  french: {aliases: [французский, французский язык, french], class: foreign_language}
+  spanish: {aliases: [испанский, испанский язык, spanish], class: foreign_language}
+  chinese: {aliases: [китайский, китайский язык, chinese, мандарин], class: foreign_language}
+  russian: {aliases: [русский, русский язык, russian], class: language}

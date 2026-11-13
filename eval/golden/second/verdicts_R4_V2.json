@@ -1,0 +1,104 @@
+{
+ "resume_file": "Петрова Лилия_резюме 4.docx",
+ "vacancy_file": "Вакансия 2.docx",
+ "annotator": "",
+ "note": "Вторая независимая разметка по рубрике T07 и D43",
+ "items": [
+  {
+   "key": "таблица поступления выдачи ОС",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "оклейка ОС инвентарными номерами",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "инвентаризация ОС на объектах",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на перемещение ОС подписи комиссии",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС по кабинетам подразделениям",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "список ОС по источникам",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "контроль поступления ОС субсидии гранты списки",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС при переезде",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на списание перемещение ОС",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "высшее экономическое образование",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "опыт не менее 3 лет направления",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "внимание к деталям",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "системность",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "концентрация монотонная работа",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммуникабельность",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "стрессоустойчивость",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

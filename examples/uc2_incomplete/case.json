@@ -1,0 +1,13 @@
+{
+  "title": "Неполные данные",
+  "description": "Короткое резюме без опыта, образования и дат против трёх вакансий кейса: почти все требования «Не указано», интервал балла широкий, кандидату задаются вопросы, «Не соответствует» без доказательства не ставится.",
+  "resume": "examples/uc2_incomplete/resume_short.txt",
+  "vacancies": ["data/case/Вакансия 1.docx", "data/case/Вакансия 2.docx", "data/case/Вакансия 3.docx"],
+  "expect": {
+    "ranked": 3,
+    "min_not_stated_share": 0.6,
+    "min_interval_width": 30,
+    "questions": true,
+    "warning_contains": "мало текста"
+  }
+}
