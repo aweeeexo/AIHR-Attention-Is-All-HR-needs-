@@ -1,0 +1,116 @@
+{
+ "resume_file": "Петров Иван_резюме 2.docx",
+ "vacancy_file": "Вакансия 1.docx",
+ "annotator": "",
+ "note": "Вторая независимая разметка по рубрике T07 и D43",
+ "items": [
+  {
+   "key": "верстка макетов Figma HTML CSS JS поддержка страниц",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "адаптивная кроссбраузерная верстка",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "интерфейсы utility классы Tailwind",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "компоненты Vue 3 props emit v-model интеграция API",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "опыт работы от 1 года",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "HTML5 семантическая верстка",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "CSS3 Flexbox Grid адаптивная верстка",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "JavaScript ES6 DOM события промисы",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Tailwind CSS конфигурация брейкпоинты",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммерческая разработка Vue.js",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "самостоятельное тестирование интерфейсов",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "аккуратность в коде читаемость",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность работать в небольшой команде",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "разница SSR SPA",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Pinia",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Nuxt",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Monaco Editor",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Figma макет экспорт ресурсов",
+   "status": "",
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}
