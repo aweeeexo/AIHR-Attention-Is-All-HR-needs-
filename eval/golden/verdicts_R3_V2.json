@@ -1,0 +1,105 @@
+{
+ "resume_file": "Семенов Алексей _резюме 3.docx",
+ "vacancy_file": "Вакансия 2.docx",
+ "note": "Ручная разметка 12.11 по рубрике T07: «Не соответствует» — только при факте против требования",
+ "items": [
+  {
+   "key": "таблица поступления выдачи ОС",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "оклейка ОС инвентарными номерами",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "инвентаризация ОС на объектах",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на перемещение ОС подписи комиссии",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС по кабинетам подразделениям",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "список ОС по источникам",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "контроль поступления ОС субсидии гранты списки",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС при переезде",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на списание перемещение ОС",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "высшее экономическое образование",
+   "status": "partial",
+   "fragment_ids": [
+    "R40"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "опыт не менее 3 лет направления",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "внимание к деталям",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "системность",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "концентрация монотонная работа",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммуникабельность",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "стрессоустойчивость",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

@@ -1,0 +1,22 @@
+{
+  "vacancy_file": "Вакансия 3.docx",
+  "note": "Ручная разметка 12.11 по правилам T04",
+  "items": [
+    {"key": "коммуникация с образовательными организациями сопровождение", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.6"]},
+    {"key": "сбор информации для договоров", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.7"]},
+    {"key": "сбор статистических данных отчетность", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.8"]},
+    {"key": "проверка комплектности документов", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.9"]},
+    {"key": "контрольные срезы успеваемости", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.10"]},
+    {"key": "табличные данные Excel Google Sheets", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.11"]},
+    {"key": "рабочие созвоны с командой", "modality": "nice", "kind": "duty", "fragment_ids": ["V3.12"]},
+    {"key": "коммуникативные навыки", "modality": "must", "kind": "soft", "fragment_ids": ["V3.14"]},
+    {"key": "ответственность", "modality": "must", "kind": "soft", "fragment_ids": ["V3.15"]},
+    {"key": "самоорганизация", "modality": "must", "kind": "soft", "fragment_ids": ["V3.15"]},
+    {"key": "навыки работы с таблицами большой объем информации", "modality": "must", "kind": "skill", "fragment_ids": ["V3.16"]},
+    {"key": "личный ноутбук ПК", "modality": "must", "kind": "other", "fragment_ids": ["V3.17"]},
+    {"key": "готовность к взаимодействию с организациями и командой", "modality": "must", "kind": "soft", "fragment_ids": ["V3.18"]},
+    {"key": "опыт в сфере образования государственных муниципальных структурах", "modality": "nice", "kind": "experience", "fragment_ids": ["V3.20"]},
+    {"key": "делопроизводитель документовед", "modality": "nice", "kind": "experience", "fragment_ids": ["V3.21"]},
+    {"key": "готовность к очному формату", "modality": "nice", "kind": "other", "fragment_ids": ["V3.22"]}
+  ]
+}
