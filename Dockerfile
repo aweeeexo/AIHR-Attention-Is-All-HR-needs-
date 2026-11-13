@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 # Многоступенчатая сборка: uv ставит зависимости в первом этапе, в итоговый образ попадает .venv.
 # Эмбеддинги (sentence-transformers + torch CPU, D19) включены по умолчанию (D42).
 # Образ без них (меньше на ~2,5 ГБ, только BM25): WITH_EMBEDDINGS=0 docker compose up --build

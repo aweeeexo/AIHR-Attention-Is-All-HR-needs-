@@ -15,4 +15,5 @@ data/runs
 data/cache
 scratch
 docs
+frontend
 eval/report.md

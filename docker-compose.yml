@@ -1,5 +1,5 @@
 # Запуск: cp .env.example .env && docker compose up --build
-# API — http://localhost:8000 (документация /docs), UI — http://localhost:8501
+# React — http://localhost:3000, API — http://localhost:8000, Streamlit — http://localhost:8501
 
 name: aihr
 
@@ -52,6 +52,19 @@ services:
       interval: 10s
       timeout: 5s
       start_period: 20s
+      retries: 5
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "${FRONTEND_PORT:-3000}:8080"
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "-q", "-O", "/dev/null", "http://127.0.0.1:8080/"]
+      interval: 10s
+      timeout: 5s
       retries: 5
 
   # Профиль local: локальная LLM, без внешнего API (D20). Запуск:

@@ -1,0 +1,23 @@
+name: Docker clean check
+
+on:
+  push:
+    branches: [t/docker-demo]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  clean-check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Build and verify from a clean clone
+        run: |
+          git branch ci-clean HEAD
+          bash scripts/clean_check.sh "file://$GITHUB_WORKSPACE" ci-clean

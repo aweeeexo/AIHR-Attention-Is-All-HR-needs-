@@ -36,9 +36,9 @@ docker compose up --build
 
 Команды работают и в PowerShell. По умолчанию анализ работает без LLM. Для подключения модели
 скопируйте `.env.example` в `.env` и укажите `LLM_BASE_URL`, `LLM_API_KEY` и `LLM_MODEL`.
-Если Docker останавливается на строке `ENV HF_HUB_OFFLINE`, используйте раздел «Без Docker» ниже.
 
-- UI: <http://localhost:8501> → кнопка «Пример из кейса» или свои файлы.
+- React: <http://localhost:3000> → кнопка «Запустить пример» или загрузка своих файлов.
+- Streamlit: <http://localhost:8501> → кнопка «Пример из кейса».
 - API: <http://localhost:8000>, документация — <http://localhost:8000/docs>.
 
 Проверка одной командой: `make demo` прогоняет три use case из `examples/` в контейнере и сверяет результат с ожидаемым.
@@ -102,7 +102,7 @@ Python 3.12, все версии закреплены в [`pyproject.toml`](pypr
 | `RUNS_DIR` | Результаты прогонов и журнал исходящих запросов | `data/runs` | нет |
 | `TODAY` | «Сегодня» для расчёта стажа, `ГГГГ-ММ` (для воспроизводимости) | текущий месяц | нет |
 | `LOG_LEVEL` | Уровень логов | `INFO` | нет |
-| `API_PORT`, `UI_PORT` | Порты на хосте | `8000`, `8501` | нет |
+| `API_PORT`, `UI_PORT`, `FRONTEND_PORT` | Порты API, Streamlit и React на хосте | `8000`, `8501`, `3000` | нет |
 
 ## Внешние сервисы и данные
 
@@ -282,7 +282,7 @@ flowchart LR
 
 | Симптом | Что сделать |
 |---|---|
-| `port is already allocated` при `docker compose up` | Порт 8000 или 8501 занят. В Git Bash: `API_PORT=8001 UI_PORT=8502 docker compose up`. В PowerShell задайте `$env:API_PORT = '8001'` и `$env:UI_PORT = '8502'` перед запуском. |
+| `port is already allocated` при `docker compose up` | Один из портов 8000, 8501 или 3000 занят. В Git Bash: `API_PORT=8001 UI_PORT=8502 FRONTEND_PORT=3001 docker compose up`. В PowerShell задайте `$env:API_PORT = '8001'`, `$env:UI_PORT = '8502'` и `$env:FRONTEND_PORT = '3001'` перед запуском. |
 | В UI «API не отвечает» | `docker compose ps`: api должен быть `healthy`. Логи: `docker compose logs api` |
 | В результате «LLM не настроена» или «LLM недоступна» | Проверьте `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY` в `.env` и перезапустите `docker compose up`. Без ключа работает режим без LLM |
 | `E_CORRUPTED`, `E_ENCRYPTED`, `E_TYPE_MISMATCH` | Откройте файл и пересохраните в docx или pdf без пароля |
