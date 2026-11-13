@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Clipboard, Download, FileText, LocateFixed, TriangleAlert, X } from 'lucide-react';
+import {
+  Clipboard, Crosshair as LocateFixed, DownloadSimple as Download, FileText, Warning as TriangleAlert, X,
+} from '@phosphor-icons/react';
 import { Tag } from './tag.jsx';
 import { VacancyQuality, WhatIf } from './extras.jsx';
 

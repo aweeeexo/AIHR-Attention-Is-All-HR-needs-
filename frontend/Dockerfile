@@ -4,6 +4,7 @@ COPY package.json package-lock.json ./
 RUN npm ci
 COPY index.html ./
 COPY src ./src
+COPY public ./public
 RUN VITE_API_URL=/api npm run build
 
 FROM nginxinc/nginx-unprivileged:1.28-alpine

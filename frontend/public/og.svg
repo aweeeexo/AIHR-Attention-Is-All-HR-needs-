@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#181818"/>
+  <rect x="96" y="96" width="72" height="72" rx="16" fill="#86a8ff"/>
+  <text x="96" y="330" fill="#f4f4f5" font-family="Manrope, Arial, sans-serif" font-size="72" font-weight="600">Подбор вакансии</text>
+  <text x="96" y="420" fill="#a8a8b0" font-family="Manrope, Arial, sans-serif" font-size="72" font-weight="600">по доказательствам</text>
+  <text x="96" y="520" fill="#a8a8b0" font-family="Manrope, Arial, sans-serif" font-size="32">AIHR · цитата к каждому выводу</text>
+</svg>

@@ -1,20 +1,30 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import {
-  ArrowLeft, ArrowRight, ChartNoAxesColumnIncreasing,
-  FilePlus2, LoaderCircle, RefreshCw,
-} from 'lucide-react';
-import '@fontsource-variable/inter';
+import { ArrowLeft, ArrowRight } from '@phosphor-icons/react';
+import { IconContext } from '@phosphor-icons/react';
+import '@fontsource-variable/manrope';
+import './tokens.css';
 import './style.css';
 import { createApi } from './api.js';
 import { Upload } from './upload.jsx';
 import { Batch, Match, Notices } from './results.jsx';
+import { Nav } from './nav.jsx';
+import { Footer, Landing } from './landing.jsx';
+import { PageSkeleton, RankingSkeleton } from './skeleton.jsx';
 
 const api = createApi(import.meta.env.VITE_API_URL || 'http://localhost:8000');
 
-function readLocation() {
-  const [, kind, id, vacancy] = window.location.hash.split('/');
-  return ['runs', 'batches'].includes(kind) && id ? { kind, id, vacancy } : null;
+// Маршруты в hash: #/ — лендинг, #/app — анализ, #/runs/<id>[/<вакансия>], #/batches/<id>
+function readRoute() {
+  const hash = window.location.hash.replace(/^#/, '') || '/';
+  const parts = hash.split('/').filter(Boolean);
+  if (!parts.length) return { page: 'landing' };
+  if (parts[0] === 'faq' && parts[1] === 'data') return { page: 'landing', anchor: 'faq-data' };
+  if (parts[0] === 'app' && parts.length === 1) return { page: 'app' };
+  if (['runs', 'batches'].includes(parts[0]) && parts[1]) {
+    return { page: 'result', kind: parts[0], id: parts[1], vacancy: parts[2] };
+  }
+  return { page: 'missing' };
 }
 
 function path(kind, id, vacancy) {
@@ -22,17 +32,9 @@ function path(kind, id, vacancy) {
 }
 
 function App() {
-  const [mode, setMode] = useState('single');
+  const [route, setRoute] = useState(readRoute);
   const [health, setHealth] = useState(undefined);
   const [exampleFiles, setExampleFiles] = useState(null);
-  const [route, setRoute] = useState(readLocation);
-  const [record, setRecord] = useState(null);
-  const [pending, setPending] = useState(false);
-  const [progress, setProgress] = useState(null);
-  const [error, setError] = useState('');
-  const cache = useRef(new Map());
-  const busy = useRef(false);
-  const recordKey = route && `${route.kind}/${route.id}`;
 
   async function checkConnection() {
     setHealth(undefined);
@@ -44,8 +46,7 @@ function App() {
   useEffect(() => {
     checkConnection();
     const navigate = () => {
-      setError('');
-      setRoute(readLocation());
+      setRoute(readRoute());
       window.scrollTo(0, 0);
     };
     window.addEventListener('hashchange', navigate);
@@ -53,24 +54,55 @@ function App() {
   }, []);
 
   useEffect(() => {
-    if (!recordKey) return undefined;
-    let active = true;
-    const [kind, id] = recordKey.split('/');
-    const stored = cache.current.get(recordKey);
-    if (stored) {
-      setRecord({ key: recordKey, value: stored });
-    } else {
-      const load = kind === 'runs' ? api.run : api.batch;
-      Promise.resolve().then(() => load(decodeURIComponent(id))).then((value) => {
-        if (!active) return;
-        cache.current.set(recordKey, value);
-        setRecord({ key: recordKey, value });
-      }).catch((failure) => {
-        if (active) setRecord({ key: recordKey, error: failure.message });
-      });
+    if (!route.anchor) return;
+    const target = document.getElementById(route.anchor);
+    if (target) {
+      if (target.tagName === 'DETAILS') target.open = true;
+      target.scrollIntoView({ block: 'center' });
     }
-    return () => { active = false; };
-  }, [recordKey]);
+  }, [route]);
+
+  return (
+    <IconContext.Provider value={{ weight: 'regular' }}>
+      <a className="skip-link button-sm" href="#main" onClick={(event) => {
+        event.preventDefault();
+        document.getElementById('main')?.focus();
+      }}>Перейти к содержимому</a>
+      <Nav page={route.page} health={health} onRefresh={checkConnection} />
+      <main id="main" tabIndex={-1} className={`main ${route.page}`}>
+        {route.page === 'landing' && <Landing />}
+        {route.page === 'app' && <Analysis files={exampleFiles} />}
+        {route.page === 'result' && <Result route={route} />}
+        {route.page === 'missing' && <NotFound />}
+      </main>
+      <Footer />
+    </IconContext.Provider>
+  );
+}
+
+function Progress({ job }) {
+  const share = Math.round((job?.progress || 0) * 100);
+  return (
+    <section className="progress-card" role="status" aria-live="polite">
+      <div className="progress-head">
+        <span className="title-3">{job?.stage || 'Отправляем документы'}</span>
+        <span className="caption-1 tabular">{share}%</span>
+      </div>
+      <div className="progress-bar" role="progressbar" aria-label="Готовность анализа" aria-valuemin={0} aria-valuemax={100} aria-valuenow={share}>
+        <span style={{ transform: `scaleX(${share / 100})` }} />
+      </div>
+      <p className="caption-2 secondary">С внешней моделью одно резюме считается около полутора минут. Пример из кейса после прогрева открывается за секунды.</p>
+      <RankingSkeleton />
+    </section>
+  );
+}
+
+function Analysis({ files }) {
+  const [mode, setMode] = useState('single');
+  const [pending, setPending] = useState(false);
+  const [progress, setProgress] = useState(null);
+  const [error, setError] = useState('');
+  const busy = useRef(false);
 
   async function analyze(request) {
     if (busy.current) return;
@@ -81,9 +113,7 @@ function App() {
     try {
       const job = await request();
       const value = await api.waitJob(job, setProgress);
-      const next = value.batch_id ? path('batches', value.batch_id) : path('runs', value.run_id);
-      cache.current.set(next.slice(2), value);
-      window.location.hash = next;
+      window.location.hash = value.batch_id ? path('batches', value.batch_id) : path('runs', value.run_id);
     } catch (failure) {
       setError(failure.message);
     } finally {
@@ -93,115 +123,103 @@ function App() {
     }
   }
 
-  const current = record?.key === recordKey ? record : null;
-  const result = current?.value;
-  const batch = route?.kind === 'batches';
-  const vacancy = result && !batch && result.vacancies.find(({ id }) => encodeURIComponent(id) === route.vacancy);
-  const initial = !route;
-  const modelStatus = health ? (health.llm === 'configured' ? 'LLM подключена' : 'Без LLM')
-    : health === null ? 'API недоступен' : 'Проверяем API';
-  const retrieval = health && (health.retrieval === 'bm25+embeddings' ? 'BM25 + эмбеддинги' : 'BM25');
-
   return (
-    <div className="shell">
-      <aside className="sidebar">
-        <a className="brand" href="#/" aria-label="AIHR · Новый анализ">
-          <strong>AIHR</strong>
-        </a>
-        <nav aria-label="Рабочая область">
-          <a className={initial ? 'active' : ''} href="#/" aria-current={initial ? 'page' : undefined}>
-            <FilePlus2 size={16} aria-hidden="true" /> Новый анализ
-          </a>
-          {route && (
-            <a className="active" href={`#/${recordKey}`} aria-current={vacancy ? undefined : 'page'}>
-              <ChartNoAxesColumnIncreasing size={17} aria-hidden="true" /> {batch ? 'Матрица кандидатов' : 'Результат анализа'}
-            </a>
-          )}
-        </nav>
-      </aside>
-
-      <div className="workspace">
-        <header className="topbar">
-          <div className="breadcrumb">
-            {vacancy
-              ? <a className="back" href={`#/${recordKey}`}><ArrowLeft size={15} aria-hidden="true" /> К рейтингу вакансий</a>
-              : <strong>{initial ? 'Новый анализ' : batch ? 'Пакет резюме' : 'Результат анализа'}</strong>}
-          </div>
-          <button className="connection" onClick={checkConnection} title="Обновить состояние API"
-            aria-label={['Проверить состояние API', modelStatus, retrieval].filter(Boolean).join('. ')}>
-            <span className={`dot ${health?.status === 'ok' ? 'online' : health === null ? 'offline' : ''}`} />
-            <span>{modelStatus}</span>
-            {retrieval && <span className="retrieval">{retrieval}</span>}
-            <RefreshCw size={13} aria-hidden="true" />
-          </button>
-        </header>
-
-        <main className="content" id="main">
-          {initial ? (
-            <div className="analysis-form">
-              <div className="page-intro">
-                <h1>Сопоставление резюме с вакансиями</h1>
-              </div>
-              <div className="analysis-layout">
-                <div>
-                  <div className="mode-control" role="group" aria-label="Режим анализа">
-                    <button type="button" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
-                    <button type="button" aria-pressed={mode === 'batch'} disabled={pending} onClick={() => setMode('batch')}>Пакет резюме</button>
-                  </div>
-                  <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
-                  <Notices error={error} />
-                  {pending && <Progress job={progress} />}
-                </div>
-                <Example mode={mode} files={exampleFiles} pending={pending} run={(resume) => analyze(() => api.startExample(mode, resume))} />
-              </div>
-            </div>
-          ) : (
-            <>
-              <Notices error={current?.error} />
-              {!current && <div className="progress" role="status"><LoaderCircle className="spin" size={21} aria-hidden="true" /> Загружаем результат…</div>}
-              {result && (batch
-                ? <Batch result={result} runUrl={(id) => path('runs', id)} />
-                : <Match result={result} vacancy={vacancy} api={api} reportUrl={(id) => path('runs', result.run_id, id)} />)}
-            </>
-          )}
-        </main>
+    <div className="container page">
+      <header className="page-head">
+        <h1 className="heading-4">Новый анализ</h1>
+        <p className="body-3 secondary">Загрузите резюме и вакансии или запустите пример из кейса.</p>
+      </header>
+      <div className="segmented" role="group" aria-label="Режим анализа">
+        <button type="button" className="button-sm" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
+        <button type="button" className="button-sm" aria-pressed={mode === 'batch'} disabled={pending} onClick={() => setMode('batch')}>Пакет резюме</button>
+      </div>
+      <div className="analysis-layout">
+        <div className="analysis-main">
+          <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
+          <Notices error={error} />
+          {pending && <Progress job={progress} />}
+        </div>
+        <Example mode={mode} files={files} pending={pending} run={(resume) => analyze(() => api.startExample(mode, resume))} />
       </div>
     </div>
-  );
-}
-
-function Progress({ job }) {
-  const share = Math.round((job?.progress || 0) * 100);
-  return (
-    <section className="progress" role="status" aria-live="polite">
-      <LoaderCircle className="spin" size={20} aria-hidden="true" />
-      <div className="progress-body">
-        <strong>{job?.stage || 'Отправляем документы'}</strong>
-        <div className="progress-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={share}>
-          <span style={{ width: `${share}%` }} />
-        </div>
-        <p>{share}% · с LLM одно резюме считается 1–2 минуты, пример из кейса после прогрева — секунды.</p>
-      </div>
-    </section>
   );
 }
 
 function Example({ mode, files, pending, run }) {
   const [resume, setResume] = useState('');
   return (
-    <section className="example" aria-labelledby="example-title">
-      <h2 id="example-title">Пример из кейса</h2>
-      <p>{mode === 'batch' ? 'Все резюме и вакансии из кейса МФТИ.' : 'Резюме и вакансии из кейса МФТИ.'}</p>
-      <div className="example-actions">
-        {mode === 'single' && Boolean(files?.resumes.length) && (
-          <select aria-label="Резюме из кейса" value={files.resumes.includes(resume) ? resume : ''} onChange={(event) => setResume(event.target.value)} disabled={pending}>
+    <aside className="card example" aria-labelledby="example-title">
+      <h2 id="example-title" className="title-2">Пример из кейса</h2>
+      <p className="body-6 secondary">{mode === 'batch' ? 'Все четыре резюме против трёх вакансий кейса.' : 'Одно резюме из кейса против трёх вакансий.'}</p>
+      {mode === 'single' && Boolean(files?.resumes.length) && (
+        <label className="field">
+          <span className="caption-1">Резюме</span>
+          <select className="body-6" value={files.resumes.includes(resume) ? resume : ''} onChange={(event) => setResume(event.target.value)} disabled={pending}>
             <option value="">Первое резюме</option>
             {files.resumes.map((name) => <option key={name} value={name}>{name}</option>)}
           </select>
-        )}
-        <button className="button secondary" disabled={pending} onClick={() => run(files?.resumes.includes(resume) ? resume : '')}>Запустить пример <ArrowRight size={17} /></button>
+        </label>
+      )}
+      <button className="button secondary button-md" type="button" disabled={pending || files === null}
+        onClick={() => run(files?.resumes.includes(resume) ? resume : '')}>
+        Запустить пример <ArrowRight size={18} aria-hidden="true" />
+      </button>
+      {files === null && <p className="caption-2 error-text">API недоступен: пример запустить нельзя. Проверьте, что сервер запущен.</p>}
+    </aside>
+  );
+}
+
+function Result({ route }) {
+  const [record, setRecord] = useState(null);
+  const cache = useRef(new Map());
+  const key = `${route.kind}/${route.id}`;
+
+  useEffect(() => {
+    let active = true;
+    const stored = cache.current.get(key);
+    if (stored) { setRecord({ key, value: stored }); return undefined; }
+    setRecord(null);
+    const load = route.kind === 'runs' ? api.run : api.batch;
+    load(decodeURIComponent(route.id)).then((value) => {
+      if (!active) return;
+      cache.current.set(key, value);
+      setRecord({ key, value });
+    }).catch((failure) => { if (active) setRecord({ key, error: failure.message }); });
+    return () => { active = false; };
+  }, [key, route.kind, route.id]);
+
+  const current = record?.key === key ? record : null;
+  const result = current?.value;
+  const batch = route.kind === 'batches';
+  const vacancy = result && !batch && result.vacancies.find(({ id }) => encodeURIComponent(id) === route.vacancy);
+
+  return (
+    <div className="container page">
+      <div className="crumbs">
+        {vacancy
+          ? <a className="back button-sm" href={path('runs', route.id)}><ArrowLeft size={16} aria-hidden="true" /> К рейтингу вакансий</a>
+          : <a className="back button-sm" href="#/app"><ArrowLeft size={16} aria-hidden="true" /> Новый анализ</a>}
       </div>
-    </section>
+      <Notices error={current?.error} />
+      {!current && <PageSkeleton />}
+      {result && (batch
+        ? <Batch result={result} runUrl={(id) => path('runs', id)} />
+        : <Match result={result} vacancy={vacancy} api={api} reportUrl={(id) => path('runs', result.run_id, id)} />)}
+    </div>
+  );
+}
+
+function NotFound() {
+  return (
+    <div className="container page empty-state">
+      <p className="caption-3 secondary">Ошибка 404</p>
+      <h1 className="heading-3">Такой страницы нет</h1>
+      <p className="body-3 secondary">Ссылка устарела или в ней опечатка. Начните новый анализ или вернитесь на главную.</p>
+      <div className="empty-actions">
+        <a className="button primary button-md" href="#/app">Новый анализ</a>
+        <a className="button secondary button-md" href="#/">На главную</a>
+      </div>
+    </div>
   );
 }
 

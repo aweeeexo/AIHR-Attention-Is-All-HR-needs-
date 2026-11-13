@@ -1,0 +1,174 @@
+/* Дизайн-токены AIHR. Значения — из скилла landing-page-design: шкала Tailwind,
+   отступы Spacing-0…900, радиусы Tailwind, один шрифт (Manrope), одна кривая анимации. */
+
+:root {
+  --font: 'Manrope Variable', 'Manrope', system-ui, sans-serif;
+
+  /* Текстовые стили: «вес размер/высота строки шрифт». Применяются классами ниже
+     или через font: var(--…) в компонентах — новых размеров не вводим. */
+  --heading-1: 600 60px/60px var(--font);
+  --heading-2: 600 48px/48px var(--font);
+  --heading-3: 600 36px/40px var(--font);
+  --heading-4: 600 30px/36px var(--font);
+  --heading-5: 600 24px/32px var(--font);
+  --heading-6: 600 20px/28px var(--font);
+  --title-1: 500 20px/28px var(--font);
+  --title-2: 500 18px/28px var(--font);
+  --title-3: 500 16px/24px var(--font);
+  --title-4: 500 14px/20px var(--font);
+  --title-5: 500 12px/16px var(--font);
+  --body-1: 600 16px/24px var(--font);
+  --body-2: 500 16px/24px var(--font);
+  --body-3: 400 16px/24px var(--font);
+  --body-4: 600 14px/20px var(--font);
+  --body-5: 500 14px/20px var(--font);
+  --body-6: 400 14px/20px var(--font);
+  --button-lg: 600 18px/28px var(--font);
+  --button-md: 600 16px/24px var(--font);
+  --button-sm: 600 14px/20px var(--font);
+  --button-xsm: 600 12px/16px var(--font);
+  --caption-1: 500 14px/20px var(--font);
+  --caption-2: 400 14px/20px var(--font);
+  --caption-3: 600 12px/16px var(--font);
+  --caption-4: 500 12px/16px var(--font);
+  --caption-5: 400 12px/16px var(--font);
+
+  /* Отступы */
+  --s-0: 0;
+  --s-25: 2px;
+  --s-50: 4px;
+  --s-75: 8px;
+  --s-100: 12px;
+  --s-200: 16px;
+  --s-300: 24px;
+  --s-400: 32px;
+  --s-500: 40px;
+  --s-600: 48px;
+  --s-700: 64px;
+  --s-800: 80px;
+  --s-900: 96px;
+
+  /* Радиусы (Tailwind) */
+  --r-sm: 2px;
+  --r: 4px;
+  --r-md: 6px;
+  --r-lg: 8px;
+  --r-xl: 12px;
+  --r-2xl: 16px;
+  --r-3xl: 24px;
+  --r-full: 9999px;
+
+  /* Движение */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --t-layout: 500ms;
+  --t-color: 300ms;
+
+  /* Ширина контента */
+  --container: 1240px;
+  --measure: 680px;
+}
+
+/* ---------- Цвет: светлая тема ---------- */
+:root,
+[data-theme='light'] {
+  color-scheme: light;
+  --surface: #ffffff;
+  --surface-subtle: #f7f7f8;
+  --surface-secondary: #efeff2;
+  --surface-hover: #ebebef;
+  --surface-nav: rgb(255 255 255 / 0.72);
+  --border: #e3e3e8;
+  --border-strong: #c8c8d0;
+  --text: #121216;
+  --text-secondary: #3d3d45;
+  --text-tertiary: #63636d;
+  --text-muted: #8a8a94;
+  --accent: #2357d6;
+  --accent-hover: #1b46b0;
+  --accent-active: #163a92;
+  --accent-text: #ffffff;
+  --accent-subtle: #e9eefc;
+  --focus: #2357d6;
+  --heading-from: #000000;
+  --heading-to: #666666;
+  --highlight: #fdf0c4;
+  --highlight-border: #b7861b;
+
+  --status-match: #1c7a47;
+  --status-partial: #8a5a00;
+  --status-mismatch: #b42335;
+  --status-unknown: #5d5d66;
+  --status-match-subtle: #e7f5ed;
+  --status-partial-subtle: #fdf3da;
+  --status-mismatch-subtle: #fcebed;
+  --status-unknown-subtle: #f0f0f3;
+}
+
+/* ---------- Цвет: тёмная тема (фоны только из списка скилла) ---------- */
+[data-theme='dark'] {
+  color-scheme: dark;
+  --surface: #181818;
+  --surface-subtle: #1f1f1f;
+  --surface-secondary: #272727;
+  --surface-hover: #313131;
+  --surface-nav: rgb(24 24 24 / 0.72);
+  --border: #313131;
+  --border-strong: #4a4a4f;
+  --text: #f4f4f5;
+  --text-secondary: #d0d0d5;
+  --text-tertiary: #a8a8b0;
+  --text-muted: #8d8d96;
+  --accent: #86a8ff;
+  --accent-hover: #a1bbff;
+  --accent-active: #6f95fb;
+  --accent-text: #0b1530;
+  --accent-subtle: #272727;
+  --focus: #86a8ff;
+  --heading-from: #ffffff;
+  --heading-to: #9b9b9b;
+  --highlight: #313131;
+  --highlight-border: #e0b44d;
+
+  --status-match: #6fd49c;
+  --status-partial: #f0c15c;
+  --status-mismatch: #ff8f9a;
+  --status-unknown: #a8a8b0;
+  --status-match-subtle: #1f1f1f;
+  --status-partial-subtle: #1f1f1f;
+  --status-mismatch-subtle: #1f1f1f;
+  --status-unknown-subtle: #1f1f1f;
+}
+
+/* ---------- Классы текстовых стилей (имена из скилла, kebab-case) ---------- */
+.heading-1 { font: var(--heading-1); }
+.heading-2 { font: var(--heading-2); }
+.heading-3 { font: var(--heading-3); }
+.heading-4 { font: var(--heading-4); }
+.heading-5 { font: var(--heading-5); }
+.heading-6 { font: var(--heading-6); }
+.title-1 { font: var(--title-1); }
+.title-2 { font: var(--title-2); }
+.title-3 { font: var(--title-3); }
+.title-4 { font: var(--title-4); }
+.title-5 { font: var(--title-5); }
+.body-1 { font: var(--body-1); }
+.body-2 { font: var(--body-2); }
+.body-3 { font: var(--body-3); }
+.body-4 { font: var(--body-4); }
+.body-5 { font: var(--body-5); }
+.body-6 { font: var(--body-6); }
+.button-lg { font: var(--button-lg); }
+.button-md { font: var(--button-md); }
+.button-sm { font: var(--button-sm); }
+.button-xsm { font: var(--button-xsm); }
+.caption-1 { font: var(--caption-1); }
+.caption-2 { font: var(--caption-2); }
+.caption-3 { font: var(--caption-3); }
+.caption-4 { font: var(--caption-4); }
+.caption-5 { font: var(--caption-5); }
+
+:where(.heading-1, .heading-2, .heading-3, .heading-4, .heading-5, .heading-6) {
+  text-wrap: balance;
+  letter-spacing: -0.02em;
+}
+:where(.body-1, .body-2, .body-3, .body-4, .body-5, .body-6, p) { text-wrap: pretty; }
