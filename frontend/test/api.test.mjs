@@ -40,3 +40,51 @@ test('reports HTTP errors and preserves partial file failures in successful resp
   const success = createApi('http://localhost:8000', async () => Response.json(partial));
   assert.deepEqual(await success.example('batch'), partial);
 });
+
+test('runs analysis as an async job, reports progress and loads the result', async () => {
+  const calls = [];
+  const states = [
+    { job_id: 'abc', status: 'running', stage: 'Профиль кандидата', progress: 0.1 },
+    { job_id: 'abc', status: 'done', stage: 'Готово', progress: 1, run_id: 'run-1' },
+  ];
+  const api = createApi('http://localhost:8000', async (url, options = {}) => {
+    calls.push([new URL(url).pathname, options.method || 'GET']);
+    if (url.endsWith('/jobs/match/example?resume=a.docx')) return Response.json({ job_id: 'abc', status: 'queued', progress: 0 });
+    if (url.endsWith('/jobs/abc')) return Response.json(states.shift());
+    if (url.endsWith('/runs/run-1')) return Response.json({ run_id: 'run-1' });
+    throw new Error(`unexpected ${url}`);
+  });
+  const seen = [];
+  const job = await api.startExample('single', 'a.docx');
+  const result = await api.waitJob(job, (state) => seen.push(state.progress), { sleep: async () => {} });
+  assert.deepEqual(result, { run_id: 'run-1' });
+  assert.deepEqual(seen, [0, 0.1, 1]);
+  assert.deepEqual(calls[0], ['/jobs/match/example', 'POST']);
+});
+
+test('batch jobs resolve to the batch and failed jobs raise a readable error', async () => {
+  const api = createApi('http://localhost:8000', async (url) => {
+    if (url.endsWith('/jobs/j1')) return Response.json({ job_id: 'j1', status: 'done', batch_id: 'b1', progress: 1 });
+    if (url.endsWith('/batches/b1')) return Response.json({ batch_id: 'b1' });
+    if (url.endsWith('/jobs/j2')) return Response.json({ job_id: 'j2', status: 'failed', error: 'TimeoutError' });
+    throw new Error(`unexpected ${url}`);
+  });
+  const opts = { sleep: async () => {} };
+  assert.deepEqual(await api.waitJob({ job_id: 'j1', status: 'running' }, undefined, opts), { batch_id: 'b1' });
+  await assert.rejects(api.waitJob({ job_id: 'j2', status: 'running' }, undefined, opts), /TimeoutError/);
+});
+
+test('sends what-if answers as JSON and loads the vacancy check', async () => {
+  const api = createApi('http://localhost:8000', async (url, options = {}) => {
+    if (url.endsWith('/runs/r1/whatif')) {
+      assert.equal(options.method, 'POST');
+      assert.equal(options.headers['Content-Type'], 'application/json');
+      assert.deepEqual(JSON.parse(options.body), { answers: [{ vacancy_id: 'V1', requirement_id: 'V1.req2', status: 'match' }] });
+      return Response.json({ changes: [], ranking: { items: [] } });
+    }
+    if (url.endsWith('/runs/r1/vacancy-check')) return Response.json([{ vacancy_id: 'V1', issues: [] }]);
+    throw new Error(`unexpected ${url}`);
+  });
+  await api.whatIf('r1', [{ vacancy_id: 'V1', requirement_id: 'V1.req2', status: 'match' }]);
+  assert.equal((await api.vacancyCheck('r1'))[0].vacancy_id, 'V1');
+});

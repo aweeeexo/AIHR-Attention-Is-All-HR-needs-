@@ -371,3 +371,20 @@ details pre { max-height: 320px; overflow: auto; padding: 8px; border-radius: va
 @media (prefers-reduced-motion: reduce) {
   .spin { animation: none; }
 }
+
+/* Прогресс асинхронной задачи (D48) */
+.progress-body { flex: 1; min-width: 0; }
+.progress-bar { height: 6px; margin: 8px 0 6px; border-radius: 999px; background: #e9e9ee; overflow: hidden; }
+.progress-bar span { display: block; height: 100%; background: var(--accent); transition: width .4s ease; }
+
+/* Качество вакансии (D51) и «Что если» (D50) */
+.quality { margin: 0 0 18px; }
+.quality ul { margin: 8px 0 0; padding-left: 18px; }
+.quality li { margin: 4px 0; }
+.quality li small { display: block; color: var(--muted); }
+.whatif { margin-top: 18px; }
+.whatif-row { display: grid; grid-template-columns: minmax(0, 1fr) 210px; gap: 12px; align-items: center; padding: 8px 0; border-bottom: 1px solid #ececf1; }
+.whatif-row select { width: 100%; }
+.whatif-row small { display: block; color: var(--muted); }
+.whatif-result { margin-top: 12px; }
+@media (max-width: 640px) { .whatif-row { grid-template-columns: 1fr; } }

@@ -11,7 +11,6 @@ import { Upload } from './upload.jsx';
 import { Batch, Match, Notices } from './results.jsx';
 
 const api = createApi(import.meta.env.VITE_API_URL || 'http://localhost:8000');
-const steps = ['Обезличивание', 'Извлечение требований', 'Сопоставление', 'Расчёт баллов', 'Отчёт'];
 
 function readLocation() {
   const [, kind, id, vacancy] = window.location.hash.split('/');
@@ -29,6 +28,7 @@ function App() {
   const [route, setRoute] = useState(readLocation);
   const [record, setRecord] = useState(null);
   const [pending, setPending] = useState(false);
+  const [progress, setProgress] = useState(null);
   const [error, setError] = useState('');
   const cache = useRef(new Map());
   const busy = useRef(false);
@@ -76,9 +76,11 @@ function App() {
     if (busy.current) return;
     busy.current = true;
     setPending(true);
+    setProgress(null);
     setError('');
     try {
-      const value = await request();
+      const job = await request();
+      const value = await api.waitJob(job, setProgress);
       const next = value.batch_id ? path('batches', value.batch_id) : path('runs', value.run_id);
       cache.current.set(next.slice(2), value);
       window.location.hash = next;
@@ -87,6 +89,7 @@ function App() {
     } finally {
       busy.current = false;
       setPending(false);
+      setProgress(null);
     }
   }
 
@@ -145,16 +148,11 @@ function App() {
                     <button type="button" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
                     <button type="button" aria-pressed={mode === 'batch'} disabled={pending} onClick={() => setMode('batch')}>Пакет резюме</button>
                   </div>
-                  <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.upload(mode, resumes, vacancies))} />
+                  <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
                   <Notices error={error} />
-                  {pending && (
-                    <section className="progress" role="status">
-                      <LoaderCircle className="spin" size={20} aria-hidden="true" />
-                      <div><strong>Анализируем документы</strong><p>С LLM ответ может занять несколько минут.</p><p>{steps.join(' → ')}</p></div>
-                    </section>
-                  )}
+                  {pending && <Progress job={progress} />}
                 </div>
-                <Example mode={mode} files={exampleFiles} pending={pending} run={(resume) => analyze(() => api.example(mode, resume))} />
+                <Example mode={mode} files={exampleFiles} pending={pending} run={(resume) => analyze(() => api.startExample(mode, resume))} />
               </div>
             </div>
           ) : (
@@ -169,6 +167,22 @@ function App() {
         </main>
       </div>
     </div>
+  );
+}
+
+function Progress({ job }) {
+  const share = Math.round((job?.progress || 0) * 100);
+  return (
+    <section className="progress" role="status" aria-live="polite">
+      <LoaderCircle className="spin" size={20} aria-hidden="true" />
+      <div className="progress-body">
+        <strong>{job?.stage || 'Отправляем документы'}</strong>
+        <div className="progress-bar" role="progressbar" aria-valuemin={0} aria-valuemax={100} aria-valuenow={share}>
+          <span style={{ width: `${share}%` }} />
+        </div>
+        <p>{share}% · с LLM одно резюме считается 1–2 минуты, пример из кейса после прогрева — секунды.</p>
+      </div>
+    </section>
   );
 }
 

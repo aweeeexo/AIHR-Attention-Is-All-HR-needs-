@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Clipboard, Download, FileText, LocateFixed, TriangleAlert, X } from 'lucide-react';
 import { Tag } from './tag.jsx';
+import { VacancyQuality, WhatIf } from './extras.jsx';
 
 const evidenceLabels = { direct: 'Прямое', indirect: 'Косвенное', adjacent: 'Смежный навык' };
 const modality = { must: 'Обязательное', nice: 'Желательное' };
@@ -61,6 +62,7 @@ export function Report({ result, vacancy, api, score }) {
         <div className="report-actions">{score}<a className="button secondary" href={api.reportUrl(result.run_id, vacancy.id)}><Download size={16} aria-hidden="true" /> Скачать DOCX</a></div>
       </section>
 
+      <VacancyQuality api={api} runId={result.run_id} vacancyId={vacancy.id} />
       <div className="section-heading">
         <h2>Требования и подтверждения</h2>
         {fragments.length > 0 && <button className="button secondary" type="button" aria-expanded={showResume}
@@ -143,6 +145,8 @@ export function Report({ result, vacancy, api, score }) {
         <button className="button secondary" type="button" onClick={copyMessage}><Clipboard size={16} aria-hidden="true" /> Скопировать</button><p className="muted" role="status">{copyStatus}</p></div>
       </section>}
       </div>
+
+      <WhatIf api={api} result={result} vacancy={vacancy} report={report} />
 
       <div className="disclosures">
         {result.profile && <Profile profile={result.profile} />}

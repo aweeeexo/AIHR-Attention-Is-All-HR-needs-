@@ -35,6 +35,38 @@ export function createApi(baseUrl, fetcher = fetch) {
       for (const vacancy of vacancies) body.append('vacancies', vacancy);
       return request(batch ? '/match/batch' : '/match', { method: 'POST', body });
     },
+    // Асинхронные задачи (D48): API сразу отвечает job_id, этап и процент берём из GET /jobs/{id}
+    startExample(mode, resume) {
+      if (mode === 'batch') return request('/jobs/batch/example', { method: 'POST' });
+      const query = resume ? `?${new URLSearchParams({ resume })}` : '';
+      return request('/jobs/match/example' + query, { method: 'POST' });
+    },
+    startUpload(mode, resumes, vacancies) {
+      const batch = mode === 'batch';
+      const body = new FormData();
+      for (const resume of resumes) body.append(batch ? 'resumes' : 'resume', resume);
+      for (const vacancy of vacancies) body.append('vacancies', vacancy);
+      return request(batch ? '/jobs/batch' : '/jobs/match', { method: 'POST', body });
+    },
+    job: (id) => request(`/jobs/${encodeURIComponent(id)}`, { signal: AbortSignal.timeout(15000) }),
+    async waitJob(job, onProgress = () => {}, { interval = 800, sleep } = {}) {
+      const pause = sleep || ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
+      let current = job;
+      onProgress(current);
+      while (current.status === 'queued' || current.status === 'running') {
+        await pause(interval);
+        current = await this.job(current.job_id);
+        onProgress(current);
+      }
+      if (current.status === 'failed') throw new Error(`Расчёт не удался: ${current.error || 'неизвестная ошибка'}`);
+      return current.batch_id ? this.batch(current.batch_id) : this.run(current.run_id);
+    },
+    whatIf: (id, answers) => request(`/runs/${encodeURIComponent(id)}/whatif`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ answers }),
+    }),
+    vacancyCheck: (id) => request(`/runs/${encodeURIComponent(id)}/vacancy-check`),
     run: (id) => request(`/runs/${encodeURIComponent(id)}`),
     batch: (id) => request(`/batches/${encodeURIComponent(id)}`),
     outbound: (id) => request(`/runs/${encodeURIComponent(id)}/outbound`),
