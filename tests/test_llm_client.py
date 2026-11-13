@@ -144,3 +144,60 @@ def test_sdk_client_gets_project_and_key() -> None:
     assert isinstance(sdk, openai.OpenAI)
     assert sdk.project == "folder-123"
     assert str(sdk.base_url).startswith("http://llm.invalid/v1")
+
+
+def test_model_routes_pick_longest_prefix() -> None:
+    from aihr.config import Settings
+
+    s = Settings(
+        _env_file=None,  # type: ignore[call-arg]
+        llm_model="main",
+        llm_model_routes="extract/=fast, extract/profile=long ,bad, =x",
+    )
+    assert s.model_for("extract/profile") == "long"
+    assert s.model_for("extract/requirements") == "fast"
+    assert s.model_for("match/pass_a") == "main"
+
+
+def test_routed_model_is_sent_and_cached_separately(llm_settings) -> None:
+    import json as _json
+
+    from pydantic import BaseModel
+
+    from aihr.llm import LLMClient
+    from tests.conftest import FakeOpenAI
+
+    class Ping(BaseModel):
+        ok: bool
+        word: str
+
+    reply = _json.dumps({"ok": True, "word": "x"})
+    s = llm_settings.model_copy(update={"llm_model_routes": "llm/ping=other-model"})
+    fake = FakeOpenAI([reply, reply])
+    LLMClient(s, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    assert fake.completions.calls[0]["model"] == "other-model"
+    # Без маршрута — основная модель и другой ключ кэша: второй запрос уходит к провайдеру
+    LLMClient(llm_settings, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    assert fake.completions.calls[1]["model"] == "test-model"
+
+
+def test_max_tokens_passed_only_when_set(llm_settings) -> None:
+    import json as _json
+
+    from pydantic import BaseModel
+
+    from aihr.llm import LLMClient
+    from tests.conftest import FakeOpenAI
+
+    class Ping(BaseModel):
+        ok: bool
+        word: str
+
+    reply = _json.dumps({"ok": True, "word": "x"})
+    fake = FakeOpenAI([reply, reply])
+    s = llm_settings.model_copy(update={"llm_cache": False})
+    LLMClient(s, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    assert "max_tokens" not in fake.completions.calls[0]
+    s2 = s.model_copy(update={"llm_max_tokens": 8000})
+    LLMClient(s2, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    assert fake.completions.calls[1]["max_tokens"] == 8000

@@ -182,7 +182,24 @@ def _examples() -> dict[type[BaseModel], BaseModel]:
         errors=[error],
         timings_ms={"total": 10},
     )
+    b_resume = c.BatchResume(
+        resume_id="C1", filename="r.docx", run_id="20261112-120000-abcdef", mode="llm",
+        best_vacancy_id="V1",
+    )  # fmt: skip
+    b_cell = c.BatchCell(
+        resume_id="C1", vacancy_id="V1", score=80.0, score_min=70.0, score_max=90.0,
+        label=c.FitLabel.fits, must_match=3, must_total=4,
+    )  # fmt: skip
+    b_vac = c.BatchVacancy(vacancy_id="V1", filename="v.docx", title="Инженер", candidates=["C1"])
+    batch = c.BatchResult(
+        batch_id="b20261112-120000-abcdef", resumes=[b_resume], vacancies=[b_vac], cells=[b_cell],
+        errors=[error], summary="Обработано резюме: 1 из 1",
+    )  # fmt: skip
     items: list[BaseModel] = [
+        b_resume,
+        b_cell,
+        b_vac,
+        batch,
         frag_r,
         error,
         resume,

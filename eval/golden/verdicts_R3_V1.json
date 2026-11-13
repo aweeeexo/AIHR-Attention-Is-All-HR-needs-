@@ -1,0 +1,162 @@
+{
+ "resume_file": "Семенов Алексей _резюме 3.docx",
+ "vacancy_file": "Вакансия 1.docx",
+ "note": "Ручная разметка 12.11 по рубрике T07: «Не соответствует» — только при факте против требования",
+ "items": [
+  {
+   "key": "верстка макетов Figma HTML CSS JS поддержка страниц",
+   "status": "match",
+   "fragment_ids": [
+    "R20",
+    "R38"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "адаптивная кроссбраузерная верстка",
+   "status": "match",
+   "fragment_ids": [
+    "R20",
+    "R30"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "интерфейсы utility классы Tailwind",
+   "status": "match",
+   "fragment_ids": [
+    "R22",
+    "R10"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "компоненты Vue 3 props emit v-model интеграция API",
+   "status": "match",
+   "fragment_ids": [
+    "R21",
+    "R23"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "опыт работы от 1 года",
+   "status": "match",
+   "fragment_ids": [
+    "R17",
+    "R27"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "HTML5 семантическая верстка",
+   "status": "match",
+   "fragment_ids": [
+    "R8",
+    "R20"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "CSS3 Flexbox Grid адаптивная верстка",
+   "status": "match",
+   "fragment_ids": [
+    "R9",
+    "R31"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "JavaScript ES6 DOM события промисы",
+   "status": "match",
+   "fragment_ids": [
+    "R11",
+    "R23",
+    "R32"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "Tailwind CSS конфигурация брейкпоинты",
+   "status": "match",
+   "fragment_ids": [
+    "R22",
+    "R10"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "коммерческая разработка Vue.js",
+   "status": "match",
+   "fragment_ids": [
+    "R21",
+    "R16",
+    "R6"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "самостоятельное тестирование интерфейсов",
+   "status": "match",
+   "fragment_ids": [
+    "R13",
+    "R30"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "аккуратность в коде читаемость",
+   "status": "match",
+   "fragment_ids": [
+    "R44",
+    "R24"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "готовность работать в небольшой команде",
+   "status": "match",
+   "fragment_ids": [
+    "R43"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "разница SSR SPA",
+   "status": "match",
+   "fragment_ids": [
+    "R14"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "Pinia",
+   "status": "partial",
+   "fragment_ids": [
+    "R14"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "Nuxt",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Monaco Editor",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Figma макет экспорт ресурсов",
+   "status": "match",
+   "fragment_ids": [
+    "R13",
+    "R20"
+   ],
+   "evidence_type": "direct"
+  }
+ ]
+}
