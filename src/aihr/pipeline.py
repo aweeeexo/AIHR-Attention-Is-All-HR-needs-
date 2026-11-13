@@ -10,10 +10,13 @@ from __future__ import annotations
 import logging
 import re
 import secrets
+import threading
 import time
 from collections import defaultdict
 from collections.abc import Callable, Iterator
+from concurrent.futures import ThreadPoolExecutor
 from contextlib import contextmanager
+from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Literal, TypeVar
 
@@ -26,23 +29,29 @@ from aihr.contracts import (
     IngestError,
     IngestErrorCode,
     IngestFailure,
+    LLMBadOutput,
     LLMUnavailable,
     MatchResult,
+    PrivacyViolation,
     Report,
     Requirement,
     VacancyScore,
     Verdict,
 )
-from aihr.ingest import load_document
+from aihr.ingest import load_document, make_error
 from aihr.llm import LLMClient
-from aihr.match import apply_rules, match_vacancy
+from aihr.match import apply_rules, attach_quotes, match_vacancy
 from aihr.normalize import enrich_profile
 from aihr.privacy import PrivacyContext, mask_document
+from aihr.privacy.outbound import OutboundLog
 from aihr.report import build_report
 from aihr.retrieve import Retriever
 from aihr.score import rank, score_vacancy
+from aihr.score.summary import ranking_summary
 
 log = logging.getLogger(__name__)
+
+MAX_LLM_FAILURES = 2  # сколько сбоев LLM терпим, прежде чем весь прогон пойдёт без неё
 
 RUN_ID_RE = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 
@@ -54,8 +63,11 @@ def new_run_id() -> str:
 
 
 class _Timings:
+    """Время шагов. Шаги вакансий идут параллельно, поэтому это сумма по вакансиям."""
+
     def __init__(self) -> None:
         self.ms: dict[str, int] = defaultdict(int)
+        self._lock = threading.Lock()
 
     @contextmanager
     def step(self, name: str) -> Iterator[None]:
@@ -63,7 +75,8 @@ class _Timings:
         try:
             yield
         finally:
-            self.ms[name] += int((time.perf_counter() - started) * 1000)
+            with self._lock:
+                self.ms[name] += int((time.perf_counter() - started) * 1000)
 
 
 class _Run:
@@ -74,20 +87,70 @@ class _Run:
         self.llm = llm
         self.mode: Literal["llm", "fallback"] = "llm" if llm.available else "fallback"
         self.warnings: list[str] = []
-        if settings.llm_provider == "openai_compatible" and not llm.available:
+        self.llm_failures = 0
+        self._lock = threading.Lock()
+        if settings.llm_provider == "none":
+            self.warnings.append(
+                "Режим без LLM (LLM_PROVIDER=none): требования и сопоставление — по правилам и "
+                "совпадению терминов, результат упрощённый."
+            )
+        elif not llm.available:
             self.warnings.append(
                 "LLM не настроена (нет LLM_BASE_URL или LLM_MODEL): работаем в режиме без LLM."
             )
+
+    def warn(self, text: str) -> None:
+        with self._lock:
+            if text not in self.warnings:
+                self.warnings.append(text)
 
     def call(self, with_llm: Callable[[], T], without_llm: Callable[[], T]) -> T:
         if self.mode == "llm":
             try:
                 return with_llm()
+            except PrivacyViolation as exc:
+                # Запрос не ушёл. Только этот шаг считаем без LLM, прогон продолжается с LLM
+                self.warn(f"Запрос к LLM заблокирован проверкой ПДн ({exc}).")
+                log.warning("guard заблокировал запрос: %s", exc)
+                return without_llm()
+            except LLMBadOutput as exc:
+                # Модель ответила не по схеме и после повторов: этот шаг без LLM, прогон — с LLM
+                self.warn(f"Ответ LLM не прошёл проверку схемы ({exc}); шаг посчитан без LLM.")
+                log.warning("невалидный ответ LLM: %s", exc)
+                return without_llm()
             except LLMUnavailable as exc:
-                self.mode = "fallback"
-                self.warnings.append(f"LLM недоступна ({exc}): дальше режим без LLM.")
-                log.warning("LLM недоступна, переход в режим без LLM: %s", exc)
+                # Первый сбой — только этот шаг без LLM (у провайдеров бывают единичные таймауты),
+                # второй — дальше весь прогон без LLM, чтобы не ждать таймаут на каждом шаге
+                with self._lock:
+                    self.llm_failures += 1
+                    switched = self.mode == "llm" and self.llm_failures >= MAX_LLM_FAILURES
+                    if switched:
+                        self.mode = "fallback"
+                if switched:
+                    self.warn(f"LLM недоступна ({exc}): дальше режим без LLM.")
+                    log.warning("LLM недоступна, переход в режим без LLM: %s", exc)
+                else:
+                    self.warn(f"LLM не ответила на одном шаге ({exc}): этот шаг посчитан без LLM.")
+                    log.warning("LLM не ответила, шаг без LLM: %s", exc)
         return without_llm()
+
+
+@dataclass
+class _VacancyOutcome:
+    reqs: list[Requirement] = field(default_factory=list)
+    verdicts: list[Verdict] = field(default_factory=list)
+    score: VacancyScore | None = None
+    error: IngestError | None = None
+    warning: str | None = None
+
+
+def _map[T](fn: Callable[[Document], T], docs: list[Document], settings: Settings) -> list[T]:
+    """Параллельно по вакансиям, не больше LLM_CONCURRENCY потоков. Порядок — как у docs."""
+    workers = min(len(docs), settings.llm_concurrency)
+    if workers <= 1:
+        return [fn(d) for d in docs]
+    with ThreadPoolExecutor(max_workers=workers, thread_name_prefix="vacancy") as pool:
+        return list(pool.map(fn, docs))
 
 
 def _load(
@@ -120,9 +183,12 @@ def run(
 ) -> MatchResult:
     settings = settings or get_settings()
     llm = llm or LLMClient(settings)
-    state = _Run(settings, llm)
     t = _Timings()
     run_id = new_run_id()
+    ctx = PrivacyContext()  # таблица замен ПДн — только в памяти этого прогона
+    outbound_path = settings.runs_dir / run_id / "outbound.jsonl"
+    llm = llm.for_run(ctx, OutboundLog(outbound_path) if save else None)
+    state = _Run(settings, llm)
     errors: list[IngestError] = []
     started = time.perf_counter()
 
@@ -136,11 +202,12 @@ def run(
         ]
 
     # 2. Маскирование: наружу уходит только masked_text
-    ctx = PrivacyContext()
     with t.step("mask"):
+        # Вакансии — первыми: номера их токенов не зависят от резюме, текст промпта извлечения
+        # одинаков для любого кандидата, и вакансия разбирается один раз (кэш, T04 шаг 9)
+        vac_docs = [mask_document(d, ctx) for d in vac_docs]
         if resume_doc is not None:
             resume_doc = mask_document(resume_doc, ctx)
-        vac_docs = [mask_document(d, ctx) for d in vac_docs]
 
     profile: CandidateProfile | None = None
     requirements: dict[str, list[Requirement]] = {}
@@ -159,68 +226,86 @@ def run(
             profile = enrich_profile(profile, settings.today_ym())
         retriever = Retriever(resume_doc)
 
-        # 4. Каждая вакансия отдельно: сбой одной не трогает остальные
-        for vac in vac_docs:
+        # 4. Каждая вакансия отдельно и параллельно: сбой одной не трогает остальные
+        def process(vac: Document) -> _VacancyOutcome:
+            out = _VacancyOutcome()
             step = "extract_requirements"
             try:
                 with t.step(step):
                     reqs = state.call(
-                        lambda v=vac: extract.extract_requirements(v, llm),
-                        lambda v=vac: fallback.extract_requirements_fallback(v),
+                        lambda: extract.extract_requirements(vac, llm),
+                        lambda: fallback.extract_requirements_fallback(vac),
                     )
                 if not reqs:
-                    errors.append(
-                        IngestError(
-                            code=IngestErrorCode.no_requirements,
-                            filename=vac.filename,
-                            message="Из вакансии не извлечено ни одного требования.",
-                            hint="Проверьте, что в файле есть раздел с требованиями.",
-                        )
-                    )
-                    continue
+                    out.error = make_error(IngestErrorCode.no_requirements, vac.filename)
+                    return out
                 step = "match"
                 with t.step(step):
                     vs = state.call(
-                        lambda r=reqs: match_vacancy(r, profile, resume_doc, retriever, llm),
-                        lambda r=reqs: fallback.match_vacancy_fallback(
-                            r, profile, resume_doc, retriever
+                        lambda: match_vacancy(reqs, profile, resume_doc, retriever, llm),
+                        lambda: fallback.match_vacancy_fallback(
+                            reqs, profile, resume_doc, retriever
                         ),
                     )
                     by_id = {r.id: r for r in reqs}
-                    vs = [apply_rules(by_id[v.requirement_id], v, profile) for v in vs]
+                    # Правила (стаж, уровни) могут добавить фрагменты — цитаты снова ставит код
+                    vs = [
+                        attach_quotes(apply_rules(by_id[v.requirement_id], v, profile), resume_doc)
+                        for v in vs
+                    ]
                 step = "score"
                 with t.step(step):
-                    score = score_vacancy(vac, reqs, vs)
+                    out.score = score_vacancy(vac, reqs, vs)
+                out.reqs, out.verdicts = reqs, vs
             except Exception as exc:
                 log.exception("%s: сбой на шаге %s", vac.id, step)
-                state.warnings.append(
+                out.warning = (
                     f"{vac.filename}: не удалось обработать (шаг {step}, {type(exc).__name__})."
                 )
-                continue
-            requirements[vac.id], verdicts[vac.id], scores[vac.id] = reqs, vs, score
+            return out
+
+        for vac, out in zip(vac_docs, _map(process, vac_docs, settings), strict=True):
+            if out.error:
+                errors.append(out.error)
+            if out.warning:
+                state.warn(out.warning)
+            if out.score is not None:
+                requirements[vac.id] = out.reqs
+                verdicts[vac.id] = out.verdicts
+                scores[vac.id] = out.score
 
     # 5. Рейтинг считает код (D11)
     with t.step("rank"):
         ranking = rank(list(scores.values())) if resume_doc is not None else None
+        if ranking is not None:  # итог: лучшая вакансия или «прямо не подходит ни одна» (D35)
+            ranking = ranking.model_copy(
+                update={"summary": ranking_summary(ranking, requirements, verdicts)}
+            )
 
     # 6. Отчёт
+    def report(vac: Document) -> Report | str:
+        try:
+            return build_report(
+                vac,
+                requirements[vac.id],
+                verdicts[vac.id],
+                scores[vac.id],
+                profile,  # type: ignore[arg-type]
+                resume_doc,  # type: ignore[arg-type]
+                llm if state.mode == "llm" else None,
+                ranking=ranking,
+            )
+        except Exception as exc:
+            log.exception("%s: сбой при сборке отчёта", vac.id)
+            return f"{vac.filename}: отчёт не собран ({type(exc).__name__})."
+
     with t.step("report"):
-        for vac in vac_docs:
-            if vac.id not in scores or profile is None or resume_doc is None:
-                continue
-            try:
-                reports[vac.id] = build_report(
-                    vac,
-                    requirements[vac.id],
-                    verdicts[vac.id],
-                    scores[vac.id],
-                    profile,
-                    resume_doc,
-                    llm,
-                )
-            except Exception as exc:
-                log.exception("%s: сбой при сборке отчёта", vac.id)
-                state.warnings.append(f"{vac.filename}: отчёт не собран ({type(exc).__name__}).")
+        ready = [v for v in vac_docs if v.id in scores and profile is not None and resume_doc]
+        for vac, rep_ in zip(ready, _map(report, ready, settings), strict=True):
+            if isinstance(rep_, str):
+                state.warn(rep_)
+            else:
+                reports[vac.id] = rep_
 
     t.ms["total"] = int((time.perf_counter() - started) * 1000)
     result = MatchResult(
@@ -235,7 +320,8 @@ def run(
         reports=reports,
         errors=errors,
         warnings=state.warnings,
-        timings_ms=dict(t.ms),
+        timings_ms={**t.ms, **llm.stats.as_timings()},
+        outbound_log_path=str(outbound_path) if save and outbound_path.is_file() else None,
     )
     if save:
         _save(result, settings)

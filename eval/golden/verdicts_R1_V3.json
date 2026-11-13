@@ -1,0 +1,132 @@
+{
+ "resume_file": "Иванов Алексей_резюме 1.docx",
+ "vacancy_file": "Вакансия 3.docx",
+ "note": "Разметка 12.11 по рубрике T07 и D43: «Не соответствует» — только при факте против требования; личные качества — только по прямому факту; разметчик один (Claude), фрагменты подбирались с помощью поиска и проверялись по тексту резюме",
+ "items": [
+  {
+   "key": "коммуникация с образовательными организациями сопровождение",
+   "status": "partial",
+   "fragment_ids": [
+    "R32",
+    "R55"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "сбор информации для договоров",
+   "status": "match",
+   "fragment_ids": [
+    "R55"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "сбор статистических данных отчетность",
+   "status": "match",
+   "fragment_ids": [
+    "R35",
+    "R55"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "проверка комплектности документов",
+   "status": "partial",
+   "fragment_ids": [
+    "R52"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "контрольные срезы успеваемости",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "табличные данные Excel Google Sheets",
+   "status": "match",
+   "fragment_ids": [
+    "R35",
+    "R52",
+    "R55"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "рабочие созвоны с командой",
+   "status": "match",
+   "fragment_ids": [
+    "R43"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "коммуникативные навыки",
+   "status": "match",
+   "fragment_ids": [
+    "R50"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "ответственность",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "самоорганизация",
+   "status": "match",
+   "fragment_ids": [
+    "R54",
+    "R55"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "навыки работы с таблицами большой объем информации",
+   "status": "match",
+   "fragment_ids": [
+    "R50",
+    "R52"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "личный ноутбук ПК",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность к взаимодействию с организациями и командой",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "опыт в сфере образования государственных муниципальных структурах",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "делопроизводитель документовед",
+   "status": "partial",
+   "fragment_ids": [
+    "R12",
+    "R52"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "готовность к очному формату",
+   "status": "partial",
+   "fragment_ids": [
+    "R14"
+   ],
+   "evidence_type": "direct"
+  }
+ ]
+}

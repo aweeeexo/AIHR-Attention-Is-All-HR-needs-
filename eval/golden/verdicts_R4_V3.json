@@ -1,0 +1,128 @@
+{
+ "resume_file": "Петрова Лилия_резюме 4.docx",
+ "vacancy_file": "Вакансия 3.docx",
+ "note": "Разметка 12.11 по рубрике T07 и D43: «Не соответствует» — только при факте против требования; личные качества — только по прямому факту; разметчик один (Claude), фрагменты подбирались с помощью поиска и проверялись по тексту резюме",
+ "items": [
+  {
+   "key": "коммуникация с образовательными организациями сопровождение",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "сбор информации для договоров",
+   "status": "partial",
+   "fragment_ids": [
+    "R41",
+    "R14"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "сбор статистических данных отчетность",
+   "status": "match",
+   "fragment_ids": [
+    "R30"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "проверка комплектности документов",
+   "status": "match",
+   "fragment_ids": [
+    "R23",
+    "R36"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "контрольные срезы успеваемости",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "табличные данные Excel Google Sheets",
+   "status": "match",
+   "fragment_ids": [
+    "R37"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "рабочие созвоны с командой",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммуникативные навыки",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "ответственность",
+   "status": "match",
+   "fragment_ids": [
+    "R45"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "самоорганизация",
+   "status": "match",
+   "fragment_ids": [
+    "R45"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "навыки работы с таблицами большой объем информации",
+   "status": "match",
+   "fragment_ids": [
+    "R44",
+    "R37"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "личный ноутбук ПК",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность к взаимодействию с организациями и командой",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "опыт в сфере образования государственных муниципальных структурах",
+   "status": "match",
+   "fragment_ids": [
+    "R26",
+    "R27"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "делопроизводитель документовед",
+   "status": "match",
+   "fragment_ids": [
+    "R19",
+    "R24"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "готовность к очному формату",
+   "status": "match",
+   "fragment_ids": [
+    "R9"
+   ],
+   "evidence_type": "direct"
+  }
+ ]
+}

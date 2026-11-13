@@ -66,3 +66,89 @@ def test_fragment_ids_are_real(live_llm: LLMClient, name: str) -> None:
         print(f"  {item.fragment_ids} {item.text}")
     assert result.items
     assert set(used) <= known, f"выдуманные номера: {set(used) - known}"
+
+
+@pytest.mark.parametrize(
+    "name", sorted(p.name for p in (REPO_ROOT / "data" / "case").glob("*резюме*.docx"))
+)
+def test_case_resume_outbound_log_is_clean(live_llm: LLMClient, name: str, tmp_path) -> None:
+    """Главный тест T02 вживую: замаскированное резюме кейса уходит в LLM, журнал без ПДн."""
+    import re
+
+    from aihr.privacy import patterns
+    from aihr.privacy.names import name_pattern, names_from_filename
+    from aihr.privacy.outbound import OutboundLog
+
+    path = REPO_ROOT / "data" / "case" / name
+    doc = load_document(path.read_bytes(), name, DocKind.resume, "R")
+    ctx = PrivacyContext()
+    masked = mask_document(doc, ctx)
+    log = OutboundLog(tmp_path / "outbound.jsonl")
+    llm = live_llm.for_run(ctx, log)
+    result = llm.structured(
+        "llm/selftest_fragments", {"fragments": masked.fragments[:40]}, FoundRequirements
+    )
+    sent = log.path.read_text(encoding="utf-8")
+    for word in names_from_filename(name):
+        assert not name_pattern(word).search(sent), "ФИО в журнале исходящих"
+    for kind, pattern in patterns.GUARD_PATTERNS.items():
+        assert not pattern.search(sent), kind
+    assert "[CANDIDATE]" in sent
+    known = {f.id for f in masked.fragments}
+    assert {fid for i in result.items for fid in i.fragment_ids} <= known
+    print(f"\n{name[-14:]}: {len(result.items)} пунктов, журнал {len(sent)} символов, ФИО нет")
+    assert re.search(r'"status": "ok"', sent)
+
+
+def test_requirements_against_golden(live_llm: LLMClient) -> None:
+    """T04: полнота и модальность ≥ 90% против ручного эталона на вакансиях кейса."""
+    import json
+    import sys
+
+    sys.path.insert(0, str(REPO_ROOT / "eval"))
+    from requirements_eval import evaluate
+
+    from aihr.extract import extract_requirements
+
+    golden_dir = REPO_ROOT / "eval" / "golden"
+    total = matched = modality_ok = 0
+    for path in sorted(golden_dir.glob("requirements_V*.json")):
+        golden = json.loads(path.read_text(encoding="utf-8"))
+        file = REPO_ROOT / "data" / "case" / golden["vacancy_file"]
+        vid = path.stem.split("_")[-1]
+        doc = mask_document(
+            load_document(file.read_bytes(), file.name, DocKind.vacancy, vid), PrivacyContext()
+        )
+        score = evaluate(golden, extract_requirements(doc, live_llm))
+        total, matched, modality_ok = (
+            total + score.golden,
+            matched + score.matched,
+            modality_ok + score.modality_ok,
+        )
+        assert not [w for w in doc.warnings if "не извлечено" in w], doc.warnings
+    assert matched / total >= 0.9
+    assert modality_ok / matched >= 0.9
+
+
+@pytest.mark.parametrize(
+    "name", sorted(p.name for p in (REPO_ROOT / "data" / "case").glob("*резюме*.docx"))
+)
+def test_profile_on_case_resumes(live_llm: LLMClient, name: str) -> None:
+    """T05-A: профиль резюме кейса — места работы с датами, все ссылки валидны, стаж посчитан."""
+    from aihr.contracts import YearMonth
+    from aihr.extract import extract_profile
+    from aihr.normalize import enrich_profile
+
+    path = REPO_ROOT / "data" / "case" / name
+    ctx = PrivacyContext()
+    doc = mask_document(load_document(path.read_bytes(), name, DocKind.resume, "R"), ctx)
+    profile = enrich_profile(
+        extract_profile(doc, live_llm.for_run(ctx, None)), YearMonth(year=2026, month=11)
+    )
+    known = {f.id for f in doc.fragments}
+    assert profile.positions and profile.skills
+    for item in [*profile.positions, *profile.education, *profile.skills, *profile.languages]:
+        assert set(item.fragment_ids) <= known
+    assert profile.total_experience_months and profile.total_experience_months > 6
+    months = profile.total_experience_months
+    print(f"\n{name[-14:]}: мест работы {len(profile.positions)}, стаж {months} мес.")

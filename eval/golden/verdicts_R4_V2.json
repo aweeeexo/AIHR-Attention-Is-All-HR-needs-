@@ -1,0 +1,118 @@
+{
+ "resume_file": "Петрова Лилия_резюме 4.docx",
+ "vacancy_file": "Вакансия 2.docx",
+ "note": "Ручная разметка 12.11 по рубрике T07: «Не соответствует» — только при факте против требования",
+ "items": [
+  {
+   "key": "таблица поступления выдачи ОС",
+   "status": "partial",
+   "fragment_ids": [
+    "R22"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "оклейка ОС инвентарными номерами",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "инвентаризация ОС на объектах",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на перемещение ОС подписи комиссии",
+   "status": "partial",
+   "fragment_ids": [
+    "R22",
+    "R25"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "учет ОС по кабинетам подразделениям",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "список ОС по источникам",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "контроль поступления ОС субсидии гранты списки",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "учет ОС при переезде",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "документы на списание перемещение ОС",
+   "status": "partial",
+   "fragment_ids": [
+    "R22"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "высшее экономическое образование",
+   "status": "match",
+   "fragment_ids": [
+    "R32"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "опыт не менее 3 лет направления",
+   "status": "partial",
+   "fragment_ids": [
+    "R21"
+   ],
+   "evidence_type": "adjacent"
+  },
+  {
+   "key": "внимание к деталям",
+   "status": "match",
+   "fragment_ids": [
+    "R43"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "системность",
+   "status": "match",
+   "fragment_ids": [
+    "R45"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "концентрация монотонная работа",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммуникабельность",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "стрессоустойчивость",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

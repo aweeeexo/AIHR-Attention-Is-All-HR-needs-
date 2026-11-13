@@ -1,0 +1,22 @@
+{
+  "vacancy_file": "Вакансия 2.docx",
+  "note": "Ручная разметка 12.11 по правилам T04: обязанности — nice (D3); список ОС по источникам — одна обязанность; личные качества — по одному",
+  "items": [
+    {"key": "таблица поступления выдачи ОС", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.3"]},
+    {"key": "оклейка ОС инвентарными номерами", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.4"]},
+    {"key": "инвентаризация ОС на объектах", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.5"]},
+    {"key": "документы на перемещение ОС подписи комиссии", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.6"]},
+    {"key": "учет ОС по кабинетам подразделениям", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.7"]},
+    {"key": "список ОС по источникам", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.8", "V2.9", "V2.10", "V2.11", "V2.12"]},
+    {"key": "контроль поступления ОС субсидии гранты списки", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.13"]},
+    {"key": "учет ОС при переезде", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.14"]},
+    {"key": "документы на списание перемещение ОС", "modality": "nice", "kind": "duty", "fragment_ids": ["V2.15"]},
+    {"key": "высшее экономическое образование", "modality": "must", "kind": "education", "fragment_ids": ["V2.17"]},
+    {"key": "опыт не менее 3 лет направления", "modality": "must", "kind": "experience", "fragment_ids": ["V2.18"]},
+    {"key": "внимание к деталям", "modality": "must", "kind": "soft", "fragment_ids": ["V2.19"]},
+    {"key": "системность", "modality": "must", "kind": "soft", "fragment_ids": ["V2.19"]},
+    {"key": "концентрация монотонная работа", "modality": "must", "kind": "soft", "fragment_ids": ["V2.19"]},
+    {"key": "коммуникабельность", "modality": "must", "kind": "soft", "fragment_ids": ["V2.19"]},
+    {"key": "стрессоустойчивость", "modality": "must", "kind": "soft", "fragment_ids": ["V2.19"]}
+  ]
+}

@@ -1,0 +1,24 @@
+{
+  "vacancy_file": "Вакансия 1.docx",
+  "note": "Ручная разметка 12.11 по правилам T04: одна строка — одно требование; перечисление без «или» делится; инструкция про сопроводительное письмо — не требование",
+  "items": [
+    {"key": "верстка макетов Figma HTML CSS JS поддержка страниц", "modality": "nice", "kind": "duty", "fragment_ids": ["V1.6"]},
+    {"key": "адаптивная кроссбраузерная верстка", "modality": "nice", "kind": "duty", "fragment_ids": ["V1.7"]},
+    {"key": "интерфейсы utility классы Tailwind", "modality": "nice", "kind": "duty", "fragment_ids": ["V1.8"]},
+    {"key": "компоненты Vue 3 props emit v-model интеграция API", "modality": "nice", "kind": "duty", "fragment_ids": ["V1.9"]},
+    {"key": "опыт работы от 1 года", "modality": "must", "kind": "experience", "fragment_ids": ["V1.11"]},
+    {"key": "HTML5 семантическая верстка", "modality": "must", "kind": "skill", "fragment_ids": ["V1.12"]},
+    {"key": "CSS3 Flexbox Grid адаптивная верстка", "modality": "must", "kind": "skill", "fragment_ids": ["V1.13"]},
+    {"key": "JavaScript ES6 DOM события промисы", "modality": "must", "kind": "skill", "fragment_ids": ["V1.14"]},
+    {"key": "Tailwind CSS конфигурация брейкпоинты", "modality": "must", "kind": "skill", "fragment_ids": ["V1.15"]},
+    {"key": "коммерческая разработка Vue.js", "modality": "must", "kind": "experience", "fragment_ids": ["V1.16"]},
+    {"key": "самостоятельное тестирование интерфейсов", "modality": "must", "kind": "skill", "fragment_ids": ["V1.17"]},
+    {"key": "аккуратность в коде читаемость", "modality": "must", "kind": "soft", "fragment_ids": ["V1.18"]},
+    {"key": "готовность работать в небольшой команде", "modality": "must", "kind": "soft", "fragment_ids": ["V1.19"]},
+    {"key": "разница SSR SPA", "modality": "nice", "kind": "skill", "fragment_ids": ["V1.21"]},
+    {"key": "Pinia", "modality": "nice", "kind": "skill", "fragment_ids": ["V1.22"]},
+    {"key": "Nuxt", "modality": "nice", "kind": "skill", "fragment_ids": ["V1.22"]},
+    {"key": "Monaco Editor", "modality": "nice", "kind": "skill", "fragment_ids": ["V1.22"]},
+    {"key": "Figma макет экспорт ресурсов", "modality": "nice", "kind": "skill", "fragment_ids": ["V1.23"]}
+  ]
+}

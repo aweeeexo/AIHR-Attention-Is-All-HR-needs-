@@ -1,0 +1,117 @@
+{
+ "resume_file": "Петрова Лилия_резюме 4.docx",
+ "vacancy_file": "Вакансия 1.docx",
+ "note": "Ручная разметка 12.11 по рубрике T07: «Не соответствует» — только при факте против требования",
+ "items": [
+  {
+   "key": "верстка макетов Figma HTML CSS JS поддержка страниц",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "адаптивная кроссбраузерная верстка",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "интерфейсы utility классы Tailwind",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "компоненты Vue 3 props emit v-model интеграция API",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "опыт работы от 1 года",
+   "status": "match",
+   "fragment_ids": [
+    "R21"
+   ],
+   "evidence_type": "direct"
+  },
+  {
+   "key": "HTML5 семантическая верстка",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "CSS3 Flexbox Grid адаптивная верстка",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "JavaScript ES6 DOM события промисы",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Tailwind CSS конфигурация брейкпоинты",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "коммерческая разработка Vue.js",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "самостоятельное тестирование интерфейсов",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "аккуратность в коде читаемость",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "готовность работать в небольшой команде",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "разница SSR SPA",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Pinia",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Nuxt",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Monaco Editor",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  },
+  {
+   "key": "Figma макет экспорт ресурсов",
+   "status": "not_stated",
+   "fragment_ids": [],
+   "evidence_type": null
+  }
+ ]
+}

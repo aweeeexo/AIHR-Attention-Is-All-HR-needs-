@@ -77,6 +77,10 @@ cmd = "docker compose down"
 help = "Тесты без сети (LLM подменена заглушкой)"
 cmd = "pytest"
 
+[tool.poe.tasks.clean-check]
+help = "Чистый клон, сборка, запуск и проверка примера — как у жюри (T12)"
+cmd = "bash scripts/clean_check.sh"
+
 [tool.poe.tasks.test-docker]
 help = "Тесты в Linux-контейнере"
 sequence = ["docker build --target test -t aihr-test .", "docker run --rm aihr-test"]
@@ -118,6 +122,7 @@ cmd = "streamlit run ui/app.py --server.port 8501"
 testpaths = ["tests"]
 addopts = "-m 'not llm'"
 markers = ["llm: прогон с настоящей моделью, по умолчанию выключен"]
+filterwarnings = ["ignore:pkg_resources is deprecated:UserWarning"]
 
 [tool.ruff]
 line-length = 100
