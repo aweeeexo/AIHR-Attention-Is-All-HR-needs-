@@ -2,7 +2,7 @@ name: Docker clean check
 
 on:
   push:
-    branches: [t/docker-demo]
+    branches: [main, t/docker-demo]
   pull_request:
     branches: [main]
 
