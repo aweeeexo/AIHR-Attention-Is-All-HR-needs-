@@ -15,6 +15,7 @@ from aihr.contracts import DocKind, Document, IngestErrorCode, IngestFailure
 from aihr.ingest.detect import EXTENSION_KIND, SUPPORTED_KINDS, sniff
 from aihr.ingest.errors import fail, make_error
 from aihr.ingest.filenames import fix_filename
+from aihr.ingest.hidden import injection_warnings
 from aihr.ingest.readers import READERS
 from aihr.ingest.sections import build_fragments, find_title, kind_warnings
 
@@ -98,6 +99,7 @@ def load_document(data: bytes, filename: str, kind: DocKind, doc_id: str) -> Doc
             raise fail(IngestErrorCode.encrypted, filename) from exc
         raise fail(IngestErrorCode.corrupted, filename) from exc
     warnings.extend(read.warnings)
+    warnings.extend(injection_warnings([b.text for b in read.blocks]))  # D52
 
     fragments, frag_warnings = build_fragments(read.blocks, kind, doc_id)
     warnings.extend(frag_warnings)

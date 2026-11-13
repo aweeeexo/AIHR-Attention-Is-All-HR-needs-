@@ -236,6 +236,11 @@ def run(
         if resume_doc is not None:
             resume_doc = mask_document(resume_doc, ctx)
 
+    # Предупреждения о самих документах (скрытый текст, «не похоже на резюме», обрезка) — рекрутеру
+    for d in [resume_doc, *vac_docs]:
+        for w in d.warnings if d is not None else []:
+            state.warn(f"{d.filename}: {w}")
+
     profile: CandidateProfile | None = None
     requirements: dict[str, list[Requirement]] = {}
     verdicts: dict[str, list[Verdict]] = {}

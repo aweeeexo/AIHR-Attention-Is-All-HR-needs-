@@ -8,9 +8,11 @@ from dataclasses import dataclass
 from typing import Any
 
 from aihr.contracts import FragmentSource
+from aihr.ingest.hidden import docx_run_hidden, hidden_warnings, pdf_char_hidden
 from aihr.ingest.text import join_wrapped_lines
 
 MAX_PDF_PAGES = 200
+
 
 _W = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 _NS = {
@@ -78,7 +80,7 @@ def _is_bold(p: Any) -> bool:
     return True
 
 
-def _paragraph_text(p: Any) -> str:
+def _paragraph_text(p: Any, hidden: list[tuple[str, str]] | None = None) -> str:
     parts: list[str] = []
     # Текст вложенных надписей и запасных копий (mc:Fallback) не берём: надписи читаются
     # отдельно. Сравниваем глубину, а не наличие предка — абзац сам может быть в надписи
@@ -87,6 +89,11 @@ def _paragraph_text(p: Any) -> str:
         if _XP_BOXES_ABOVE(node) != depth:
             continue
         if node.tag == _TAG_T:
+            reason = docx_run_hidden(node.getparent())
+            if reason:  # невидимый человеку текст в анализ не берём (D52)
+                if hidden is not None:
+                    hidden.append((reason, node.text or ""))
+                continue
             parts.append(node.text or "")
         elif node.tag == _TAG_TAB:
             parts.append(" ")
@@ -95,7 +102,13 @@ def _paragraph_text(p: Any) -> str:
     return "".join(parts)
 
 
-def _walk(container: Any, doc: Any, out: list[Block], source: FragmentSource) -> None:
+def _walk(
+    container: Any,
+    doc: Any,
+    out: list[Block],
+    source: FragmentSource,
+    hidden: list[tuple[str, str]] | None = None,
+) -> None:
     for child in container.iterchildren():
         tag = child.tag
         if tag == _TAG_P:
@@ -105,24 +118,25 @@ def _walk(container: Any, doc: Any, out: list[Block], source: FragmentSource) ->
             heading = style.startswith(("Heading", "Заголовок", "Title", "Название"))
             bold = _is_bold(child)
             # Ручные переносы строк внутри абзаца: продолжение предложения склеиваем
-            for line in join_wrapped_lines(_paragraph_text(child).split("\n")):
+            for line in join_wrapped_lines(_paragraph_text(child, hidden).split("\n")):
                 if line.strip():
                     out.append(Block(line, source, list_item, heading, bold))
             for box in _XP_TEXTBOX(child):
-                _walk(box, doc, out, FragmentSource.textbox)
+                _walk(box, doc, out, FragmentSource.textbox, hidden)
         elif tag == _TAG_TBL:
             for tc in _XP_CELLS(child):
-                _walk(tc, doc, out, FragmentSource.table_cell)
+                _walk(tc, doc, out, FragmentSource.table_cell, hidden)
         elif tag == _TAG_SDT or tag in _CONTAINERS:
             target = _XP_SDT_CONTENT(child) if tag == _TAG_SDT else [child]
             for node in target:
-                _walk(node, doc, out, source)
+                _walk(node, doc, out, source, hidden)
 
 
 def read_docx(data: bytes) -> ReadResult:
     import docx
 
     doc = docx.Document(io.BytesIO(data))
+    hidden: list[tuple[str, str]] = []
     headers: list[Block] = []
     footers: list[Block] = []
     for section in doc.sections:
@@ -137,10 +151,10 @@ def read_docx(data: bytes) -> ReadResult:
             part = getattr(section, attr)
             if part.is_linked_to_previous:  # нет своего колонтитула; не создаём его
                 continue
-            _walk(part._element, doc, target, src)
+            _walk(part._element, doc, target, src, hidden)
 
     body: list[Block] = []
-    _walk(doc.element.body, doc, body, FragmentSource.paragraph)
+    _walk(doc.element.body, doc, body, FragmentSource.paragraph, hidden)
 
     def dedupe(blocks: list[Block]) -> list[Block]:
         seen: set[str] = set()
@@ -156,7 +170,7 @@ def read_docx(data: bytes) -> ReadResult:
     for b in blocks:
         if b.source == FragmentSource.paragraph and b.list_item:
             b.source = FragmentSource.list_item
-    return ReadResult(blocks, [])
+    return ReadResult(blocks, hidden_warnings(hidden))
 
 
 # ---------- pdf ----------
@@ -172,9 +186,29 @@ def read_pdf(data: bytes) -> ReadResult:
         if len(pages) > MAX_PDF_PAGES:
             warnings.append(f"Документ обрезан до {MAX_PDF_PAGES} страниц из {len(pages)}.")
             pages = pages[:MAX_PDF_PAGES]
+        hidden: list[tuple[str, str]] = []
         for page in pages:
-            lines.extend((page.extract_text() or "").splitlines())
+            width, height = float(page.width), float(page.height)
+            page_hidden: dict[str, list[str]] = {}
+
+            def visible(
+                obj: dict[str, Any],
+                w: float = width,
+                h: float = height,
+                found: dict[str, list[str]] = page_hidden,
+            ) -> bool:
+                if obj.get("object_type") != "char":
+                    return True
+                reason = pdf_char_hidden(obj, w, h)
+                if reason:  # невидимый человеку текст в анализ не берём (D52)
+                    found.setdefault(reason, []).append(obj.get("text") or "")
+                    return False
+                return True
+
+            lines.extend((page.filter(visible).extract_text() or "").splitlines())
+            hidden.extend((reason, "".join(chars)) for reason, chars in page_hidden.items())
             lines.append("")  # граница страницы — не склеиваем через неё
+    warnings.extend(hidden_warnings(hidden))
     blocks = [Block(line, FragmentSource.pdf_line) for line in join_wrapped_lines(lines) if line]
     return ReadResult(blocks, warnings)
 
