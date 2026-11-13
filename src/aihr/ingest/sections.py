@@ -5,6 +5,7 @@
 from __future__ import annotations
 
 import re
+import unicodedata
 from collections import Counter
 
 from aihr.contracts import DocKind, Fragment, FragmentSource
@@ -22,6 +23,8 @@ _RESUME_HEADINGS: dict[str, list[str]] = {
         "места работы",
         "место работы",
         "профессиональный опыт",
+        "чем занимался",
+        "чем занималась",
         "опыт работы и проекты",
         "карьера",
         "проекты",
@@ -79,6 +82,7 @@ _RESUME_HEADINGS: dict[str, list[str]] = {
         "стек",
         "технологии",
         "стек технологий",
+        "технический стек",
         "инструменты",
         "программы",
         "знание программ",
@@ -242,8 +246,15 @@ _VACANCY_HEADINGS: dict[str, list[str]] = {
 
 def _key(text: str) -> str:
     s = text.lower().replace("ё", "е")
+    edge = " :.;!?—–-\t*"
+    edge += "".join(
+        char
+        for char in s
+        if unicodedata.category(char) in {"So", "Sk"} or char in "\u200d\ufe0e\ufe0f"
+    )
+    s = s.strip(edge)
     s = re.sub(r"^[\d.)\s]+", "", s)  # «1. Требования»
-    s = s.strip(" :.;!?—–-\t*")
+    s = s.strip(edge)
     s = re.sub(r"[,]", "", s)
     return re.sub(r"\s+", " ", s)
 
