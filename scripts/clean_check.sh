@@ -39,7 +39,7 @@ curl -fsS "$API_URL/health"
 echo
 curl -fsS "$STREAMLIT_URL/_stcore/health"
 echo
-curl -fsS "$FRONTEND_URL/" | grep -q '<div id="root">'
+curl -fsS "$FRONTEND_URL/" | grep -F '<div id="root">' >/dev/null
 curl -fsS "$FRONTEND_URL/api/health"
 echo
 

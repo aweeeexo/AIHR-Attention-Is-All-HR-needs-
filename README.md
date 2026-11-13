@@ -277,7 +277,7 @@ flowchart LR
 
 | Симптом | Что сделать |
 |---|---|
-| `port is already allocated` при `docker compose up` | Порт 8000 или 8501 занят. В Git Bash: `API_PORT=8001 UI_PORT=8502 docker compose up`. В PowerShell задайте `$env:API_PORT = '8001'` и `$env:UI_PORT = '8502'` перед запуском. |
+| `port is already allocated` при `docker compose up` | Один из портов 8000, 8501 или 3000 занят. В Git Bash: `API_PORT=8001 UI_PORT=8502 FRONTEND_PORT=3001 docker compose up`. В PowerShell задайте `$env:API_PORT = '8001'`, `$env:UI_PORT = '8502'` и `$env:FRONTEND_PORT = '3001'` перед запуском. |
 | В UI «API не отвечает» | `docker compose ps`: api должен быть `healthy`. Логи: `docker compose logs api` |
 | В результате «LLM не настроена» или «LLM недоступна» | Проверьте `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY` в `.env` и перезапустите `docker compose up`. Без ключа работает режим без LLM |
 | `E_CORRUPTED`, `E_ENCRYPTED`, `E_TYPE_MISMATCH` | Откройте файл и пересохраните в docx или pdf без пароля |
