@@ -1,4 +1,3 @@
-# syntax=docker/dockerfile:1.7
 # Многоступенчатая сборка: uv ставит зависимости в первом этапе, в итоговый образ попадает .venv.
 # Эмбеддинги (sentence-transformers + torch CPU, D19) включены по умолчанию (D42).
 # Образ без них (меньше на ~2,5 ГБ, только BM25): WITH_EMBEDDINGS=0 docker compose up --build
@@ -63,7 +62,9 @@ COPY examples ./examples
 RUN python -m aihr.warmup \
     && mkdir -p /app/data/runs /app/data/cache \
     && chown -R app:app /app/data
-ENV HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \n    HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_DISABLE_TELEMETRY=1 \n    HF_HUB_VERBOSITY=error TRANSFORMERS_VERBOSITY=error
+ENV HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
+    HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_DISABLE_TELEMETRY=1 \
+    HF_HUB_VERBOSITY=error TRANSFORMERS_VERBOSITY=error
 
 USER app
 EXPOSE 8000 8501

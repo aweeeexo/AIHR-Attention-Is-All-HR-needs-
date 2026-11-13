@@ -1,8 +1,11 @@
 # AIHR · Фронтенд
 
-Для запуска нужен Node.js 22.12+ и API AIHR. Без файла `.env` API работает в упрощённом режиме.
+Из корня репозитория запустите `docker compose up --build` и откройте
+<http://localhost:3000>. React обращается к API через прокси на том же адресе.
+Без файла `.env` API работает в упрощённом режиме.
 
-Из корня репозитория запустите API командой `docker compose up --build api`. Если сборка останавливается на строке `ENV HF_HUB_OFFLINE` в Dockerfile, запустите API локально через uv и Python 3.12.
+Для разработки вне Compose нужны Node.js 22.12+ и запущенный API AIHR.
+API можно поднять отдельно командой `docker compose up --build api` или через uv:
 
 ```sh
 uv sync --frozen
