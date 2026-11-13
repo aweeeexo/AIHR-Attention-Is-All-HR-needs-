@@ -26,11 +26,17 @@
 
 ## Быстрый старт
 
+Публичный репозиторий можно клонировать по HTTPS. Укажите `main` явно.
+
 ```bash
-git clone git@github.com:aweeeexo/AIHR-Attention-Is-All-HR-needs-.git aihr && cd aihr
-cp .env.example .env          # вписать LLM_BASE_URL, LLM_API_KEY, LLM_MODEL; без них — режим без LLM
-docker compose up --build     # или: make up
+git clone --branch main https://github.com/aweeeexo/AIHR-Attention-Is-All-HR-needs-.git aihr
+cd aihr
+docker compose up --build
 ```
+
+Команды работают и в PowerShell. По умолчанию анализ работает без LLM. Для подключения модели
+скопируйте `.env.example` в `.env` и укажите `LLM_BASE_URL`, `LLM_API_KEY` и `LLM_MODEL`.
+Если Docker останавливается на строке `ENV HF_HUB_OFFLINE`, используйте раздел «Без Docker» ниже.
 
 - UI: <http://localhost:8501> → кнопка «Пример из кейса» или свои файлы.
 - API: <http://localhost:8000>, документация — <http://localhost:8000/docs>.
@@ -271,7 +277,7 @@ flowchart LR
 
 | Симптом | Что сделать |
 |---|---|
-| `port is already allocated` при `docker compose up` | Порт 8000 или 8501 занят: `API_PORT=8001 UI_PORT=8502 docker compose up` |
+| `port is already allocated` при `docker compose up` | Порт 8000 или 8501 занят. В Git Bash: `API_PORT=8001 UI_PORT=8502 docker compose up`. В PowerShell задайте `$env:API_PORT = '8001'` и `$env:UI_PORT = '8502'` перед запуском. |
 | В UI «API не отвечает» | `docker compose ps`: api должен быть `healthy`. Логи: `docker compose logs api` |
 | В результате «LLM не настроена» или «LLM недоступна» | Проверьте `LLM_BASE_URL`, `LLM_MODEL`, `LLM_API_KEY` в `.env` и перезапустите `docker compose up`. Без ключа работает режим без LLM |
 | `E_CORRUPTED`, `E_ENCRYPTED`, `E_TYPE_MISMATCH` | Откройте файл и пересохраните в docx или pdf без пароля |
