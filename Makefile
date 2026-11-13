@@ -1,12 +1,13 @@
 # Linux, macOS и жюри. На Windows те же команды: uv run poe <цель>.
 # Цели с Docker не требуют uv на машине; test, lint, eval, check-leak — требуют (https://docs.astral.sh/uv/).
 
-.PHONY: help up down demo test test-docker clean-check lint eval check-leak
+.PHONY: help up down demo warm test test-docker clean-check lint eval check-leak
 
 help:
 	@echo "up          собрать образ и поднять API (8000) и UI (8501)"
 	@echo "down        остановить сервисы"
 	@echo "demo        прогон примера из кейса в контейнере и проверка результата"
+	@echo "warm        прогреть кэш LLM на примере кейса перед демо"
 	@echo "test        тесты (uv)"
 	@echo "test-docker тесты в Linux-контейнере (нужен только Docker)"
 	@echo "clean-check чистый клон, сборка, запуск и проверка примера — как у жюри"
@@ -22,6 +23,9 @@ down:
 
 demo:
 	docker compose run --rm api aihr demo
+
+warm:
+	docker compose exec api aihr warm
 
 test-docker:
 	docker build --target test -t aihr-test .

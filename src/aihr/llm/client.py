@@ -38,6 +38,9 @@ log = logging.getLogger(__name__)
 T = TypeVar("T", bound=BaseModel)
 
 MAX_FIX_ATTEMPTS = 2  # повторы при невалидном JSON
+# Таймаут на тот же запрос помним сутки: повтор сразу идёт запасным путём (деление пачки, шаблон).
+# Иначе прогон то успевает, то нет, и результат меняется от запуска к запуску (принцип 8, D49)
+TIMEOUT_MEMORY_S = 24 * 3600
 CACHE_FORMAT = 1  # меняем, если меняется формат записи в кэше
 
 _FENCE_RE = re.compile(r"^```(?:json)?\s*(.*?)\s*```$", re.DOTALL)
@@ -199,6 +202,10 @@ class LLMClient:
         self._guard(messages, prompt)
 
         key = self._cache_key(prompt, messages, schema)
+        if self._cache_get(f"timeout:{key}") is not None:
+            self.stats.add(cache_hits=1)
+            self._log(prompt, status="timeout_cached", cached=True, messages=messages)
+            raise LLMUnavailable(f"{prompt.prompt_id}: APITimeoutError (из кэша)")
         cached = self._cache_get(key)
         if cached is not None:
             try:
@@ -215,7 +222,12 @@ class LLMClient:
             if attempt:
                 self._guard(messages, prompt)
                 self.stats.add(fixes=1)
-            content = self._complete(client, messages, prompt, schema)
+            try:
+                content = self._complete(client, messages, prompt, schema)
+            except LLMUnavailable as exc:
+                if "Timeout" in str(exc):
+                    self._cache_set(f"timeout:{key}", True, expire=TIMEOUT_MEMORY_S)
+                raise
             try:
                 result = schema.model_validate(_extract_json(content))
             except (json.JSONDecodeError, ValidationError) as exc:
@@ -292,10 +304,10 @@ class LLMClient:
         cache = self._cache()
         return cache.get(key) if cache is not None else None
 
-    def _cache_set(self, key: str, value: Any) -> None:
+    def _cache_set(self, key: str, value: Any, expire: float | None = None) -> None:
         cache = self._cache()
         if cache is not None:
-            cache.set(key, value)
+            cache.set(key, value, expire=expire)
 
     # ---------- запрос ----------
 

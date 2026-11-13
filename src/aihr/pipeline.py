@@ -57,6 +57,29 @@ RUN_ID_RE = re.compile(r"^\d{8}-\d{6}-[0-9a-f]{6}$")
 
 T = TypeVar("T")
 
+# Колбэк прогресса: (этап по-русски, доля от 0 до 1). Для асинхронных задач API и прогрева кэша
+Progress = Callable[[str, float], None]
+
+
+class _Progress:
+    """Обёртка колбэка: ошибки колбэка не роняют прогон, доля не убывает."""
+
+    def __init__(self, callback: Progress | None) -> None:
+        self._callback = callback
+        self._lock = threading.Lock()
+        self._last = 0.0
+
+    def __call__(self, stage: str, fraction: float) -> None:
+        if self._callback is None:
+            return
+        with self._lock:
+            self._last = max(self._last, min(max(fraction, 0.0), 1.0))
+            value = self._last
+        try:
+            self._callback(stage, value)
+        except Exception:
+            log.warning("колбэк прогресса упал", exc_info=True)
+
 
 def new_run_id() -> str:
     return f"{datetime.now():%Y%m%d-%H%M%S}-{secrets.token_hex(3)}"
@@ -180,9 +203,12 @@ def run(
     settings: Settings | None = None,
     llm: LLMClient | None = None,
     save: bool = True,
+    progress: Progress | None = None,
 ) -> MatchResult:
     settings = settings or get_settings()
     llm = llm or LLMClient(settings)
+    report_progress = _Progress(progress)
+    report_progress("Загрузка документов", 0.02)
     t = _Timings()
     run_id = new_run_id()
     ctx = PrivacyContext()  # таблица замен ПДн — только в памяти этого прогона
@@ -202,6 +228,7 @@ def run(
         ]
 
     # 2. Маскирование: наружу уходит только masked_text
+    report_progress("Обезличивание", 0.06)
     with t.step("mask"):
         # Вакансии — первыми: номера их токенов не зависят от резюме, текст промпта извлечения
         # одинаков для любого кандидата, и вакансия разбирается один раз (кэш, T04 шаг 9)
@@ -217,6 +244,7 @@ def run(
 
     if resume_doc is not None:
         # 3. Профиль кандидата
+        report_progress("Профиль кандидата", 0.1)
         with t.step("extract_profile"):
             doc = resume_doc
             profile = state.call(
@@ -227,7 +255,24 @@ def run(
         retriever = Retriever(resume_doc)
 
         # 4. Каждая вакансия отдельно и параллельно: сбой одной не трогает остальные
+        total = len(vac_docs)
+        done = [0]
+        done_lock = threading.Lock()
+        report_progress(f"Сопоставление: 0 из {total} вакансий", 0.3)
+
+        def vacancy_done() -> None:
+            with done_lock:
+                done[0] += 1
+                n = done[0]
+            report_progress(f"Сопоставление: {n} из {total} вакансий", 0.3 + 0.5 * n / total)
+
         def process(vac: Document) -> _VacancyOutcome:
+            try:
+                return _process(vac)
+            finally:
+                vacancy_done()
+
+        def _process(vac: Document) -> _VacancyOutcome:
             out = _VacancyOutcome()
             step = "extract_requirements"
             try:
@@ -275,6 +320,7 @@ def run(
                 scores[vac.id] = out.score
 
     # 5. Рейтинг считает код (D11)
+    report_progress("Рейтинг", 0.82)
     with t.step("rank"):
         ranking = rank(list(scores.values())) if resume_doc is not None else None
         if ranking is not None:  # итог: лучшая вакансия или «прямо не подходит ни одна» (D35)
@@ -299,6 +345,7 @@ def run(
             log.exception("%s: сбой при сборке отчёта", vac.id)
             return f"{vac.filename}: отчёт не собран ({type(exc).__name__})."
 
+    report_progress("Отчёт рекрутеру", 0.85)
     with t.step("report"):
         ready = [v for v in vac_docs if v.id in scores and profile is not None and resume_doc]
         for vac, rep_ in zip(ready, _map(report, ready, settings), strict=True):
@@ -308,6 +355,7 @@ def run(
                 reports[vac.id] = rep_
 
     t.ms["total"] = int((time.perf_counter() - started) * 1000)
+    report_progress("Готово", 1.0)
     result = MatchResult(
         run_id=run_id,
         mode=state.mode,

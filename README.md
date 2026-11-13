@@ -60,7 +60,10 @@ uv run poe ui                              # UI на :8501 (в другом те
 uv run aihr match --resume data/case/<резюме>.docx --vacancies data/case/
 uv run aihr batch --resumes data/case/ --vacancies data/case/   # пакет: все резюме × все вакансии
 uv run aihr demo                           # use cases из examples/ + проверка
+uv run aihr warm                           # прогреть кэш LLM на примере кейса перед демо
 ```
+
+**Перед демо с LLM** прогрейте кэш: `make warm` (Windows: `uv run poe warm`, в контейнере: `docker compose exec api aihr warm`) или `WARM_ON_START=1` в `.env` — API прогреется сам в фоне, статус в `/health` → `warmup`. Внешняя LLM считает одно резюме 1–2 минуты; из кэша «Пример из кейса» и «Пакет из кейса» открываются за секунды. Кэш хранится в томе Docker и переживает перезапуск.
 
 Если `--vacancies` — папка, из неё берутся docx, pdf, rtf и txt, кроме файлов со словами «резюме», «resume» или «cv» в имени.
 
@@ -288,6 +291,8 @@ flowchart LR
 | POST | `/match/batch` | пакет (D38): `resumes` (несколько файлов, до `MAX_BATCH_RESUMES`=50), `vacancies` → `BatchResult`: матрица «кандидат × вакансия», лучшие кандидаты на каждую вакансию |
 | POST | `/match/batch/example` | пакет из всех резюме и вакансий `data/case/` |
 | GET | `/batches/{batch_id}` | сохранённый пакет; отчёт кандидата — `/runs/{run_id}` из `resumes[]` |
+| POST | `/jobs/match`, `/jobs/match/example`, `/jobs/batch`, `/jobs/batch/example` | то же, что `/match…`, но асинхронно: сразу `202` и `job_id` |
+| GET | `/jobs/{job_id}` | этап («Сопоставление: 2 из 3 вакансий»), доля готовности 0–1, статус `queued/running/done/failed`, затем `run_id` или `batch_id` |
 | GET | `/example/files` | файлы примера |
 | GET | `/runs/{run_id}` | сохранённый результат прогона |
 | GET | `/runs/{run_id}/outbound` | журнал запросов к внешней LLM |

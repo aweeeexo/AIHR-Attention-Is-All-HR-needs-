@@ -227,3 +227,28 @@ def test_pipeline_parallel_keeps_order_and_reports_llm_stats(llm_settings) -> No
     assert [v.id for v in r.vacancies] == ["V1", "V2", "V3", "V4"]
     assert set(r.reports) == {"V1", "V2", "V3", "V4"}
     assert "llm_requests" in r.timings_ms and "llm_cache_hits" in r.timings_ms
+
+
+def test_timeout_is_remembered_so_reruns_are_deterministic(llm_settings, tmp_path) -> None:
+    """D49: таймаут на тот же запрос — сразу запасной путь, без повторного похода к модели."""
+    import httpx
+    import openai
+    import pytest
+    from pydantic import BaseModel
+
+    from aihr.contracts import LLMUnavailable
+    from aihr.llm import LLMClient
+    from tests.conftest import FakeOpenAI
+
+    class Ping(BaseModel):
+        ok: bool
+        word: str
+
+    s = llm_settings.model_copy(update={"cache_dir": tmp_path / "c", "llm_max_retries": 0})
+    timeout = openai.APITimeoutError(request=httpx.Request("POST", "http://x/v1"))
+    fake = FakeOpenAI([timeout, '{"ok": true, "word": "x"}'])
+    with pytest.raises(LLMUnavailable):
+        LLMClient(s, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    with pytest.raises(LLMUnavailable, match="из кэша"):
+        LLMClient(s, client=fake).structured("llm/ping", {"word": "x"}, Ping)
+    assert len(fake.completions.calls) == 1  # второй раз к провайдеру не ходили

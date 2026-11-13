@@ -9,6 +9,7 @@ from __future__ import annotations
 import html
 import json
 import os
+import time
 from typing import Any
 
 import httpx
@@ -201,18 +202,49 @@ def _health() -> dict[str, Any] | None:
         return None
 
 
-def _post(path: str, **kwargs: Any) -> None:
+POLL_S = 0.7
+
+
+def _run_job(path: str, **kwargs: Any) -> dict[str, Any] | None:
+    """Асинхронная задача API с живым прогрессом: этап и процент вместо долгого ожидания."""
     try:
-        with st.status("Считаем: " + " → ".join(STEPS), expanded=False) as status:
-            response = httpx.post(f"{API_URL}{path}", timeout=TIMEOUT_S, **kwargs)
-            status.update(label="Готово", state="complete")
+        response = httpx.post(f"{API_URL}{path}", timeout=60, **kwargs)
     except httpx.HTTPError as exc:
         st.error(f"API недоступен: {type(exc).__name__}")
-        return
-    if response.status_code != 200:
+        return None
+    if response.status_code not in (200, 202):
         st.error(f"Ошибка API {response.status_code}: {response.text[:500]}")
+        return None
+    job = response.json()
+    bar = st.progress(0.0, text="В очереди")
+    deadline = time.monotonic() + TIMEOUT_S * 4
+    while job["status"] in ("queued", "running"):
+        if time.monotonic() > deadline:
+            st.error("Расчёт идёт слишком долго — проверьте API и LLM.")
+            return None
+        time.sleep(POLL_S)
+        try:
+            job = httpx.get(f"{API_URL}/jobs/{job['job_id']}", timeout=10).json()
+        except (httpx.HTTPError, ValueError) as exc:
+            st.error(f"API недоступен: {type(exc).__name__}")
+            return None
+        bar.progress(float(job["progress"]), text=f"{job['stage']} · {job['progress']:.0%}")
+    bar.empty()
+    if job["status"] == "failed":
+        st.error(f"Расчёт не удался: {job.get('error') or 'неизвестная ошибка'}")
+        return None
+    return job
+
+
+def _post(path: str, **kwargs: Any) -> None:
+    job = _run_job("/jobs" + path, **kwargs)
+    if job is None:
         return
-    st.session_state["result"] = response.json()
+    try:
+        st.session_state["result"] = httpx.get(f"{API_URL}/runs/{job['run_id']}", timeout=30).json()
+    except (httpx.HTTPError, ValueError) as exc:
+        st.error(f"Не удалось получить результат: {type(exc).__name__}")
+        return
     st.session_state.pop("selected_vacancy", None)
 
 
@@ -507,17 +539,15 @@ def _show_result(result: dict[str, Any], key: str = "") -> None:
 
 
 def _post_batch(path: str, **kwargs: Any) -> None:
+    job = _run_job(path.replace("/match/batch", "/jobs/batch"), **kwargs)
+    if job is None:
+        return
     try:
-        with st.status("Считаем пакет: каждое резюме против всех вакансий") as status:
-            response = httpx.post(f"{API_URL}{path}", timeout=TIMEOUT_S * 4, **kwargs)
-            status.update(label="Готово", state="complete")
-    except httpx.HTTPError as exc:
-        st.error(f"API недоступен: {type(exc).__name__}")
+        batch = httpx.get(f"{API_URL}/batches/{job['batch_id']}", timeout=30).json()
+    except (httpx.HTTPError, ValueError) as exc:
+        st.error(f"Не удалось получить результат: {type(exc).__name__}")
         return
-    if response.status_code != 200:
-        st.error(f"Ошибка API {response.status_code}: {response.text[:500]}")
-        return
-    st.session_state["batch"] = response.json()
+    st.session_state["batch"] = batch
     st.session_state.pop("batch_candidate", None)
 
 

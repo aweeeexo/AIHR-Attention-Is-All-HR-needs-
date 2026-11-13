@@ -17,6 +17,7 @@ def test_health(client: TestClient) -> None:
     assert r.status_code == 200
     body = r.json()
     assert body.pop("retrieval") in ("bm25", "bm25+embeddings")  # D42: режим поиска виден
+    assert body.pop("warmup") == "off"  # прогрев кэша при старте выключен по умолчанию
     assert body == {"status": "ok", "llm": "none", "contracts_version": CONTRACTS_VERSION}
 
 

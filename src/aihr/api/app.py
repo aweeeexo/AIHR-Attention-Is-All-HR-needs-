@@ -20,6 +20,7 @@ from aihr.config import get_settings, setup_logging
 from aihr.contracts import CONTRACTS_VERSION, BatchResult, MatchResult
 from aihr.ingest import fix_filename
 from aihr.inputs import case_files, read_files
+from aihr.jobs import JobStatus, registry
 from aihr.pipeline import RUN_ID_RE, run
 from aihr.retrieve import default_encoder
 
@@ -32,6 +33,16 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     # Модель эмбеддингов грузим при старте (~10 с), а не на первом запросе пользователя
     encoder, _e5 = await run_in_threadpool(default_encoder)
     log.info("поиск доказательств: %s", "BM25 + эмбеддинги" if encoder else "только BM25")
+    s = get_settings()
+    if s.warm_on_start and s.llm_configured:
+        resumes, vacancies = case_files(s.case_dir)
+        if resumes and vacancies:
+            job = _jobs().submit(
+                "batch",
+                lambda p: run_batch(read_files(resumes), read_files(vacancies), progress=p),
+            )
+            _state["warm_job"] = job.job_id
+            log.info("прогрев кэша на примере кейса: задача %s", job.job_id)
     yield
 
 
@@ -53,10 +64,25 @@ app.add_middleware(
 )
 
 
+_state: dict[str, str] = {}
+JOB_ID_RE = re.compile(r"^[0-9a-f]{16}$")
+
+
+def _jobs():
+    return registry(get_settings().jobs_workers)
+
+
+def _warmup() -> str:
+    job_id = _state.get("warm_job")
+    job = _jobs().get(job_id) if job_id else None
+    return job.status if job else "off"
+
+
 @app.get("/health")
 def health() -> dict[str, Any]:
     s = get_settings()
     return {
+        "warmup": _warmup(),
         "status": "ok",
         "llm": "configured" if s.llm_configured else "none",
         "retrieval": "bm25+embeddings" if default_encoder()[0] is not None else "bm25",
@@ -137,6 +163,78 @@ def get_batch(batch_id: str) -> BatchResult:
     if not path.is_file():
         raise HTTPException(404, "Пакет не найден")
     return BatchResult.model_validate_json(path.read_text(encoding="utf-8"))
+
+
+# ---------- асинхронные задачи: этап и процент вместо долгого молчания ----------
+
+
+async def _batch_files(resumes: list[UploadFile], vacancies: list[UploadFile]):
+    s = get_settings()
+    if len(resumes) > s.max_batch_resumes:
+        raise HTTPException(
+            413, f"В пакете не больше {s.max_batch_resumes} резюме (MAX_BATCH_RESUMES)"
+        )
+    limit = s.max_file_bytes
+    return [await _read(r, limit) for r in resumes], [await _read(v, limit) for v in vacancies]
+
+
+def _example(resume: str | None = None) -> tuple[list[Path], list[Path]]:
+    s = get_settings()
+    resumes, vacancies = case_files(s.case_dir)
+    if not resumes or not vacancies:
+        raise HTTPException(404, f"В {s.case_dir} нет резюме или вакансий примера")
+    if resume:
+        resumes = [p for p in resumes if resume.lower() in p.name.lower()]
+        if not resumes:
+            raise HTTPException(404, "Резюме с таким именем в примере нет")
+    return resumes, vacancies
+
+
+@app.post("/jobs/match", response_model=JobStatus, status_code=202)
+async def job_match(
+    resume: Annotated[UploadFile, File(description="Резюме: docx, pdf или txt")],
+    vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
+) -> JobStatus:
+    """То же, что POST /match, но сразу возвращает задачу; результат — по GET /jobs/{id}."""
+    limit = get_settings().max_file_bytes
+    resume_file = await _read(resume, limit)
+    vacancy_files = [await _read(v, limit) for v in vacancies]
+    return _jobs().submit("match", lambda p: run(resume_file, vacancy_files, progress=p))
+
+
+@app.post("/jobs/match/example", response_model=JobStatus, status_code=202)
+def job_match_example(
+    resume: Annotated[str | None, Query(description="Часть имени файла резюме")] = None,
+) -> JobStatus:
+    resumes, vacancies = _example(resume)
+    files = read_files(resumes[:1])[0], read_files(vacancies)
+    return _jobs().submit("match", lambda p: run(files[0], files[1], progress=p))
+
+
+@app.post("/jobs/batch", response_model=JobStatus, status_code=202)
+async def job_batch(
+    resumes: Annotated[list[UploadFile], File(description="Несколько резюме")],
+    vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
+) -> JobStatus:
+    resume_files, vacancy_files = await _batch_files(resumes, vacancies)
+    return _jobs().submit("batch", lambda p: run_batch(resume_files, vacancy_files, progress=p))
+
+
+@app.post("/jobs/batch/example", response_model=JobStatus, status_code=202)
+def job_batch_example() -> JobStatus:
+    resumes, vacancies = _example()
+    files = read_files(resumes), read_files(vacancies)
+    return _jobs().submit("batch", lambda p: run_batch(files[0], files[1], progress=p))
+
+
+@app.get("/jobs/{job_id}", response_model=JobStatus)
+def get_job(job_id: str) -> JobStatus:
+    if not JOB_ID_RE.match(job_id):
+        raise HTTPException(400, "Неверный job_id")
+    job = _jobs().get(job_id)
+    if job is None:
+        raise HTTPException(404, "Задача не найдена (после перезапуска API задачи не хранятся)")
+    return job
 
 
 @app.get("/example/files")

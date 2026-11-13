@@ -57,6 +57,9 @@ class Settings(BaseSettings):
 
     max_file_mb: float = Field(default=10, gt=0)
     max_batch_resumes: int = Field(default=50, ge=1)  # резюме в одном пакете (D38)
+    jobs_workers: int = Field(default=2, ge=1)  # асинхронных задач API одновременно
+    # Прогреть кэш LLM на примере кейса при старте API (в фоне): демо потом отвечает за секунды
+    warm_on_start: bool = False
     runs_dir: Path = Path("data/runs")
     cache_dir: Path = Path("data/cache")
     case_dir: Path = Path("data/case")

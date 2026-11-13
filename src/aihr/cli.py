@@ -127,6 +127,33 @@ def batch(
     typer.echo(result.model_dump_json(indent=2) if as_json else batch_summary(result))
 
 
+@app.command()
+def warm() -> None:
+    """Прогреть кэш LLM: все резюме × все вакансии примера кейса. Перед демо."""
+    import time
+
+    from aihr.batch import run_batch
+    from aihr.inputs import case_files
+
+    settings = get_settings()
+    resumes, vacancies = case_files(settings.case_dir)
+    if not resumes or not vacancies:
+        typer.echo(f"В {settings.case_dir} нет резюме или вакансий примера.", err=True)
+        raise typer.Exit(2)
+    if not settings.llm_configured:
+        typer.echo("LLM не настроена: прогревать нечего, режим без LLM и так быстрый.")
+        return
+    started = time.perf_counter()
+
+    def show(stage: str, fraction: float) -> None:
+        typer.echo(f"  {fraction:4.0%} {stage}")
+
+    result = run_batch(read_files(resumes), read_files(vacancies), progress=show)
+    typer.echo(f"Прогрев за {time.perf_counter() - started:.0f} с. {result.summary}")
+    for warning in result.warnings:
+        typer.echo(f"Предупреждение: {warning}")
+
+
 def _load_masked(path: Path, kind: DocKind, doc_id: str) -> Document:
     try:
         doc = load_document(path.read_bytes(), path.name, kind, doc_id)

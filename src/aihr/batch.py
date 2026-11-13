@@ -25,7 +25,7 @@ from aihr.contracts import (
     VacancyScore,
 )
 from aihr.llm import LLMClient
-from aihr.pipeline import run
+from aihr.pipeline import Progress, run
 from aihr.score import is_close, load_scoring_config, sort_key
 from aihr.score.summary import LABEL_RU
 
@@ -146,14 +146,23 @@ def run_batch(
     settings: Settings | None = None,
     llm: LLMClient | None = None,
     save: bool = True,
+    progress: Progress | None = None,
 ) -> BatchResult:
     settings = settings or get_settings()
     llm = llm or LLMClient(settings)
     batch_id = new_batch_id()
     results: list[MatchResult | None] = []
-    for data, name in resumes:
+    n = len(resumes)
+    for i, (data, name) in enumerate(resumes):
+
+        def step(stage: str, fraction: float, i: int = i) -> None:
+            if progress is not None:
+                progress(f"Кандидат {i + 1} из {n}: {stage}", (i + fraction) / n)
+
         try:
-            results.append(run((data, name), vacancies, settings=settings, llm=llm, save=save))
+            results.append(
+                run((data, name), vacancies, settings=settings, llm=llm, save=save, progress=step)
+            )
         except Exception:  # принцип 7: сбой одного кандидата не роняет пакет
             log.exception("пакет %s: сбой прогона резюме", batch_id)
             results.append(None)
