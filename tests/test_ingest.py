@@ -173,6 +173,10 @@ def test_split_long_keeps_short() -> None:
     [
         ("Опыт работы", DocKind.resume, ("experience", False)),
         ("ОПЫТ РАБОТЫ:", DocKind.resume, ("experience", False)),
+        ("🛠️ ЧЕМ ЗАНИМАЛАСЬ", DocKind.resume, ("experience", False)),
+        ("Hard skills 🛠️", DocKind.resume, ("skills", False)),
+        ("🧰 Технический стек: QGIS, PostGIS", DocKind.resume, ("skills", True)),
+        ("Обо мне ✨:", DocKind.resume, ("about", False)),
         ("Опыт работы — 6 лет 2 месяца", DocKind.resume, ("experience", False)),
         ("Опыт работы: 3 года", DocKind.resume, ("experience", False)),
         ("Навыки: Excel, SQL", DocKind.resume, ("skills", True)),
@@ -195,10 +199,23 @@ def test_match_heading(text: str, kind: DocKind, expected: tuple[str, bool]) -> 
         ("Опыт работы поваром от 3 лет", DocKind.vacancy),  # требование, а не заголовок
         ("Образование: высшее экономическое.", DocKind.vacancy),  # строка требований
         ("Опыт работы с Python 3 года в банке", DocKind.resume),
+        ("🛠️ Чем занимался на прошлой работе", DocKind.resume),
     ],
 )
 def test_not_heading(text: str, kind: DocKind) -> None:
     assert match_heading(text, kind) is None
+
+
+def test_resume_section_applies_to_following_text() -> None:
+    text = (
+        "Специалист по картографии\n🛠️ ЧЕМ ЗАНИМАЛСЯ\nГотовил карты по полевым данным.\n"
+        "Технический стек\nQGIS, PostGIS.\nОбо мне ✨:\nЛюблю работать с картами."
+    )
+    doc = load_document(text.encode(), "resume.txt", DocKind.resume, "R")
+    by_text = {fragment.text: fragment for fragment in doc.fragments}
+    assert by_text["Готовил карты по полевым данным."].section_role == "experience"
+    assert by_text["QGIS, PostGIS."].section_role == "skills"
+    assert by_text["Люблю работать с картами."].section_role == "about"
 
 
 # ---------- вакансии других профессий ----------
