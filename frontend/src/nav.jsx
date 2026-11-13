@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ArrowsClockwise, List, Moon, Sun, X } from '@phosphor-icons/react';
-import { currentTheme, setTheme } from './theme.js';
+import { ArrowsClockwise, List, X } from '@phosphor-icons/react';
+import { applyMode, followSystem, storedMode } from './theme.js';
 
 const links = [
   { href: '#/', label: 'О системе', match: (page) => page === 'landing' },
@@ -23,17 +23,18 @@ function Status({ health, onRefresh }) {
   );
 }
 
-function ThemeToggle() {
-  const [theme, setLocal] = useState(currentTheme);
-  const next = theme === 'dark' ? 'light' : 'dark';
+function ThemeSelect() {
+  const [mode, setMode] = useState(storedMode);
+  useEffect(() => followSystem(), []);
   return (
-    <button className="icon-button" type="button" aria-label={next === 'dark' ? 'Включить тёмную тему' : 'Включить светлую тему'}
-      onClick={() => { setTheme(next); setLocal(next); }}>
-      <span className="icon-swap" data-state={theme}>
-        <Sun size={18} aria-hidden="true" className="icon-sun" />
-        <Moon size={18} aria-hidden="true" className="icon-moon" />
-      </span>
-    </button>
+    <label className="theme-select">
+      <span className="sr-only">Тема оформления</span>
+      <select className="caption-4" value={mode} onChange={(event) => { applyMode(event.target.value); setMode(event.target.value); }}>
+        <option value="system">Системная тема</option>
+        <option value="light">Светлая тема</option>
+        <option value="dark">Тёмная тема</option>
+      </select>
+    </label>
   );
 }
 
@@ -62,7 +63,7 @@ export function Nav({ page, health, onRefresh }) {
         </ul>
         <div className="nav-tools">
           <Status health={health} onRefresh={onRefresh} />
-          <ThemeToggle />
+          <ThemeSelect />
           <button className="icon-button menu-button" type="button" aria-expanded={open} aria-controls="mobile-menu"
             aria-label={open ? 'Закрыть меню' : 'Открыть меню'} onClick={() => setOpen(!open)}>
             <span className="icon-swap" data-state={open ? 'open' : 'closed'}>

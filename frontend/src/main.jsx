@@ -11,6 +11,7 @@ import { Batch, Match, Notices } from './results.jsx';
 import { Nav } from './nav.jsx';
 import { Footer, Landing } from './landing.jsx';
 import { PageSkeleton, RankingSkeleton } from './skeleton.jsx';
+import { takePendingResume } from './pending.js';
 
 const api = createApi(import.meta.env.VITE_API_URL || 'http://localhost:8000');
 
@@ -58,6 +59,7 @@ function App() {
     const target = document.getElementById(route.anchor);
     if (target) {
       if (target.tagName === 'DETAILS') target.open = true;
+      if (target.tagName === 'BUTTON') target.click();
       target.scrollIntoView({ block: 'center' });
     }
   }, [route]);
@@ -70,7 +72,9 @@ function App() {
       }}>Перейти к содержимому</a>
       <Nav page={route.page} health={health} onRefresh={checkConnection} />
       <main id="main" tabIndex={-1} className={`main ${route.page}`}>
-        {route.page === 'landing' && <Landing />}
+        {route.page === 'landing' && <Landing api={api} onDone={(value) => {
+          window.location.hash = value.batch_id ? path('batches', value.batch_id) : path('runs', value.run_id);
+        }} />}
         {route.page === 'app' && <Analysis files={exampleFiles} />}
         {route.page === 'result' && <Result route={route} />}
         {route.page === 'missing' && <NotFound />}
@@ -99,6 +103,7 @@ function Progress({ job }) {
 
 function Analysis({ files }) {
   const [mode, setMode] = useState('single');
+  const [initialResume] = useState(takePendingResume);
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState(null);
   const [error, setError] = useState('');
@@ -127,7 +132,7 @@ function Analysis({ files }) {
     <div className="container page">
       <header className="page-head">
         <h1 className="heading-4">Новый анализ</h1>
-        <p className="body-3 secondary">Загрузите резюме и вакансии или запустите пример из кейса.</p>
+        <p className="body-3 secondary">Три шага: резюме, вакансии, запуск. Или запустите готовый пример из кейса.</p>
       </header>
       <div className="segmented" role="group" aria-label="Режим анализа">
         <button type="button" className="button-sm" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
@@ -135,7 +140,7 @@ function Analysis({ files }) {
       </div>
       <div className="analysis-layout">
         <div className="analysis-main">
-          <Upload mode={mode} pending={pending} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
+          <Upload mode={mode} pending={pending} initialResumes={initialResume ? [initialResume] : undefined} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
           <Notices error={error} />
           {pending && <Progress job={progress} />}
         </div>

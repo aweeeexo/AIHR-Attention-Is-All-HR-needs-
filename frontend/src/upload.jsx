@@ -4,8 +4,8 @@ import { ArrowRight, FileText, Paperclip, X } from '@phosphor-icons/react';
 const formats = /\.(docx|pdf|rtf|txt)$/i;
 const accepted = '.docx,.pdf,.rtf,.txt';
 
-export function Upload({ mode, pending, submit }) {
-  const [resumes, setResumes] = useState([]);
+export function Upload({ mode, pending, submit, initialResumes }) {
+  const [resumes, setResumes] = useState(initialResumes || []);
   const [vacancies, setVacancies] = useState([]);
   const [resumeText, setResumeText] = useState('');
   const [vacancyText, setVacancyText] = useState('');

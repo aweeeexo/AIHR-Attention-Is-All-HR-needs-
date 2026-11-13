@@ -48,6 +48,11 @@ export function createApi(baseUrl, fetcher = fetch) {
       for (const vacancy of vacancies) body.append('vacancies', vacancy);
       return request(batch ? '/jobs/batch' : '/jobs/match', { method: 'POST', body });
     },
+    startCase(resume) {
+      const body = new FormData();
+      body.append('resume', resume);
+      return request('/jobs/match/case', { method: 'POST', body });
+    },
     job: (id) => request(`/jobs/${encodeURIComponent(id)}`, { signal: AbortSignal.timeout(15000) }),
     async waitJob(job, onProgress = () => {}, { interval = 800, sleep } = {}) {
       const pause = sleep || ((ms) => new Promise((resolve) => setTimeout(resolve, ms)));
