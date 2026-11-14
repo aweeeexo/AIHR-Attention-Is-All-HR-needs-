@@ -1,0 +1,50 @@
+{
+ "resume_file": "Орлова Светлана_резюме HC.txt",
+ "vacancy_file": "Вакансия H3.txt",
+ "items": [
+  {
+   "key": "реклама Яндекс Директ",
+   "status": "match"
+  },
+  {
+   "key": "анализ трафика Яндекс Метрике Google Analytics",
+   "status": "partial"
+  },
+  {
+   "key": "контента сайта соцсетей",
+   "status": "partial"
+  },
+  {
+   "key": "опыт интернет-маркетинге",
+   "status": "match"
+  },
+  {
+   "key": "настройки контекстной рекламы",
+   "status": "match"
+  },
+  {
+   "key": "аналитикой отчёты воронки конверсии",
+   "status": "match"
+  },
+  {
+   "key": "грамотная письменная речь",
+   "status": "not_stated"
+  },
+  {
+   "key": "креативность",
+   "status": "not_stated"
+  },
+  {
+   "key": "инициативность",
+   "status": "not_stated"
+  },
+  {
+   "key": "продвижения медицинских услуг",
+   "status": "match"
+  },
+  {
+   "key": "навыки Photoshop",
+   "status": "match"
+  }
+ ]
+}

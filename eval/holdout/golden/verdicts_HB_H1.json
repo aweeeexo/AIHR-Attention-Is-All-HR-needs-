@@ -1,0 +1,54 @@
+{
+ "resume_file": "Ильина Марина_резюме HB.txt",
+ "vacancy_file": "Вакансия H1.txt",
+ "items": [
+  {
+   "key": "разработка разделов ОВ ВК стадиях",
+   "status": "not_stated"
+  },
+  {
+   "key": "спецификаций оборудования Excel",
+   "status": "not_stated"
+  },
+  {
+   "key": "согласование решений смежными отделами",
+   "status": "not_stated"
+  },
+  {
+   "key": "высшее техническое образование",
+   "status": "mismatch"
+  },
+  {
+   "key": "опыт проектирования систем вентиляции",
+   "status": "not_stated"
+  },
+  {
+   "key": "владение AutoCAD",
+   "status": "not_stated"
+  },
+  {
+   "key": "Revit семейств спецификаций",
+   "status": "not_stated"
+  },
+  {
+   "key": "знание СП 60.13330 норм",
+   "status": "not_stated"
+  },
+  {
+   "key": "внимательность",
+   "status": "not_stated"
+  },
+  {
+   "key": "аккуратность",
+   "status": "not_stated"
+  },
+  {
+   "key": "Navisworks",
+   "status": "not_stated"
+  },
+  {
+   "key": "английский язык B1",
+   "status": "not_stated"
+  }
+ ]
+}

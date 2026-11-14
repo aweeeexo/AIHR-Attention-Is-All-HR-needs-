@@ -1,0 +1,54 @@
+{
+ "resume_file": "Котов Денис_резюме HA.txt",
+ "vacancy_file": "Вакансия H1.txt",
+ "items": [
+  {
+   "key": "разработка разделов ОВ ВК стадиях",
+   "status": "partial"
+  },
+  {
+   "key": "спецификаций оборудования Excel",
+   "status": "partial"
+  },
+  {
+   "key": "согласование решений смежными отделами",
+   "status": "match"
+  },
+  {
+   "key": "высшее техническое образование",
+   "status": "match"
+  },
+  {
+   "key": "опыт проектирования систем вентиляции",
+   "status": "match"
+  },
+  {
+   "key": "владение AutoCAD",
+   "status": "match"
+  },
+  {
+   "key": "Revit семейств спецификаций",
+   "status": "partial"
+  },
+  {
+   "key": "знание СП 60.13330 норм",
+   "status": "match"
+  },
+  {
+   "key": "внимательность",
+   "status": "not_stated"
+  },
+  {
+   "key": "аккуратность",
+   "status": "not_stated"
+  },
+  {
+   "key": "Navisworks",
+   "status": "not_stated"
+  },
+  {
+   "key": "английский язык B1",
+   "status": "partial"
+  }
+ ]
+}

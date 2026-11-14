@@ -1,0 +1,50 @@
+{
+ "resume_file": "Котов Денис_резюме HA.txt",
+ "vacancy_file": "Вакансия H2.txt",
+ "items": [
+  {
+   "key": "планирование маршрутов загрузки автопарка",
+   "status": "not_stated"
+  },
+  {
+   "key": "отчётности рейсам Excel Power BI",
+   "status": "not_stated"
+  },
+  {
+   "key": "работа перевозчиками клиентами",
+   "status": "not_stated"
+  },
+  {
+   "key": "опыт работы логистом",
+   "status": "not_stated"
+  },
+  {
+   "key": "знание 1С управление торговлей логистикой",
+   "status": "not_stated"
+  },
+  {
+   "key": "Excel ВПР сводные таблицы",
+   "status": "not_stated"
+  },
+  {
+   "key": "стрессоустойчивость",
+   "status": "not_stated"
+  },
+  {
+   "key": "пунктуальность",
+   "status": "not_stated"
+  },
+  {
+   "key": "высшее образование",
+   "status": "match"
+  },
+  {
+   "key": "водительское удостоверение категории B",
+   "status": "not_stated"
+  },
+  {
+   "key": "международными перевозками",
+   "status": "not_stated"
+  }
+ ]
+}

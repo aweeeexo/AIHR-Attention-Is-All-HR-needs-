@@ -1,0 +1,89 @@
+{
+ "vacancy_file": "Вакансия H1.txt",
+ "items": [
+  {
+   "key": "разработка разделов ОВ ВК стадиях",
+   "fragment_ids": [
+    "V1.4"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "спецификаций оборудования Excel",
+   "fragment_ids": [
+    "V1.5"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "согласование решений смежными отделами",
+   "fragment_ids": [
+    "V1.6"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "высшее техническое образование",
+   "fragment_ids": [
+    "V1.8"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "опыт проектирования систем вентиляции",
+   "fragment_ids": [
+    "V1.9"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "владение AutoCAD",
+   "fragment_ids": [
+    "V1.10"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "Revit семейств спецификаций",
+   "fragment_ids": [
+    "V1.11"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "знание СП 60.13330 норм",
+   "fragment_ids": [
+    "V1.12"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "внимательность",
+   "fragment_ids": [
+    "V1.13"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "аккуратность",
+   "fragment_ids": [
+    "V1.13"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "Navisworks",
+   "fragment_ids": [
+    "V1.15"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "английский язык B1",
+   "fragment_ids": [
+    "V1.16"
+   ],
+   "modality": "nice"
+  }
+ ]
+}

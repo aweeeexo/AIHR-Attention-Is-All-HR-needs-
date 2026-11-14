@@ -1,0 +1,82 @@
+{
+ "vacancy_file": "Вакансия H2.txt",
+ "items": [
+  {
+   "key": "планирование маршрутов загрузки автопарка",
+   "fragment_ids": [
+    "V2.4"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "отчётности рейсам Excel Power BI",
+   "fragment_ids": [
+    "V2.5"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "работа перевозчиками клиентами",
+   "fragment_ids": [
+    "V2.6"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "опыт работы логистом",
+   "fragment_ids": [
+    "V2.8"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "знание 1С управление торговлей логистикой",
+   "fragment_ids": [
+    "V2.9"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "Excel ВПР сводные таблицы",
+   "fragment_ids": [
+    "V2.10"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "стрессоустойчивость",
+   "fragment_ids": [
+    "V2.11"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "пунктуальность",
+   "fragment_ids": [
+    "V2.11"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "высшее образование",
+   "fragment_ids": [
+    "V2.12"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "водительское удостоверение категории B",
+   "fragment_ids": [
+    "V2.14"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "международными перевозками",
+   "fragment_ids": [
+    "V2.15"
+   ],
+   "modality": "nice"
+  }
+ ]
+}

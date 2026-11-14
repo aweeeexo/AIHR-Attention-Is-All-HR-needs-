@@ -1,0 +1,47 @@
+{
+ "vacancy_file": "Вакансия H4.txt",
+ "items": [
+  {
+   "key": "приготовление блюд европейской кухни технологическим картам",
+   "fragment_ids": [
+    "V4.3"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "контроль качества заготовок",
+   "fragment_ids": [
+    "V4.4"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "опыт работы поваром",
+   "fragment_ids": [
+    "V4.6"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "среднее профессиональное образование специальности",
+   "fragment_ids": [
+    "V4.7"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "санитарная книжка",
+   "fragment_ids": [
+    "V4.8"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "пароконвектоматом",
+   "fragment_ids": [
+    "V4.9"
+   ],
+   "modality": "nice"
+  }
+ ]
+}

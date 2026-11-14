@@ -1,0 +1,82 @@
+{
+ "vacancy_file": "Вакансия H3.txt",
+ "items": [
+  {
+   "key": "реклама Яндекс Директ",
+   "fragment_ids": [
+    "V3.4"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "анализ трафика Яндекс Метрике Google Analytics",
+   "fragment_ids": [
+    "V3.5"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "контента сайта соцсетей",
+   "fragment_ids": [
+    "V3.6"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "опыт интернет-маркетинге",
+   "fragment_ids": [
+    "V3.8"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "настройки контекстной рекламы",
+   "fragment_ids": [
+    "V3.9"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "аналитикой отчёты воронки конверсии",
+   "fragment_ids": [
+    "V3.10"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "грамотная письменная речь",
+   "fragment_ids": [
+    "V3.11"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "креативность",
+   "fragment_ids": [
+    "V3.12"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "инициативность",
+   "fragment_ids": [
+    "V3.12"
+   ],
+   "modality": "must"
+  },
+  {
+   "key": "продвижения медицинских услуг",
+   "fragment_ids": [
+    "V3.14"
+   ],
+   "modality": "nice"
+  },
+  {
+   "key": "навыки Photoshop",
+   "fragment_ids": [
+    "V3.15"
+   ],
+   "modality": "nice"
+  }
+ ]
+}
