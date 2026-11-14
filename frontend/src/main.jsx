@@ -37,10 +37,12 @@ function path(kind, id, vacancy) {
 function App() {
   const [route, setRoute] = useState(readRoute);
   const [health, setHealth] = useState(undefined);
-  const [exampleFiles, setExampleFiles] = useState(null);
+  // undefined — ещё загружаем, null — API не ответил (не показываем ошибку, пока идёт загрузка)
+  const [exampleFiles, setExampleFiles] = useState(undefined);
 
   async function checkConnection() {
     setHealth(undefined);
+    setExampleFiles(undefined);
     const [status, files] = await Promise.allSettled([api.health(), api.files()]);
     setHealth(status.status === 'fulfilled' ? status.value : null);
     setExampleFiles(files.status === 'fulfilled' ? files.value : null);
@@ -174,10 +176,11 @@ function Example({ mode, files, pending, run }) {
           </select>
         </label>
       )}
-      <button className="button secondary button-md" type="button" disabled={pending || files === null}
+      <button className="button secondary button-md" type="button" disabled={pending || !files}
         onClick={() => run(files?.resumes.includes(resume) ? resume : '')}>
         Запустить пример <ArrowRight size={18} aria-hidden="true" />
       </button>
+      {files === undefined && <p className="caption-2 secondary" role="status">Загружаем пример…</p>}
       {files === null && <p className="caption-2 error-text">API недоступен: пример запустить нельзя. Проверьте, что сервер запущен.</p>}
     </aside>
   );
