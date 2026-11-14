@@ -97,8 +97,8 @@ def main() -> None:
     for (rfile, vfile), statuses in LABELS.items():
         items = VACANCIES[vfile]
         assert len(statuses) == len(items), (rfile, vfile)
-        out = {"resume_file": rfile, "vacancy_file": vfile, "items": [
-            {"key": k, "status": s} for (_, _, k), s in zip(items, statuses, strict=True)]}  # fmt: skip
+        rows = [{"key": k, "status": s} for (_, _, k), s in zip(items, statuses, strict=True)]
+        out = {"resume_file": rfile, "vacancy_file": vfile, "items": rows}
         name = f"verdicts_{rfile.split()[-1][:-4]}_{vfile.split()[-1][:-4]}.json"
         (OUT / name).write_text(json.dumps(out, ensure_ascii=False, indent=1), encoding="utf-8")
 
