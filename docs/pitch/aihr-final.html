@@ -179,8 +179,8 @@ svg {
 .chrome { position: absolute; left: var(--pad); right: var(--pad); top: 76px; display: flex; justify-content: space-between;
           font: 500 22px 'JetBrains Mono'; letter-spacing: .08em; text-transform: uppercase; color: var(--ash); }
 .chrome b { color: var(--mint); font-weight: 500; }
-.ember { position: absolute; right: var(--pad); bottom: 76px; font: 800 34px/1.1 'Unbounded'; letter-spacing: -0.02em;
-         color: var(--ember); text-align: right; max-width: 900px; }
+.ember { position: absolute; right: var(--pad); bottom: 70px; font: 800 56px/1.05 'Unbounded'; letter-spacing: -0.03em;
+         color: var(--ember); text-align: right; max-width: 1400px; text-shadow: 0 0 48px rgba(255, 106, 61, .28); }
 .foot { position: absolute; left: var(--pad); bottom: 84px; font: 500 22px 'JetBrains Mono'; color: var(--ash); }
 
 /* === TYPE === */
@@ -255,7 +255,7 @@ h2 .w { color: var(--text); }
 .report .note em { font-style: normal; color: var(--amber); }
 
 /* === SLIDE 7: цифры === */
-.nums { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 110px; }
+.nums { display: grid; grid-template-columns: 1fr 1fr; gap: 30px 110px; }
 .nums .num { font-size: 112px; }
 .nums > div { display: block; }
 .nums .cap { margin-top: 12px; max-width: 700px; }
@@ -289,7 +289,9 @@ h2 .w { color: var(--text); }
                background: #1E1A17; color: #6FF0BE; border: 1px solid #333; border-radius: 10px; padding: 8px 12px; font: 600 14px 'Manrope'; }
 .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
 body.editing [data-edit] { outline: 1px dashed rgba(111,240,190,.5); }
-.hint { position: fixed; right: 18px; bottom: 14px; z-index: 1000; font: 500 13px 'JetBrains Mono'; color: rgba(210,214,211,.35); }
+.hint { position: fixed; right: 18px; bottom: 14px; z-index: 1000; font: 500 13px 'JetBrains Mono'; color: rgba(210,214,211,.35);
+        animation: hint-out 1s 5s forwards; }
+@keyframes hint-out { to { opacity: 0; } }
 
 </style>
 </head>
@@ -353,9 +355,9 @@ body.editing [data-edit] { outline: 1px dashed rgba(111,240,190,.5); }
 <div class="ember r" style="--d:7" data-edit>0 ложных «не соответствует»</div></section>
 <section class="slide" data-notes="<b>~50 c. Здесь переключаемся на живой сайт.</b> Загружаем резюме — система сравнивает его со всеми открытыми вакансиями, за полторы минуты.
 Рейтинг с баллом и причиной места. Открываем вакансию: таблица требований. Вот строка «Соответствует» с цитатой [R21], стаж посчитал код.
-Вот «Частично»: позиционирование не упомянуто — и это уже вопрос кандидату. Клик по цитате подсвечивает её прямо в резюме. В конце — DOCX для нанимающего менеджера."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Демо · 06 / 10</span></div>
+Вот «Частично»: позиционирование не упомянуто — и это уже вопрос кандидату. Клик по цитате подсвечивает её прямо в резюме. В конце — DOCX для нанимающего менеджера."><div class="chrome"><span><b>Живая версия</b> · consultant-abroad-bracelet-brokers.trycloudflare.com</span><span>Демо · 06 / 10</span></div>
 <h2 class="at r" style="left:112px; top:160px; --d:0" data-edit>Так выглядит<br><span class="w">одна строка отчёта</span></h2>
-<div class="report at r" style="left:120px; right:120px; top:420px; --d:2">
+<div class="report at r" style="left:120px; right:120px; top:390px; --d:2">
   <div class="h"><span>Требование вакансии</span><span>Статус</span><span>Подтверждение в резюме</span></div>
   <div class="row"><div class="req" data-edit>Опыт коммерческой разработки на Vue.js: компоненты, props, emit</div>
     <div><span class="tag t-match">Соответствует</span></div>
@@ -366,12 +368,12 @@ body.editing [data-edit] { outline: 1px dashed rgba(111,240,190,.5); }
     <div><span class="id">[R9]</span><q>CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами.</q>
     <div class="note">Не хватает: <em>позиционирование не упомянуто</em> → вопрос кандидату</div></div></div>
 </div>
-<div class="foot r" style="--d:4">Живая версия: <span style="color:var(--mint)">consultant-abroad-bracelet-brokers.trycloudflare.com</span></div><div class="ember r" style="--d:6" data-edit>клик → подсветка в резюме</div></section>
+<div class="ember r" style="--d:6" data-edit>клик → подсветка в резюме</div></section>
 <section class="slide" data-notes="<b>~30 c.</b> Все цифры воспроизводятся одной командой make eval. 86% статусов совпали с ручной разметкой, 96% требований найдены,
 все 447 цитат — дословно из резюме. И отдельно: мы собрали отложенный набор вакансий других профессий, разметили его до прогона,
 и там 96%. Значит, мы не подогнали систему под три вакансии кейса."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Качество · 07 / 10</span></div>
 <h2 class="at r" style="left:112px; top:170px; --d:0" data-edit>Проверено, <span class="w">а не обещано</span></h2>
-<div class="nums at" style="left:120px; right:120px; top:330px">
+<div class="nums at" style="left:120px; right:120px; top:300px">
   <div class="r" style="--d:2"><div class="num">86%</div><div class="cap" data-edit>статусов совпали с ручной разметкой 200 требований</div></div>
   <div class="r" style="--d:3"><div class="num">96%</div><div class="cap" data-edit>требований вакансий найдены; обязательные и желательные размечены верно во всех</div></div>
   <div class="r" style="--d:4"><div class="num">447<small>/447</small></div><div class="cap" data-edit>цитат найдены в резюме дословно</div></div>
