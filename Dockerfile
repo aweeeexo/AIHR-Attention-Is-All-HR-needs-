@@ -60,7 +60,7 @@ COPY examples ./examples
 
 # Модели — на этапе сборки, а не при первом запросе
 RUN python -m aihr.warmup \
-    && mkdir -p /app/data/runs /app/data/cache \
+    && mkdir -p /app/data/runs /app/data/cache /app/data/vacancies \
     && chown -R app:app /app/data
 ENV HF_HUB_OFFLINE=1 TRANSFORMERS_OFFLINE=1 \
     HF_HUB_DISABLE_PROGRESS_BARS=1 HF_HUB_DISABLE_TELEMETRY=1 \
