@@ -47,6 +47,10 @@ step "пример из кейса через React-прокси"
 curl -fsS --max-time 720 -o /dev/null -X POST "$FRONTEND_URL/api/match/example"
 echo "POST /api/match/example: 200"
 
+step "реестр открытых вакансий: три вакансии кейса при первом запуске (D58)"
+curl -fsS "$FRONTEND_URL/api/vacancies" | grep -o '"source":"example"' | wc -l | grep -qx 3
+echo "GET /api/vacancies: 3 вакансии примера"
+
 step "use cases в контейнере (aihr demo)"
 docker compose -p "$PROJECT" run --rm api aihr demo
 
