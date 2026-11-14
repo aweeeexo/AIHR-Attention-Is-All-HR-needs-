@@ -25,6 +25,26 @@ LABEL_RU = {
 _LABEL_ORDER = {FitLabel.fits: 0, FitLabel.fits_with_caveats: 1, FitLabel.not_fit: 2}
 
 
+# Пустой раздел отчёта объясняем, а не оставляем пустым: «Пробелы» — это обязательные требования
+# с «Не соответствует» и «Частично», а обязательные «Не указано» стоят в рисках (D61)
+EMPTY_SECTION = {
+    "strengths": "Ни одно требование вакансии не подтверждено полностью.",
+    "beyond_requirements": "Сверх требований вакансии ничего не найдено.",
+    "gaps": "Нет обязательных требований со статусом «Не соответствует» или «Частично».",
+    "risks": "Уточнять нечего: по обязательным требованиям есть сведения и выводы прямые.",
+}
+GAPS_SEE_RISKS = (
+    "Обязательные требования без сведений в резюме перечислены в рисках: их стоит уточнить."
+)
+
+
+def empty_section(key: str, risks_count: int = 0) -> str:
+    text = EMPTY_SECTION[key]
+    if key == "gaps" and risks_count:
+        text += " " + GAPS_SEE_RISKS
+    return text
+
+
 def _short(text: str, n: int = 80) -> str:
     text = " ".join(text.split()).rstrip(".")
     return text if len(text) <= n else text[: n - 1].rstrip() + "…"

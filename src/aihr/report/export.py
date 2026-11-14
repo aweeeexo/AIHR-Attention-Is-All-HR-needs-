@@ -10,6 +10,7 @@ from __future__ import annotations
 import io
 
 from aihr.contracts import STATUS_RU, MatchResult, Modality, Point, ReqKind, Status
+from aihr.report.texts import empty_section
 
 _STATUS_FILL = {
     Status.match: "D4EDDA",
@@ -31,10 +32,12 @@ def _shade(cell, hex_fill: str) -> None:
     cell._tc.get_or_add_tcPr().append(parse_xml(f'<w:shd {nsdecls("w")} w:fill="{hex_fill}"/>'))
 
 
-def _points(doc, title: str, points: list[Point]) -> None:
-    if not points:
+def _points(doc, title: str, points: list[Point], empty: str | None = None) -> None:
+    if not points and empty is None:
         return
     doc.add_heading(title, level=2)
+    if not points:
+        doc.add_paragraph(empty)
     for p in points:
         refs = f" [{', '.join(p.fragment_ids)}]" if p.fragment_ids else ""
         doc.add_paragraph(f"{p.text}{refs}", style="List Bullet")
@@ -103,10 +106,10 @@ def report_docx(result: MatchResult, vacancy_id: str) -> bytes:
         "резюме. Стаж и пороги посчитаны кодом."
     ).runs[0].italic = True
 
-    _points(doc, "Сильные стороны", report.strengths)
+    _points(doc, "Сильные стороны", report.strengths, empty_section("strengths"))
     _points(doc, "Сверх требований", report.beyond_requirements)
-    _points(doc, "Пробелы", report.gaps)
-    _points(doc, "Что стоит уточнить", report.risks)
+    _points(doc, "Пробелы", report.gaps, empty_section("gaps", len(report.risks)))
+    _points(doc, "Что стоит уточнить", report.risks, empty_section("risks"))
     if result.ranking and result.ranking.summary:
         doc.add_heading("Итог по всем вакансиям", level=2)
         doc.add_paragraph(result.ranking.summary)

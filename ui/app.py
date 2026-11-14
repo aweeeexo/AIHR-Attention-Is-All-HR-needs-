@@ -16,6 +16,23 @@ import httpx
 import pandas as pd
 import streamlit as st
 
+# D61: пустой раздел объясняем теми же словами, что DOCX и React (src/aihr/report/texts.py)
+EMPTY_SECTION = {
+    "strengths": "Ни одно требование вакансии не подтверждено полностью.",
+    "beyond_requirements": "Сверх требований вакансии ничего не найдено.",
+    "gaps": "Нет обязательных требований со статусом «Не соответствует» или «Частично».",
+    "risks": "Уточнять нечего: по обязательным требованиям есть сведения и выводы прямые.",
+}
+GAPS_SEE_RISKS = (
+    "Обязательные требования без сведений в резюме перечислены в рисках: их стоит уточнить."
+)
+
+
+def empty_section(key: str, risks_count: int = 0) -> str:
+    text = EMPTY_SECTION[key]
+    return f"{text} {GAPS_SEE_RISKS}" if key == "gaps" and risks_count else text
+
+
 API_URL = os.environ.get("API_URL", "http://localhost:8000").rstrip("/")
 TIMEOUT_S = 900
 
@@ -400,11 +417,12 @@ def _show_vacancy(result: dict[str, Any], vacancy_id: str) -> None:
             ("Риски", "risks"),
         ):
             points = report.get(key, [])
-            if points:
-                st.markdown(f"**{title}**")
-                for p in points:
-                    refs = ", ".join(p.get("fragment_ids", []))
-                    st.markdown(f"- {p['text']}" + (f" _({refs})_" if refs else ""))
+            st.markdown(f"**{title}**")
+            if not points:
+                st.caption(empty_section(key, len(report.get("risks", []))))
+            for p in points:
+                refs = ", ".join(p.get("fragment_ids", []))
+                st.markdown(f"- {p['text']}" + (f" _({refs})_" if refs else ""))
         if report.get("questions"):
             st.markdown("**Вопросы кандидату**")
             for q in report["questions"]:

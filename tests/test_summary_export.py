@@ -175,6 +175,22 @@ def test_docx_export(result) -> None:
     assert len(table.rows) == len(result.reports[vid].rows) + 1
 
 
+def test_docx_explains_empty_sections(result) -> None:
+    """D61: пустой раздел объясняется, а не пропадает; пробелы отсылают к рискам."""
+    from aihr.report.export import report_docx
+    from aihr.report.texts import EMPTY_SECTION, GAPS_SEE_RISKS
+
+    vid = result.ranking.items[0].vacancy_id
+    report = result.reports[vid]
+    emptied = result.model_copy(deep=True)
+    emptied.reports[vid] = report.model_copy(update={"strengths": [], "gaps": []})
+    d = docx.Document(io.BytesIO(report_docx(emptied, vid)))
+    text = chr(10).join(p.text for p in d.paragraphs)
+    assert "Сильные стороны" in text and EMPTY_SECTION["strengths"] in text
+    assert "Пробелы" in text and EMPTY_SECTION["gaps"] in text
+    assert (GAPS_SEE_RISKS in text) == bool(report.risks)
+
+
 def test_docx_endpoint() -> None:
     client = TestClient(app)
     resume, vac = fixture_file("resume_cook.txt"), fixture_file("vacancy_cook.txt")

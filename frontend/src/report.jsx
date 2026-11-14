@@ -9,6 +9,14 @@ const evidenceLabels = { direct: 'Прямое', indirect: 'Косвенное',
 const modality = { must: 'Обязательное', nice: 'Желательное' };
 const questionKinds = { factual: 'Уточнение фактов', behavioral: 'Вопрос об опыте' };
 const thresholds = { years: 'Стаж, лет', education_level: 'Образование', language_level: 'Уровень языка' };
+// D61: пустой раздел объясняем теми же словами, что DOCX и Streamlit (report/texts.py)
+const emptySection = {
+  strengths: 'Ни одно требование вакансии не подтверждено полностью.',
+  beyond_requirements: 'Сверх требований вакансии ничего не найдено.',
+  gaps: 'Нет обязательных требований со статусом «Не соответствует» или «Частично».',
+  risks: 'Уточнять нечего: по обязательным требованиям есть сведения и выводы прямые.',
+};
+const gapsSeeRisks = 'Обязательные требования без сведений в резюме перечислены в рисках: их стоит уточнить.';
 
 export function Report({ result, vacancy, api, score }) {
   const report = result.reports[vacancy.id];
@@ -131,16 +139,16 @@ export function Report({ result, vacancy, api, score }) {
       <h2 className="section-title">Что учесть рекрутеру</h2>
       <div className="report-sections">
         {[
-          ['Сильные стороны', report.strengths], ['Пробелы', report.gaps],
-          ['Риски', report.risks], ['Сверх требований', report.beyond_requirements],
-        ].map(([title, items]) => (
+          ['Сильные стороны', report.strengths, 'strengths'], ['Пробелы', report.gaps, 'gaps'],
+          ['Риски', report.risks, 'risks'], ['Сверх требований', report.beyond_requirements, 'beyond_requirements'],
+        ].map(([title, items, key]) => (
           <section className="report-section" key={title}><h3>{title}</h3>
             {items.length ? <ul>{items.map(({ text, fragment_ids }, index) => <li key={index}>{text}
               {fragment_ids.length > 0 && <button className="text-button references" onClick={() => highlight(fragment_ids)} aria-controls="resume-viewer"
                 aria-label={`Показать фрагменты ${fragment_ids.join(', ')}`}>
                 <LocateFixed size={14} aria-hidden="true" /> {fragment_ids.join(', ')}
               </button>}
-            </li>)}</ul> : <p className="muted">Нет пунктов в отчёте.</p>}
+            </li>)}</ul> : <p className="muted">{emptySection[key]}{key === 'gaps' && report.risks.length > 0 && ` ${gapsSeeRisks}`}</p>}
           </section>
         ))}
         {report.questions.length > 0 && <section className="report-section"><h3>Вопросы кандидату</h3>
