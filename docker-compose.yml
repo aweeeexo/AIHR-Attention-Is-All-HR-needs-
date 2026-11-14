@@ -25,6 +25,7 @@ services:
     volumes:
       - runs:/app/data/runs     # результаты прогонов и журнал исходящих запросов
       - cache:/app/data/cache   # кэш ответов LLM (T03)
+      - vacancies:/app/data/vacancies   # реестр открытых вакансий (D58)
 
   ui:
     <<: *app
@@ -82,4 +83,5 @@ services:
 volumes:
   runs:
   cache:
+  vacancies:
   ollama:

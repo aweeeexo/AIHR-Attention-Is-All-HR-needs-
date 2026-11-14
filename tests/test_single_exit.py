@@ -12,11 +12,23 @@ NETWORK = re.compile(
 )
 
 
+# D58: загрузка страницы вакансии по ссылке. Не LLM и не резюме: только GET страницы по адресу,
+# который ввёл рекрутер. Модуль не должен знать про LLM и не получает текст резюме.
+PAGE_FETCH = ("ingest/web.py",)
+
+
+def test_page_fetch_does_not_touch_llm_or_resume() -> None:
+    for rel in PAGE_FETCH:
+        text = (SRC / rel).read_text(encoding="utf-8")
+        assert not re.search(r"\b(?:openai|aihr\.llm|aihr\.privacy|DocKind\.resume)\b", text), rel
+        assert 'client.stream("GET"' in text and ".post(" not in text, rel
+
+
 def test_only_llm_client_talks_to_network() -> None:
     offenders = []
     for path in SRC.rglob("*.py"):
         rel = path.relative_to(SRC).as_posix()
-        if rel == "llm/client.py":
+        if rel in ("llm/client.py", *PAGE_FETCH):
             continue
         if NETWORK.search(path.read_text(encoding="utf-8")):
             offenders.append(rel)

@@ -17,6 +17,7 @@ __pycache__/
 
 # данные прогонов, кэш LLM, черновики
 data/runs/
+data/vacancies/
 data/cache/
 scratch/
 

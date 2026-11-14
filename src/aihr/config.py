@@ -63,6 +63,10 @@ class Settings(BaseSettings):
     runs_dir: Path = Path("data/runs")
     cache_dir: Path = Path("data/cache")
     case_dir: Path = Path("data/case")
+    # Реестр открытых вакансий (D58): вакансии добавляют один раз, дальше грузят только резюме
+    vacancies_dir: Path = Path("data/vacancies")
+    vacancies_seed: bool = True  # при первом запуске положить в реестр вакансии из case_dir
+    url_timeout_s: float = Field(default=15, gt=0)  # загрузка вакансии по ссылке
     scoring_config: Path = Path("config/scoring.yaml")
     synonyms_path: Path = Path("data/synonyms.yaml")
     today: str | None = None  # "2026-11" — фиксированная дата для воспроизводимых тестов

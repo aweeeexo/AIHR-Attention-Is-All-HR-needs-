@@ -12,6 +12,7 @@
 .ruff_cache
 .mypy_cache
 data/runs
+data/vacancies
 data/cache
 scratch
 docs

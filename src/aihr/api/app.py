@@ -20,12 +20,21 @@ from aihr.batch import run_batch
 from aihr.config import get_settings, setup_logging
 from aihr.contracts import CONTRACTS_VERSION, BatchResult, MatchResult
 from aihr.ingest import fix_filename
+from aihr.ingest.web import UrlImportError, fetch_vacancy
 from aihr.inputs import case_files, read_files
 from aihr.jobs import JobStatus, registry
 from aihr.pipeline import RUN_ID_RE, run
 from aihr.report.vacancy_check import VacancyCheck, check_vacancy
 from aihr.retrieve import default_encoder
 from aihr.score.whatif import WhatIfAnswer, WhatIfError, WhatIfResult, what_if
+from aihr.vacancies import (
+    RegistryError,
+    RegistryVacancy,
+    add_vacancy,
+    list_vacancies,
+    registry_files,
+    remove_vacancy,
+)
 
 setup_logging()
 log = logging.getLogger(__name__)
@@ -61,7 +70,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=get_settings().cors_origin_list,
-    allow_methods=["GET", "POST"],
+    allow_methods=["GET", "POST", "DELETE"],
     allow_headers=["*"],
     expose_headers=["Content-Disposition"],  # имя файла DOCX-отчёта
 )
@@ -249,6 +258,81 @@ def get_job(job_id: str) -> JobStatus:
     if job is None:
         raise HTTPException(404, "Задача не найдена (после перезапуска API задачи не хранятся)")
     return job
+
+
+# ---------- реестр открытых вакансий (D58) ----------
+
+
+class VacancyUrl(BaseModel):
+    url: str
+
+
+class AddedVacancies(BaseModel):
+    added: list[RegistryVacancy]
+    errors: list[str]
+
+
+def _registry_or_404() -> list[tuple[bytes, str]]:
+    files = registry_files()
+    if not files:
+        raise HTTPException(404, "В реестре нет вакансий. Добавьте их на странице «Вакансии».")
+    return files
+
+
+@app.get("/vacancies", response_model=list[RegistryVacancy])
+def get_vacancies() -> list[RegistryVacancy]:
+    return list_vacancies()
+
+
+@app.post("/vacancies", response_model=AddedVacancies)
+async def post_vacancies(
+    files: Annotated[list[UploadFile], File(description="Вакансии: docx, pdf, rtf или txt")],
+) -> AddedVacancies:
+    limit = get_settings().max_file_bytes
+    added, errors = [], []
+    for upload in files:
+        data, name = await _read(upload, limit)
+        try:
+            added.append(await run_in_threadpool(add_vacancy, data, name))
+        except RegistryError as exc:
+            errors.append(f"{name}: {exc}")
+    return AddedVacancies(added=added, errors=errors)
+
+
+@app.post("/vacancies/url", response_model=RegistryVacancy)
+async def post_vacancy_url(body: VacancyUrl) -> RegistryVacancy:
+    """Вакансия по ссылке: hh.ru, сайт работодателя. Страница превращается в текст на сервере."""
+    try:
+        data, name, final = await run_in_threadpool(fetch_vacancy, body.url)
+        return await run_in_threadpool(add_vacancy, data, name, "url", final)
+    except (UrlImportError, RegistryError) as exc:
+        raise HTTPException(422, str(exc)) from exc
+
+
+@app.delete("/vacancies/{vacancy_id}", status_code=204)
+def delete_vacancy(vacancy_id: str) -> Response:
+    if not re.fullmatch(r"[0-9a-f]{12}", vacancy_id) or not remove_vacancy(vacancy_id):
+        raise HTTPException(404, "Вакансии нет в реестре")
+    return Response(status_code=204)
+
+
+@app.post("/jobs/match/registry", response_model=JobStatus, status_code=202)
+async def job_match_registry(
+    resume: Annotated[UploadFile, File(description="Резюме: docx, pdf, rtf или txt")],
+) -> JobStatus:
+    """Резюме против всех открытых вакансий реестра."""
+    vacancy_files = _registry_or_404()
+    resume_file = await _read(resume, get_settings().max_file_bytes)
+    return _jobs().submit("match", lambda p: run(resume_file, vacancy_files, progress=p))
+
+
+@app.post("/jobs/batch/registry", response_model=JobStatus, status_code=202)
+async def job_batch_registry(
+    resumes: Annotated[list[UploadFile], File(description="Несколько резюме")],
+) -> JobStatus:
+    vacancy_files = _registry_or_404()
+    resume_files, _ = await _batch_files(resumes, [])
+    return _jobs().submit("batch", lambda p: run_batch(resume_files, vacancy_files, progress=p))
 
 
 @app.get("/example/files")

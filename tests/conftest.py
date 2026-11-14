@@ -23,6 +23,7 @@ def isolated_settings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:
     monkeypatch.setenv("RUNS_DIR", str(tmp_path / "runs"))
     monkeypatch.setenv("CACHE_DIR", str(tmp_path / "cache"))
     monkeypatch.setenv("CASE_DIR", str(CASE_DIR))
+    monkeypatch.setenv("VACANCIES_DIR", str(tmp_path / "vacancies"))
     monkeypatch.setenv("SCORING_CONFIG", str(REPO_ROOT / "config" / "scoring.yaml"))
     monkeypatch.setenv("TODAY", "2026-11")
     get_settings.cache_clear()

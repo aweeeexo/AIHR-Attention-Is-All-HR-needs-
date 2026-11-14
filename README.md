@@ -200,6 +200,9 @@ Python 3.12, все версии закреплены в [`pyproject.toml`](pypr
 | `CORS_ORIGINS` | Откуда браузеру можно ходить в API | `http://localhost:3000,http://localhost:5173,http://localhost:8501` | нет |
 | `CACHE_DIR` | Каталог кэша (в Docker — том `cache`) | `data/cache` | нет |
 | `RUNS_DIR` | Результаты прогонов и журнал исходящих запросов | `data/runs` | нет |
+| `VACANCIES_DIR` | Реестр открытых вакансий (в Docker — том `vacancies`) | `data/vacancies` | нет |
+| `VACANCIES_SEED` | При первом запуске положить в реестр вакансии примера из `CASE_DIR` | `1` | нет |
+| `URL_TIMEOUT_S` | Сколько ждать страницу при загрузке вакансии по ссылке, с | `15` | нет |
 | `TODAY` | «Сегодня» для расчёта стажа, `ГГГГ-ММ` (для воспроизводимости) | текущий месяц | нет |
 | `LOG_LEVEL` | Уровень логов | `INFO` | нет |
 | `API_PORT`, `UI_PORT`, `FRONTEND_PORT` | Порты API, Streamlit и React на хосте | `8000`, `8501`, `3000` | нет |
