@@ -9,8 +9,8 @@ from __future__ import annotations
 
 import itertools
 
-from aihr.contracts import CandidateProfile, Position, YearMonth
-from aihr.normalize.dates import month_index, parse_period
+from aihr.contracts import CandidateProfile, Fragment, Position, YearMonth
+from aihr.normalize.dates import find_period_text, month_index, parse_period
 from aihr.normalize.levels import cefr_from_text
 
 GAP_MONTHS = 6  # перерыв длиннее — в gaps_months (риск для T09, без оценок)
@@ -85,8 +85,25 @@ def _with_dates(pos: Position, today: YearMonth) -> Position:
     return pos
 
 
-def enrich_profile(profile: CandidateProfile, today: YearMonth) -> CandidateProfile:
-    positions = [_with_dates(p, today) for p in profile.positions]
+def _dates_from_fragments(pos: Position, by_id: dict[str, Fragment]) -> Position:
+    """Модель не переписала даты места работы — ищем диапазон в его фрагментах (D13, D57).
+
+    Даты по-прежнему разбирает код; берём только фрагменты, на которые сослалась модель.
+    """
+    if pos.raw_dates or pos.start is not None:
+        return pos
+    for frag in sorted((by_id[f] for f in pos.fragment_ids if f in by_id), key=lambda f: f.order):
+        found = find_period_text(frag.text)
+        if found:
+            return pos.model_copy(update={"raw_dates": found})
+    return pos
+
+
+def enrich_profile(
+    profile: CandidateProfile, today: YearMonth, fragments: list[Fragment] | None = None
+) -> CandidateProfile:
+    by_id = {f.id: f for f in fragments or []}
+    positions = [_with_dates(_dates_from_fragments(p, by_id), today) for p in profile.positions]
     total, _ = tenure_for(positions)
 
     merged = union([iv for p in positions if (iv := _interval(p)) is not None])

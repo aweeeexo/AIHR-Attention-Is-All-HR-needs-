@@ -88,6 +88,25 @@ def parse_point(text: str) -> Point | None:
     return Point(YearMonth(year=int(m.group("y3"))), True)
 
 
+_POINT_TEXT = rf"(?:(?:(?:0?[1-9]|1[0-2])\s*[./]\s*|(?:{_MONTH_NAME})\.?\s+)?{_YEAR})"
+_CURRENT_TEXT = (
+    r"по\s*н\.?\s*в\.?|н\.\s*в\.?|(?:по\s+)?настоящ\w*\s+(?:время|момент)|сейчас"
+    r"|present|current|now"
+)
+_RANGE = re.compile(
+    rf"(?<![\d.])(?:с\s+)?{_POINT_TEXT}\s*(?:—|–|‐|-|−|\bпо\b|\bдо\b)\s*"
+    rf"(?:{_POINT_TEXT}|{_CURRENT_TEXT})",
+    re.IGNORECASE,
+)
+
+
+def find_period_text(text: str) -> str | None:
+    """Диапазон дат внутри строки резюме: «03.2021 — по настоящее время. ООО …» →
+    «03.2021 — по настоящее время». Одиночный год («отчёты за 2023 год») — не период."""
+    m = _RANGE.search(_ISO.sub(lambda x: f"{x.group(2)}.{x.group(1)}", text))
+    return m.group(0).strip() if m else None
+
+
 def parse_period(raw: str | None, today: YearMonth) -> Period | None:
     """None, если в строке нет ни одной даты начала."""
     if not raw or not raw.strip():

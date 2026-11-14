@@ -256,7 +256,7 @@ def run(
                 lambda: extract.extract_profile(doc, llm),
                 lambda: fallback.extract_profile_fallback(doc),
             )
-            profile = enrich_profile(profile, settings.today_ym())
+            profile = enrich_profile(profile, settings.today_ym(), doc.fragments)
         retriever = Retriever(resume_doc)
 
         # 4. Каждая вакансия отдельно и параллельно: сбой одной не трогает остальные

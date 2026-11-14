@@ -247,3 +247,36 @@ def test_meets_language_and_enrich() -> None:
         TODAY,
     )
     assert profile.languages[0].cefr == "B2"
+
+
+def test_missing_raw_dates_are_taken_from_position_fragments() -> None:
+    """D57: модель не переписала даты места работы — код берёт их из его фрагмента (D13)."""
+    from aihr.contracts import CandidateProfile, Fragment, FragmentSource, Position, YearMonth
+    from aihr.normalize import enrich_profile
+    from aihr.normalize.dates import find_period_text
+
+    def frag(fid: str, text: str) -> Fragment:
+        return Fragment(id=fid, order=int(fid[1:]), section=None, section_role="experience",
+                        source=FragmentSource.paragraph, text=text, masked_text=text)  # fmt: skip
+
+    frags = [frag("R5", "03.2021 — по настоящее время. ООО «Альфа», диспетчер."),
+             frag("R6", "Планирую смены, отчёты за 2023 год."),
+             frag("R9", "Сварщик, ООО «Бета», 2015 – 2019")]  # fmt: skip
+    positions = [
+        Position(title="диспетчер", organization=None, start=None, end=None, raw_dates=None,
+                 fragment_ids=["R6", "R5"]),
+        Position(title="сварщик", organization=None, start=None, end=None, raw_dates=None,
+                 fragment_ids=["R9"]),
+        Position(title="без дат", organization=None, start=None, end=None, raw_dates=None,
+                 fragment_ids=["R6"]),
+    ]  # fmt: skip
+    out = enrich_profile(
+        CandidateProfile(positions=positions), YearMonth(year=2026, month=11), frags
+    )
+    assert [p.raw_dates for p in out.positions] == [
+        "03.2021 — по настоящее время",
+        "2015 – 2019",
+        None,
+    ]
+    assert out.positions[0].duration_months == 68
+    assert find_period_text("Отчёты за 2023 год") is None
