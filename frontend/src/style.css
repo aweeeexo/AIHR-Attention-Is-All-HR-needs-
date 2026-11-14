@@ -349,6 +349,7 @@ select { min-height: 40px; }
 .figure-side { display: grid; gap: var(--s-300); margin: 0; padding: 0; list-style: none; }
 .figure-side li { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--s-200); align-items: baseline; padding-bottom: var(--s-200); border-bottom: 1px solid var(--border); }
 .compare-sheet { padding: 0; overflow: hidden; }
+.timeline + .compare-sheet { margin-top: var(--s-600); }
 .compare caption { text-align: left; padding: var(--s-300) var(--s-300) var(--s-100); }
 .compare :is(th, td) { padding: var(--s-100) var(--s-300); }
 

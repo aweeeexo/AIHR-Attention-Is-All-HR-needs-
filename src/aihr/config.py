@@ -42,6 +42,10 @@ class Settings(BaseSettings):
     llm_model_routes: str = ""
     llm_project: str | None = None
     llm_timeout_s: float = Field(default=60, gt=0)
+    # Подключение отдельно от ответа: зависшее TCP-соединение в Windows ждёт ~21 с, а повтор
+    # через 5 с обычно проходит сразу (замер 14.11, D59)
+    llm_connect_timeout_s: float = Field(default=5, gt=0)
+    llm_connect_retries: int = Field(default=2, ge=0)  # переподключения до отправки запроса
     llm_max_retries: int = Field(default=3, ge=0)
     llm_concurrency: int = Field(default=4, ge=1)
     # Предел длины ответа. Пусто — по умолчанию провайдера; у части провайдеров он мал, и длинный

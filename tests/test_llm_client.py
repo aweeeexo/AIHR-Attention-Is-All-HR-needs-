@@ -144,6 +144,9 @@ def test_sdk_client_gets_project_and_key() -> None:
     assert isinstance(sdk, openai.OpenAI)
     assert sdk.project == "folder-123"
     assert str(sdk.base_url).startswith("http://llm.invalid/v1")
+    # D59: зависшее подключение повторяем через 5 с, а ответ модели ждём LLM_TIMEOUT_S
+    assert sdk.timeout.connect == 5 and sdk.timeout.read == 60
+    assert sdk._client._transport._pool._retries == 2  # переподключение до отправки запроса
 
 
 def test_model_routes_pick_longest_prefix() -> None:

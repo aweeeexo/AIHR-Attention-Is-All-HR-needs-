@@ -6,8 +6,8 @@ from tests.conftest import REPO_ROOT
 
 SRC = REPO_ROOT / "src" / "aihr"
 NETWORK = re.compile(
-    r"^\s*(?:import|from)\s+(?:openai|httpx|requests|urllib\.request|aiohttp|http\.client)\b"
-    r"|\b(?:httpx|requests)\.(?:get|post|put|request|Client|AsyncClient)\b",
+    r"^\s*(?:import|from)\s+(?:openai|httpx2?|requests|urllib\.request|aiohttp|http\.client)\b"
+    r"|\b(?:httpx2?|requests)\.(?:get|post|put|request|Client|AsyncClient)\b",
     re.MULTILINE,
 )
 

@@ -24,6 +24,7 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, ClassVar, TypeVar
 
+import httpx2
 import openai
 from pydantic import BaseModel, ValidationError
 
@@ -179,8 +180,15 @@ class LLMClient:
             base_url=s.llm_base_url,
             api_key=api_key,
             project=s.llm_project or None,
-            timeout=s.llm_timeout_s,
+            timeout=httpx2.Timeout(
+                s.llm_timeout_s, connect=min(s.llm_connect_timeout_s, s.llm_timeout_s)
+            ),
             max_retries=s.llm_max_retries,  # 429, 5xx и сеть — с экспоненциальной паузой
+            # Несостоявшееся подключение переоткрываем на уровне транспорта: запрос ещё не ушёл,
+            # повтор безопасен и не тратит попытки max_retries (D59)
+            http_client=openai.DefaultHttpxClient(
+                transport=httpx2.HTTPTransport(retries=s.llm_connect_retries)
+            ),
         )
         return self._client
 

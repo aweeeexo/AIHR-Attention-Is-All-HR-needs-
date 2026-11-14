@@ -328,7 +328,7 @@ function TaglineReveal() {
 // ---------- 03. Как это работает ----------
 
 const steps = [
-  ['Загрузите документы', 'Резюме и вакансии в DOCX, PDF, RTF или TXT. Можно вставить текст или взять пример из кейса.'],
+  ['Загрузите резюме', 'Вакансии добавляются один раз в «Открытые вакансии» файлом или ссылкой на hh.ru. Дальше достаточно резюме в DOCX, PDF, RTF или TXT.'],
   ['Система сверяет требования', 'Документы обезличиваются, вакансия делится на пункты, каждый пункт сверяется с резюме.'],
   ['Получите отчёт', 'Рейтинг вакансий, таблица с цитатами, вопросы кандидату и отчёт в DOCX для руководителя.'],
 ];
@@ -346,6 +346,16 @@ function HowItWorks() {
           </li>
         ))}
       </ol>
+      <div className="sheet compare-sheet">
+        <table className="compare">
+          <caption className="title-3">Время на одного кандидата</caption>
+          <thead><tr><th scope="col" className="caption-3">Шаг</th><th scope="col" className="caption-3">Сейчас, по словам заказчика</th><th scope="col" className="caption-3">С AIHR</th></tr></thead>
+          <tbody className="body-6">
+            <tr><th scope="row">Сопоставление с несколькими вакансиями</th><td>10–20 минут</td><td className="strong">около 1,5 минуты расчёта и проверка спорных пунктов</td></tr>
+            <tr><th scope="row">Оформление для заказчика</th><td>10–15 минут</td><td className="strong">отчёт DOCX одной кнопкой</td></tr>
+          </tbody>
+        </table>
+      </div>
     </Reveal>
   );
 }
