@@ -226,6 +226,72 @@ _ALTERNATIVE_WORDS = re.compile(
 )
 
 
+def split_glued(reqs: list[Requirement], fragments: list[Fragment]) -> list[Requirement]:
+    """Модель склеила пункты из разных строк вакансии в одно требование с alternatives (D57).
+
+    «Уверенное знание A» + alternatives [A, B, C], где B и C — из соседних строк. Тогда каждая
+    строка — своё требование с её собственным текстом. Строку, у которой уже есть своё
+    требование, не дублируем. Перечисление внутри одной строки не трогаем.
+    """
+    by_id = {f.id: f for f in fragments}
+    out: list[Requirement] = []
+    for req in reqs:
+        sources = [by_id[fid] for fid in req.source_fragment_ids if fid in by_id]
+        home = [
+            next((f.id for f in sources if alt.lower() in f.text.lower()), None)
+            for alt in req.alternatives
+        ]
+        lines = list(dict.fromkeys(fid for fid in home if fid))
+        if len(req.alternatives) < 2 or None in home or len(lines) < 2:
+            out.append(req)
+            continue
+        log.info("%s: требование склеено из строк %s — делим по строкам", req.vacancy_id, lines)
+        for fid in lines:
+            covered = any(
+                o is not req and o.source_fragment_ids and set(o.source_fragment_ids) <= {fid}
+                for o in reqs
+            )
+            if covered:
+                continue
+            text = by_id[fid].text.strip().rstrip(";.,").strip()
+            out.append(
+                req.model_copy(
+                    update={
+                        "text": text,
+                        "alternatives": [],
+                        "canonical_terms": list(dict.fromkeys(find_terms(text))),
+                        "source_fragment_ids": [fid],
+                    }
+                )
+            )
+    return out
+
+
+# Перечисление однородных слов в конце личного качества: «… ответственности и самоорганизации»,
+# «Внимательность, усидчивость и аккуратность»
+_SOFT_LIST = re.compile(r"^(?P<head>.*?)(?P<items>(?:[\w-]{4,},\s*)*[\w-]{4,}\s+и\s+[\w-]{4,})\.?$")
+
+
+def split_soft(reqs: list[Requirement]) -> list[Requirement]:
+    """Личное качество из нескольких через «и» — отдельные требования (атомарность, D57).
+
+    Делим, только если слова однородные: одинаковое окончание (один падеж и число).
+    «Работать в команде и самостоятельно» не делим.
+    """
+    out: list[Requirement] = []
+    for req in reqs:
+        m = _SOFT_LIST.match(req.text.strip()) if req.kind == ReqKind.soft else None
+        items = re.split(r",\s*|\s+и\s+", m.group("items")) if m else []
+        if not m or len({w[-1].lower() for w in items}) != 1:
+            out.append(req)
+            continue
+        head = m.group("head")
+        for word in items:
+            text = f"{head}{word}" if head else word[:1].upper() + word[1:]
+            out.append(req.model_copy(update={"text": text, "alternatives": []}))
+    return out
+
+
 def split_conjunctions(reqs: list[Requirement]) -> list[Requirement]:
     """«Опыт с A, B и C» модель иногда кладёт в alternatives. Без «или», «/», «одно из» это
     перечисление: нужны все — делим на атомарные требования (шаг 1 T04)."""
@@ -336,5 +402,5 @@ def extract_requirements(vacancy: Document, llm: LLMClient) -> list[Requirement]
                 f"Из фрагментов {ids} не извлечено ни одного требования — проверьте их вручную."
             )
 
-    reqs = merge_duplicates(split_conjunctions(reqs))
+    reqs = merge_duplicates(split_soft(split_conjunctions(split_glued(reqs, vacancy.fragments))))
     return [r.model_copy(update={"id": f"{vacancy.id}.req{i}"}) for i, r in enumerate(reqs, 1)]
