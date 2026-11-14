@@ -152,6 +152,23 @@ def test_plural(n: int, word: str) -> None:
 # ---------- T08: крайние случаи и объяснения ----------
 
 
+def test_not_stated_is_neither_gain_nor_loss() -> None:
+    """D63: «Не указано» не добавило и не потеряло балл, о нём отдельная фраза с интервалом."""
+    reqs = [_req(1, Modality.must), _req(2, Modality.must), _req(3, Modality.must)]
+    verdicts = [
+        _verdict(Status.match, "R1", rid="V1.req1"),
+        _verdict(Status.not_stated, rid="V1.req2"),
+        _verdict(Status.mismatch, "R2", rid="V1.req3"),
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    assert s.top_plus == ["V1.req1"] and s.top_minus == ["V1.req3"]
+    assert not set(s.top_plus) & set(s.top_minus)
+    assert "«требование 2»" not in s.explanation.split("Не указано")[0]
+    added = s.explanation.split("Сильнее всего добавили:")[1].split(".")[0]
+    lost = s.explanation.split("Больше всего потеряно на:")[1].split(".")[0]
+    assert "требование 2" not in added and "требование 2" not in lost
+
+
 def test_manual_calculation_small_example() -> None:
     reqs = [
         _req(1, Modality.must),
@@ -203,8 +220,9 @@ def test_empty_resume_scores_fifty() -> None:
     )
     assert (s.score, s.score_min, s.score_max) == (50.0, 0.0, 100.0)
     assert s.label == FitLabel.not_fit  # D41: без подтверждений — не «с оговорками»
-    assert "мало данных" in s.explanation and "Мало данных: в резюме подтверждено 0 из 1" in (
-        s.explanation
+    assert (
+        "мало данных" in s.explanation
+        and "Мало данных: в резюме подтверждено полностью или частично 0 из 1" in (s.explanation)
     )
 
 

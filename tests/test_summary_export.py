@@ -250,7 +250,10 @@ def test_mostly_unknown_is_not_fit_with_low_data_note() -> None:
     [s] = ranking.items
     assert s.score >= 45 and s.score_min < 45
     assert s.label == FitLabel.not_fit
-    assert "Мало данных: в резюме подтверждено 1 из 4 обязательных" in s.explanation
+    assert (
+        "Мало данных: в резюме подтверждено полностью или частично 1 из 4 обязательных"
+        in s.explanation
+    )
 
 
 def test_half_confirmed_keeps_caveats() -> None:

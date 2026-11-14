@@ -196,8 +196,21 @@ def score_vacancy(
     }
     loss = {r.req.id: r.weight - gain[r.req.id] for r in rows}
     order = {r.req.id: i for i, r in enumerate(rows)}
-    top_plus = [k for k in sorted(gain, key=lambda k: (-gain[k], order[k])) if gain[k] > 0][:TOP_N]
-    top_minus = [k for k in sorted(loss, key=lambda k: (-loss[k], order[k])) if loss[k] > 0][:TOP_N]
+    # D63: «Не указано» ни добавило, ни потеряло — у него свой интервал балла. В «добавили» — только
+    # подтверждённое (match, partial), в «потеряно» — только опровергнутое (mismatch, partial)
+    status = {r.req.id: r.status for r in rows}
+    plus_ok = {Status.match, Status.partial}
+    minus_ok = {Status.mismatch, Status.partial}
+    top_plus = [
+        k
+        for k in sorted(gain, key=lambda k: (-gain[k], order[k]))
+        if gain[k] > 0 and status[k] in plus_ok
+    ][:TOP_N]
+    top_minus = [
+        k
+        for k in sorted(loss, key=lambda k: (-loss[k], order[k]))
+        if loss[k] > 0 and status[k] in minus_ok
+    ][:TOP_N]
 
     texts = {r.req.id: _short(r.req.text) for r in rows}
     parts: list[str] = []
@@ -226,8 +239,11 @@ def score_vacancy(
         )
     if label == FitLabel.not_fit and score >= cfg.caveats_min_score and low_data:
         which = "обязательных" if hard_must.total else "требований"
+        if soft:  # D55: личные качества в долю не входят — иначе «1 из 15» и «2 из 13» рядом
+            which += " без личных качеств"
         parts.append(
-            f"Мало данных: в резюме подтверждено {confirmed} из {base.total} {which}, "
+            f"Мало данных: в резюме подтверждено полностью или частично {confirmed} из "
+            f"{base.total} {which}, "
             "поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл "
             f"до {score_max:g}."
         )
