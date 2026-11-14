@@ -23,3 +23,5 @@ scratch/
 
 # ответы модели в режиме replay (D39): обезличенные тексты резюме
 data/llm_replay/
+.frontend-slides/
+.claude/skills/frontend-slides/

@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AIHR — Attention Is All HR Needs</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@800&family=Manrope:wght@500;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+
+/* ===========================================
+   THEME — фон «тлеющие угли», цвета статусов, светлый текст, жар в правом нижнем углу
+   =========================================== */
+:root {
+  --stage-bg: #0E0C0B;
+  --slide-bg: #141210;
+  --bg-glow: #1E1A17;
+  --mint: #6FF0BE;     /* Соответствует, главный цвет */
+  --amber: #F5B942;    /* Частично */
+  --coral: #FF6B6B;    /* Не соответствует */
+  --ash: #8A8F8C;      /* Не указано, служебный текст */
+  --ember: #FF6A3D;    /* жар: одна ключевая фраза в правом нижнем углу */
+  --text: #D2D6D3;
+  --text-dim: rgba(210, 214, 211, .62);
+  --line: rgba(210, 214, 211, .12);
+  --card: rgba(255, 255, 255, .035);
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --pad: 120px;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED STAGE BASE (viewport-base.css, полностью)
+   =========================================== */
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+
+/* ===========================================
+   SLIDE SURFACE — тёплый уголь + зерно
+   =========================================== */
+.slide { color: var(--text); font-family: 'Manrope', sans-serif;
+         background: radial-gradient(1300px 900px at 78% 12%, var(--bg-glow) 0%, var(--slide-bg) 62%, #100E0D 100%); }
+.slide::after { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 .05 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>"); pointer-events: none; z-index: 0; }
+.slide > * { position: relative; z-index: 1; }
+
+/* === CHROME: верх (бренд, раздел, номер) и угол с жаром === */
+.chrome { position: absolute; left: var(--pad); right: var(--pad); top: 76px; display: flex; justify-content: space-between;
+          font: 500 22px 'JetBrains Mono'; letter-spacing: .08em; text-transform: uppercase; color: var(--ash); }
+.chrome b { color: var(--mint); font-weight: 500; }
+.ember { position: absolute; right: var(--pad); bottom: 76px; font: 800 34px/1.1 'Unbounded'; letter-spacing: -0.02em;
+         color: var(--ember); text-align: right; max-width: 900px; }
+.foot { position: absolute; left: var(--pad); bottom: 84px; font: 500 22px 'JetBrains Mono'; color: var(--ash); }
+
+/* === TYPE === */
+.kicker { font: 500 24px 'JetBrains Mono'; letter-spacing: .1em; text-transform: uppercase; color: var(--ash); }
+h1, h2 { font-family: 'Unbounded'; font-weight: 800; letter-spacing: -0.04em; color: var(--mint); }
+h1 { font-size: 168px; line-height: .98; }
+h2 { font-size: 92px; line-height: 1.02; }
+h2 .w { color: var(--text); }
+.lead { font: 500 36px/1.45 'Manrope'; color: var(--text); }
+.dim { color: var(--text-dim); }
+.mono { font-family: 'JetBrains Mono'; }
+.dot { color: var(--coral); }
+
+/* === STATUS TAGS === */
+.tags { display: flex; gap: 16px; flex-wrap: wrap; }
+.tag { font: 700 22px 'Manrope'; padding: 8px 20px; border: 2px solid currentColor; border-radius: 999px; white-space: nowrap; }
+.t-match { color: var(--mint); } .t-partial { color: var(--amber); } .t-mismatch { color: var(--coral); } .t-ns { color: var(--ash); }
+
+/* === LAYOUT HELPERS (fixed stage coordinates) === */
+.at { position: absolute; }
+.cols { display: grid; gap: 48px; }
+.card { background: var(--card); border: 2px solid var(--line); border-radius: 22px; padding: 40px 44px; }
+.card h3 { font: 800 34px/1.15 'Unbounded'; letter-spacing: -0.02em; color: var(--text); margin-bottom: 16px; }
+.card p { font: 500 26px/1.45 'Manrope'; color: var(--text-dim); }
+.big { font: 800 220px/0.9 'Unbounded'; letter-spacing: -0.05em; }
+.num { font: 800 120px/0.95 'Unbounded'; letter-spacing: -0.05em; color: var(--mint); }
+.num small { font-size: 56px; }
+.cap { font: 500 28px/1.35 'Manrope'; color: var(--text-dim); margin-top: 14px; }
+.rule { height: 2px; background: var(--line); }
+
+/* ===========================================
+   ANIMATIONS — каскад появления на активном слайде
+   =========================================== */
+.r { opacity: 0; transform: translateY(36px); transition: opacity .9s var(--ease), transform .9s var(--ease);
+     transition-delay: calc(var(--d, 0) * 110ms); }
+.slide.visible .r { opacity: 1; transform: none; }
+.grow { transform-origin: left center; transform: scaleX(0); transition: transform 1.2s var(--ease); transition-delay: calc(var(--d, 0) * 110ms); }
+.slide.visible .grow { transform: scaleX(1); }
+
+/* === SLIDE 3: сравнение «один промпт» и AIHR === */
+.vs { display: grid; grid-template-columns: 1fr 1fr; gap: 56px; }
+.vs .side { padding: 40px 52px 44px; border-radius: 26px; border: 2px solid var(--line); background: var(--card); }
+.vs .side.win { border-color: rgba(111, 240, 190, .45); background: rgba(111, 240, 190, .05); }
+.vs .label { font: 700 26px 'Manrope'; letter-spacing: .06em; text-transform: uppercase; margin-bottom: 30px; }
+.vs .row { display: flex; align-items: center; gap: 26px; margin-top: 18px; }
+.vs .row b { font: 800 96px/1 'Unbounded'; letter-spacing: -0.05em; min-width: 330px; flex: none; }
+.vs .row span { font: 500 28px/1.35 'Manrope'; color: var(--text-dim); }
+
+/* === SLIDE 4: конвейер === */
+.steps { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.step { padding: 36px 34px 40px; border-radius: 22px; background: var(--card); border: 2px solid var(--line); min-height: 380px; }
+.step i { display: block; font: 500 22px 'JetBrains Mono'; font-style: normal; color: var(--mint); margin-bottom: 22px; }
+.step h3 { font: 800 32px/1.15 'Unbounded'; letter-spacing: -0.02em; margin-bottom: 18px; }
+.step p { font: 500 25px/1.45 'Manrope'; color: var(--text-dim); }
+.step code { font: 500 23px 'JetBrains Mono'; color: var(--amber); }
+
+/* === SLIDE 5: четыре статуса === */
+.st { display: grid; grid-template-columns: repeat(4, 1fr); gap: 28px; }
+.st .s { padding: 38px 36px; border-radius: 22px; border: 3px solid currentColor; min-height: 330px; }
+.st .s b { display: block; font: 800 38px/1.1 'Unbounded'; letter-spacing: -0.02em; margin-bottom: 20px; }
+.st .s p { font: 500 25px/1.45 'Manrope'; color: var(--text); }
+
+/* === SLIDE 6: строки отчёта === */
+.report { border: 2px solid var(--line); border-radius: 24px; overflow: hidden; background: rgba(0,0,0,.18); }
+.report .h, .report .row { display: grid; grid-template-columns: 430px 220px 1fr; gap: 32px; padding: 26px 40px; align-items: start; }
+.report .h { font: 500 21px 'JetBrains Mono'; text-transform: uppercase; letter-spacing: .08em; color: var(--ash); border-bottom: 2px solid var(--line); }
+.report .row + .row { border-top: 2px solid var(--line); }
+.report .req { font: 700 27px/1.35 'Manrope'; color: var(--text); }
+.report q { display: block; font: 500 24px/1.45 'Manrope'; color: var(--text); quotes: '«' '»'; padding-left: 20px; border-left: 4px solid var(--mint); }
+.report .id { font: 500 20px 'JetBrains Mono'; color: var(--mint); margin-bottom: 8px; display: block; }
+.report .note { font: 500 22px/1.4 'Manrope'; color: var(--text-dim); margin-top: 10px; }
+.report .note em { font-style: normal; color: var(--amber); }
+
+/* === SLIDE 7: цифры === */
+.nums { display: grid; grid-template-columns: 1fr 1fr; gap: 40px 110px; }
+.nums .num { font-size: 112px; }
+.nums > div { display: block; }
+.nums .cap { margin-top: 12px; max-width: 700px; }
+.nums > div { border-top: 3px solid var(--mint); padding-top: 28px; }
+
+/* === SLIDE 8: плитки возможностей === */
+.tiles { display: grid; grid-template-columns: repeat(3, 1fr); gap: 26px; }
+.tiles .card { min-height: 236px; padding: 34px 38px; }
+.tiles .card h3 { font-size: 30px; }
+.tiles .card p { font-size: 24px; }
+.tiles .card i { font: 500 20px 'JetBrains Mono'; font-style: normal; color: var(--mint); display: block; margin-bottom: 14px; }
+
+/* === SLIDE 9: время === */
+.time { display: flex; align-items: baseline; gap: 48px; }
+.time .was { font: 800 124px/1 'Unbounded'; letter-spacing: -0.05em; color: var(--text-dim); text-decoration: line-through;
+             text-decoration-color: var(--coral); text-decoration-thickness: 10px; }
+.time .arrow { font: 800 110px/1 'Unbounded'; color: var(--ash); }
+.time .now { font: 800 124px/1 'Unbounded'; letter-spacing: -0.05em; color: var(--mint); }
+
+/* ===========================================
+   PRESENTER UI — номер слайда, заметки (N), правка (E), полоса прогресса
+   =========================================== */
+.progress { position: fixed; left: 0; top: 0; height: 4px; background: var(--mint); z-index: 1001; transition: width .5s var(--ease); }
+.notes { position: fixed; left: 24px; right: 24px; bottom: 24px; z-index: 1002; max-height: 38vh; overflow: auto; display: none;
+         background: rgba(14,12,11,.95); border: 1px solid #333; border-radius: 14px; padding: 18px 22px;
+         font: 500 17px/1.55 'Manrope'; color: #D2D6D3; }
+.notes.show { display: block; }
+.notes b { color: #6FF0BE; }
+.edit-hotzone { position: fixed; top: 0; left: 0; width: 80px; height: 80px; z-index: 10000; cursor: pointer; }
+.edit-toggle { position: fixed; top: 16px; left: 16px; z-index: 10001; opacity: 0; pointer-events: none; transition: opacity .3s;
+               background: #1E1A17; color: #6FF0BE; border: 1px solid #333; border-radius: 10px; padding: 8px 12px; font: 600 14px 'Manrope'; }
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+body.editing [data-edit] { outline: 1px dashed rgba(111,240,190,.5); }
+.hint { position: fixed; right: 18px; bottom: 14px; z-index: 1000; font: 500 13px 'JetBrains Mono'; color: rgba(210,214,211,.35); }
+
+</style>
+</head>
+<body>
+<div class="progress" id="progress"></div>
+<div class="edit-hotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Правка текста (E)">Правка</button>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage">
+<section class="slide active" data-notes="<b>~25 c.</b> Здравствуйте, мы команда AIHR — Attention Is All HR Needs. Мы сделали систему, которая по одному резюме ранжирует открытые вакансии
+и объясняет каждый вывод цитатой из документа. Главное, что вы сегодня увидите: ни одной выдуманной цитаты.">
+<div class="chrome"><span><b>AIHR</b></span><span>Хакатон «ИИ в системе управления МФТИ» · Трек 3 · Финал 15.11.2026</span></div>
+<h1 class="at r" style="left:112px; top:230px; --d:1" data-edit>Attention Is All<br>HR Needs<span class="dot">.</span></h1>
+<p class="lead at r" style="left:120px; top:640px; width:1150px; --d:3" data-edit>Подбор вакансии по доказательствам: каждый вывод — с цитатой из резюме.</p>
+<div class="tags at r" style="left:120px; bottom:84px; --d:5"><span class="tag t-match">Соответствует</span><span class="tag t-partial">Частично</span><span class="tag t-mismatch">Не соответствует</span><span class="tag t-ns">Не указано</span></div>
+<div class="ember r" style="--d:6" data-edit>0 выдуманных цитат</div></section>
+<section class="slide" data-notes="<b>~30 c.</b> Боль мы взяли из ответов заказчика, а не придумали. Полное сопоставление кандидата с несколькими вакансиями — 10–20 минут,
+ещё 10–15 — оформить для заказчика. На пике приходит 300+ откликов в день, ATS нет. В итоге альтернативные вакансии не предлагают, и сильные кандидаты уходят."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Проблема · 02 / 10</span></div>
+<div class="kicker at r" style="left:120px; top:200px; --d:0">По словам заказчика</div>
+<div class="at r" style="left:112px; top:270px; --d:1"><div class="big" style="color:var(--text)" data-edit>20–35</div>
+<div class="lead" style="margin-top:10px" data-edit>минут рекрутера на одного кандидата</div></div>
+<div class="at" style="left:1080px; top:250px; width:720px; display:grid; gap:34px">
+  <div class="r" style="--d:3"><div class="num" style="font-size:84px">10–20 <small>мин</small></div><div class="cap" data-edit>сопоставить кандидата с несколькими вакансиями</div></div>
+  <div class="r" style="--d:4"><div class="num" style="font-size:84px">10–15 <small>мин</small></div><div class="cap" data-edit>оформить результат для заказчика</div></div>
+  <div class="r" style="--d:5"><div class="num" style="font-size:84px; color:var(--coral)">300+</div><div class="cap" data-edit>откликов в день на пике, отдельной ATS нет</div></div>
+</div>
+<div class="ember r" style="--d:7" data-edit>сильные кандидаты теряются</div></section>
+<section class="slide" data-notes="<b>~35 c.</b> Можно просто спросить модель. Мы проверили это на нашем эталоне — 200 требований, размеченных вручную, та же модель DeepSeek.
+Один промпт дал 5 ложных «не соответствует» и только 70% дословных цитат. У AIHR — ноль и сто процентов. Разница не в модели, а в архитектуре."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Почему не просто ChatGPT · 03 / 10</span></div>
+<h2 class="at r" style="left:112px; top:170px; width:1700px; --d:0" data-edit>Та же модель. <span class="w">Другие правила.</span></h2>
+<div class="vs at" style="left:120px; right:120px; top:410px">
+  <div class="side r" style="--d:2"><div class="label" style="color:var(--coral)" data-edit>Один промпт к модели</div>
+    <div class="row"><b style="color:var(--coral)">5</b><span data-edit>ложных «не соответствует», когда в резюме просто нет сведений</span></div>
+    <div class="row"><b style="color:var(--coral)">70%</b><span data-edit>цитат совпадают с резюме дословно — остальные модель переписала</span></div></div>
+  <div class="side win r" style="--d:3"><div class="label" style="color:var(--mint)" data-edit>AIHR</div>
+    <div class="row"><b style="color:var(--mint)">0</b><span data-edit>ложных «не соответствует»</span></div>
+    <div class="row"><b style="color:var(--mint)">100%</b><span data-edit>цитат дословно из документа: их подставляет код</span></div></div>
+</div>
+<div class="ember r" style="--d:6" data-edit>модель не пишет цитаты</div></section>
+<section class="slide" data-notes="<b>~40 c.</b> Документ режется на фрагменты с адресами. Персональные данные маскируются до того, как что-то уйдёт наружу.
+Модель сверяет каждое требование и возвращает только номер фрагмента. Код проверяет, что номер существует, и подставляет текст сам.
+Нет фрагмента — статус «не указано». Стаж, пороги и итоговый балл модель не считает вообще."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Как это работает · 04 / 10</span></div>
+<h2 class="at r" style="left:112px; top:170px; width:1700px; --d:0" data-edit>Модель называет номер.<br><span class="w">Цитату ставит код.</span></h2>
+<div class="steps at" style="left:120px; right:120px; top:470px">
+  <div class="step r" style="--d:2"><i>01 · разбор</i><h3 data-edit>Фрагменты с адресами</h3><p data-edit>DOCX, PDF, RTF, TXT режутся на абзацы и строки: <code>[R12]</code>, <code>[V1.4]</code></p></div>
+  <div class="step r" style="--d:3"><i>02 · приватность</i><h3 data-edit>Обезличивание</h3><p data-edit>ФИО, контакты и даты рождения заменяются метками до отправки. Каждый запрос — в журнале</p></div>
+  <div class="step r" style="--d:4"><i>03 · LLM</i><h3 data-edit>Сверка по требованию</h3><p data-edit>Модель отвечает статусом и номером фрагмента по строгой JSON-схеме</p></div>
+  <div class="step r" style="--d:5"><i>04 · код</i><h3 data-edit>Проверка и расчёт</h3><p data-edit>Номер существует → цитата из документа. Стаж, пороги и балл считает код</p></div>
+</div>
+<div class="ember r" style="--d:7" data-edit>нет фрагмента — «Не указано»</div></section>
+<section class="slide" data-notes="<b>~30 c.</b> Самая дорогая ошибка рекрутинговой системы — отсеять человека, который просто не написал про навык.
+Поэтому у нас четыре статуса. «Не указано» не штрафует кандидата: балл показывается интервалом от худшего до лучшего случая,
+а в отчёте появляется вопрос кандидату. На эталоне ложных «не соответствует» — ноль."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Неопределённость · 05 / 10</span></div>
+<h2 class="at r" style="left:112px; top:170px; width:1700px; --d:0" data-edit>«Не указано» <span class="w">≠</span><br>«Не соответствует»</h2>
+<div class="st at" style="left:120px; right:120px; top:460px">
+  <div class="s t-match r" style="--d:2"><b>Соответствует</b><p data-edit>Есть фрагмент резюме, который закрывает требование целиком</p></div>
+  <div class="s t-partial r" style="--d:3"><b>Частично</b><p data-edit>Подтверждена часть: меньше стаж, ниже уровень, смежный навык</p></div>
+  <div class="s t-mismatch r" style="--d:4"><b>Не соответствует</b><p data-edit>Резюме прямо противоречит требованию — только с цитатой</p></div>
+  <div class="s t-ns r" style="--d:5"><b>Не указано</b><p data-edit>Сведений нет. Это не минус, а вопрос кандидату и интервал балла</p></div>
+</div>
+<div class="ember r" style="--d:7" data-edit>0 ложных «не соответствует»</div></section>
+<section class="slide" data-notes="<b>~50 c. Здесь переключаемся на живой сайт.</b> Загружаем резюме — система сравнивает его со всеми открытыми вакансиями, за полторы минуты.
+Рейтинг с баллом и причиной места. Открываем вакансию: таблица требований. Вот строка «Соответствует» с цитатой [R21], стаж посчитал код.
+Вот «Частично»: позиционирование не упомянуто — и это уже вопрос кандидату. Клик по цитате подсвечивает её прямо в резюме. В конце — DOCX для нанимающего менеджера."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Демо · 06 / 10</span></div>
+<h2 class="at r" style="left:112px; top:160px; --d:0" data-edit>Так выглядит<br><span class="w">одна строка отчёта</span></h2>
+<div class="report at r" style="left:120px; right:120px; top:420px; --d:2">
+  <div class="h"><span>Требование вакансии</span><span>Статус</span><span>Подтверждение в резюме</span></div>
+  <div class="row"><div class="req" data-edit>Опыт коммерческой разработки на Vue.js: компоненты, props, emit</div>
+    <div><span class="tag t-match">Соответствует</span></div>
+    <div><span class="id">[R21]</span><q>Разработка компонентов на Vue 3: карточки курсов, формы регистрации, модальные окна, пагинация. Использовал props/emit/v-model для передачи данных между компонентами.</q>
+    <div class="note">Расчёт кода: <em>стаж 3 г. 8 мес.</em> по профильным местам работы</div></div></div>
+  <div class="row"><div class="req" data-edit>Хорошее знание CSS3: позиционирование</div>
+    <div><span class="tag t-partial">Частично</span></div>
+    <div><span class="id">[R9]</span><q>CSS3: Flexbox, Grid, адаптивная и кроссбраузерная верстка; работа с псевдоклассами, анимациями, кастомными свойствами.</q>
+    <div class="note">Не хватает: <em>позиционирование не упомянуто</em> → вопрос кандидату</div></div></div>
+</div>
+<div class="foot r" style="--d:4">Живая версия: <span style="color:var(--mint)">consultant-abroad-bracelet-brokers.trycloudflare.com</span></div><div class="ember r" style="--d:6" data-edit>клик → подсветка в резюме</div></section>
+<section class="slide" data-notes="<b>~30 c.</b> Все цифры воспроизводятся одной командой make eval. 86% статусов совпали с ручной разметкой, 96% требований найдены,
+все 447 цитат — дословно из резюме. И отдельно: мы собрали отложенный набор вакансий других профессий, разметили его до прогона,
+и там 96%. Значит, мы не подогнали систему под три вакансии кейса."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Качество · 07 / 10</span></div>
+<h2 class="at r" style="left:112px; top:170px; --d:0" data-edit>Проверено, <span class="w">а не обещано</span></h2>
+<div class="nums at" style="left:120px; right:120px; top:330px">
+  <div class="r" style="--d:2"><div class="num">86%</div><div class="cap" data-edit>статусов совпали с ручной разметкой 200 требований</div></div>
+  <div class="r" style="--d:3"><div class="num">96%</div><div class="cap" data-edit>требований вакансий найдены; обязательные и желательные размечены верно во всех</div></div>
+  <div class="r" style="--d:4"><div class="num">447<small>/447</small></div><div class="cap" data-edit>цитат найдены в резюме дословно</div></div>
+  <div class="r" style="--d:5"><div class="num">96%</div><div class="cap" data-edit>на вакансиях других профессий: проверка, что мы не подогнали под кейс</div></div>
+</div>
+<div class="ember r" style="--d:7" data-edit>воспроизводится: make eval</div></section>
+<section class="slide" data-notes="<b>~35 c.</b> Сверх требований кейса. Реестр открытых вакансий с импортом по ссылке с hh.ru — то, о чём говорил эксперт.
+Пакет до 50 резюме: матрица и лучшие кандидаты на вакансию — это закрывает боль куратора про входящий поток.
+«Что если» пересчитывает балл после ответа кандидата. DOCX для менеджера, проверка качества самой вакансии и защита от скрытого текста в резюме."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Сверх кейса · 08 / 10</span></div>
+<h2 class="at r" style="left:112px; top:160px; --d:0" data-edit>Больше, <span class="w">чем просили</span></h2>
+<div class="tiles at" style="left:120px; right:120px; top:390px">
+  <div class="card r" style="--d:2"><i>реестр</i><h3 data-edit>Открытые вакансии</h3><p data-edit>Вакансии добавляются один раз — файлом или ссылкой на hh.ru</p></div>
+  <div class="card r" style="--d:3"><i>поток</i><h3 data-edit>Пакет до 50 резюме</h3><p data-edit>Матрица «кандидат × вакансия» и лучшие кандидаты на каждую</p></div>
+  <div class="card r" style="--d:4"><i>что если</i><h3 data-edit>Пересчёт после ответа</h3><p data-edit>Кандидат ответил на вопрос — балл и рейтинг пересчитаны без LLM</p></div>
+  <div class="card r" style="--d:5"><i>менеджеру</i><h3 data-edit>Отчёт DOCX</h3><p data-edit>Таблица, сильные стороны, риски и вопросы — одной кнопкой</p></div>
+  <div class="card r" style="--d:6"><i>вакансия</i><h3 data-edit>Проверка вакансии</h3><p data-edit>Что не проверить по резюме, размытые и дискриминирующие формулировки</p></div>
+  <div class="card r" style="--d:7"><i>защита</i><h3 data-edit>Щит от скрытого текста</h3><p data-edit>Белый шрифт и «игнорируй инструкции» вырезаются и помечаются</p></div>
+</div>
+<div class="ember r" style="--d:9" data-edit>и боль куратора — тоже</div></section>
+<section class="slide" data-notes="<b>~30 c.</b> Внедрение простое, потому что ATS у МФТИ нет и она не нужна: Docker в сети института, одна команда.
+Пилот две недели — рекрутер работает параллельно, мы меряем время и совпадение статусов. Дальше подключаем почту откликов и API hh.ru.
+По нашим замерам расчёт — полторы минуты на резюме против 20–35 минут ручной работы."><div class="chrome"><span><b>AIHR</b> · Attention Is All HR Needs</span><span>Внедрение · 09 / 10</span></div>
+<div class="kicker at r" style="left:120px; top:200px; --d:0">Время на кандидата</div>
+<div class="time at r" style="left:112px; top:270px; --d:1"><span class="was" data-edit>20–35 мин</span><span class="arrow">→</span><span class="now" data-edit>1,5 мин</span></div>
+<p class="cap at r" style="left:120px; top:440px; width:1500px; --d:2" data-edit>расчёт системы плюс проверка спорных пунктов рекрутером; было — 20–35 минут, по словам заказчика</p>
+<div class="steps at" style="left:120px; right:120px; top:560px; grid-template-columns: repeat(3, 1fr)">
+  <div class="step r" style="--d:3; min-height:300px"><i>день 1</i><h3 data-edit>Docker в сети МФТИ</h3><p data-edit>Одна команда, без ATS и отдельной базы. Нет внешнего API — локальная модель</p></div>
+  <div class="step r" style="--d:4; min-height:300px"><i>2 недели</i><h3 data-edit>Пилот</h3><p data-edit>Рекрутер работает как обычно и параллельно в AIHR: сравниваем время и статусы</p></div>
+  <div class="step r" style="--d:5; min-height:300px"><i>дальше</i><h3 data-edit>Каналы</h3><p data-edit>Почта для откликов и API hh.ru работодателя — без ручной выгрузки</p></div>
+</div>
+<div class="ember r" style="--d:7" data-edit>ATS не нужна</div></section>
+<section class="slide" data-notes="<b>~15 c.</b> AIHR: подбор вакансии по доказательствам. Ссылка на живую версию и репозиторий на экране — всё запускается одной командой по README.
+Спасибо, готовы ответить на вопросы.">
+<div class="chrome"><span><b>AIHR</b></span><span>10 / 10</span></div>
+<h1 class="at r" style="left:112px; top:220px; --d:1" data-edit>Attention Is All<br>HR Needs<span class="dot">.</span></h1>
+<p class="lead at r" style="left:120px; top:620px; width:1200px; --d:3" data-edit>Каждый вывод — с цитатой из резюме. Проверьте сами:</p>
+<div class="at r mono" style="left:120px; top:720px; font-size:30px; line-height:1.7; color:var(--mint); --d:4" data-edit>consultant-abroad-bracelet-brokers.trycloudflare.com<br><span class="dim">github.com/aweeeexo/AIHR-Attention-Is-All-HR-needs-</span></div>
+<div class="ember r" style="--d:6" data-edit>спасибо</div></section>
+</main>
+</div>
+<div class="notes" id="notes" aria-live="polite"></div>
+<div class="hint">← → листать · N заметки · E правка</div>
+<script>
+/* ===========================================
+   SLIDE PRESENTATION CONTROLLER
+   Стрелки, пробел, PageUp/Down, колесо, свайп; N — заметки докладчика; E — правка текста
+   =========================================== */
+class SlidePresentation {
+  constructor() {
+    this.slides = [...document.querySelectorAll('.slide')];
+    this.stage = document.getElementById('deckStage');
+    this.notes = document.getElementById('notes');
+    this.bar = document.getElementById('progress');
+    this.current = 0;
+    this.wheelLock = false;
+    this.fit(); addEventListener('resize', () => this.fit());
+    addEventListener('keydown', (e) => this.onKey(e));
+    addEventListener('wheel', (e) => this.onWheel(e), { passive: true });
+    let x0 = null;
+    addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+    addEventListener('touchend', (e) => { if (x0 === null) return; const dx = e.changedTouches[0].clientX - x0;
+      if (Math.abs(dx) > 50) this.go(this.current + (dx < 0 ? 1 : -1)); x0 = null; });
+    const start = parseInt(location.hash.replace('#', ''), 10);
+    this.go(Number.isFinite(start) ? start - 1 : 0);
+  }
+  fit() {
+    const f = Math.min(innerWidth / 1920, innerHeight / 1080);
+    this.stage.style.transform = `translate(${(innerWidth - 1920 * f) / 2}px, ${(innerHeight - 1080 * f) / 2}px) scale(${f})`;
+  }
+  onKey(e) {
+    if (document.body.classList.contains('editing') && e.target.isContentEditable) return;
+    if (['ArrowRight', 'ArrowDown', ' ', 'PageDown', 'Enter'].includes(e.key)) { e.preventDefault(); this.go(this.current + 1); }
+    if (['ArrowLeft', 'ArrowUp', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); this.go(this.current - 1); }
+    if (e.key === 'Home') this.go(0);
+    if (e.key === 'End') this.go(this.slides.length - 1);
+    if (e.key === 'n' || e.key === 'N' || e.key === 'т' || e.key === 'Т') this.notes.classList.toggle('show');
+  }
+  onWheel(e) {
+    if (this.wheelLock || Math.abs(e.deltaY) < 30) return;
+    this.wheelLock = true; setTimeout(() => { this.wheelLock = false; }, 700);
+    this.go(this.current + (e.deltaY > 0 ? 1 : -1));
+  }
+  go(i) {
+    this.current = Math.max(0, Math.min(i, this.slides.length - 1));
+    this.slides.forEach((s, k) => { s.classList.toggle('active', k === this.current); s.classList.remove('visible'); });
+    const s = this.slides[this.current];
+    requestAnimationFrame(() => requestAnimationFrame(() => s.classList.add('visible')));
+    this.notes.innerHTML = `<b>Слайд ${this.current + 1}.</b> ` + s.dataset.notes;
+    this.bar.style.width = `${((this.current + 1) / this.slides.length) * 100}%`;
+    history.replaceState(null, '', `#${this.current + 1}`);
+  }
+}
+
+/* ===========================================
+   INLINE EDITING — E или уголок слева сверху; правки сохраняются в браузере
+   =========================================== */
+class Editor {
+  constructor() {
+    this.isActive = false;
+    this.key = 'aihr-deck-edits-v1';
+    this.nodes = [...document.querySelectorAll('[data-edit]')];
+    try { const saved = JSON.parse(localStorage.getItem(this.key) || '{}');
+      this.nodes.forEach((n, i) => { if (saved[i] !== undefined) n.innerHTML = saved[i]; }); } catch (e) {}
+  }
+  toggleEditMode() {
+    this.isActive = !this.isActive;
+    document.body.classList.toggle('editing', this.isActive);
+    document.getElementById('editToggle').classList.toggle('active', this.isActive);
+    this.nodes.forEach((n) => { n.contentEditable = this.isActive; });
+    if (!this.isActive) this.save();
+  }
+  save() {
+    const data = {}; this.nodes.forEach((n, i) => { data[i] = n.innerHTML; });
+    try { localStorage.setItem(this.key, JSON.stringify(data)); } catch (e) {}
+  }
+}
+
+const deck = new SlidePresentation();
+const editor = new Editor();
+const toggle = document.getElementById('editToggle');
+const hotzone = document.querySelector('.edit-hotzone');
+let hideTimeout = null;
+toggle.addEventListener('click', () => editor.toggleEditMode());
+hotzone.addEventListener('click', () => editor.toggleEditMode());
+hotzone.addEventListener('mouseenter', () => { clearTimeout(hideTimeout); toggle.classList.add('show'); });
+hotzone.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) toggle.classList.remove('show'); }, 400); });
+toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+toggle.addEventListener('mouseleave', () => { hideTimeout = setTimeout(() => { if (!editor.isActive) toggle.classList.remove('show'); }, 400); });
+addEventListener('keydown', (e) => {
+  if ((e.key === 'e' || e.key === 'E' || e.key === 'у' || e.key === 'У') && !e.target.isContentEditable) editor.toggleEditMode();
+  if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); editor.save(); }
+});
+</script>
+</body>
+</html>
