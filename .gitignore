@@ -25,3 +25,4 @@ scratch/
 data/llm_replay/
 .frontend-slides/
 .claude/skills/frontend-slides/
+.claude/skills/stop-slop/
