@@ -10,12 +10,13 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Annotated, Any
 
-from fastapi import FastAPI, File, HTTPException, Query, Response, UploadFile
+from fastapi import FastAPI, File, HTTPException, Query, Request, Response, UploadFile
 from fastapi.concurrency import run_in_threadpool
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
 from aihr import __version__
+from aihr.api.limits import charge
 from aihr.batch import run_batch
 from aihr.config import get_settings, setup_logging
 from aihr.contracts import CONTRACTS_VERSION, BatchResult, MatchResult
@@ -110,9 +111,11 @@ async def _read(upload: UploadFile, limit: int) -> tuple[bytes, str]:
 
 @app.post("/match", response_model=MatchResult)
 async def match(
+    request: Request,
     resume: Annotated[UploadFile, File(description="Резюме: docx, pdf или txt")],
     vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
 ) -> MatchResult:
+    charge(request)
     limit = get_settings().max_file_bytes
     resume_file = await _read(resume, limit)
     vacancy_files = [await _read(v, limit) for v in vacancies]
@@ -143,6 +146,7 @@ BATCH_ID_RE = re.compile(r"^b\d{8}-\d{6}-[0-9a-f]{6}$")
 
 @app.post("/match/batch", response_model=BatchResult)
 async def match_batch(
+    request: Request,
     resumes: Annotated[list[UploadFile], File(description="Несколько резюме: docx, pdf или txt")],
     vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
 ) -> BatchResult:
@@ -152,6 +156,7 @@ async def match_batch(
         raise HTTPException(
             413, f"В пакете не больше {s.max_batch_resumes} резюме (MAX_BATCH_RESUMES)"
         )
+    charge(request, len(resumes))
     resume_files = [await _read(r, s.max_file_bytes) for r in resumes]
     vacancy_files = [await _read(v, s.max_file_bytes) for v in vacancies]
     return await run_in_threadpool(run_batch, resume_files, vacancy_files)
@@ -204,10 +209,12 @@ def _example(resume: str | None = None) -> tuple[list[Path], list[Path]]:
 
 @app.post("/jobs/match", response_model=JobStatus, status_code=202)
 async def job_match(
+    request: Request,
     resume: Annotated[UploadFile, File(description="Резюме: docx, pdf или txt")],
     vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
 ) -> JobStatus:
     """То же, что POST /match, но сразу возвращает задачу; результат — по GET /jobs/{id}."""
+    charge(request)
     limit = get_settings().max_file_bytes
     resume_file = await _read(resume, limit)
     vacancy_files = [await _read(v, limit) for v in vacancies]
@@ -225,9 +232,11 @@ def job_match_example(
 
 @app.post("/jobs/match/case", response_model=JobStatus, status_code=202)
 async def job_match_case(
+    request: Request,
     resume: Annotated[UploadFile, File(description="Своё резюме: docx, pdf, rtf или txt")],
 ) -> JobStatus:
     """Своё резюме против вакансий из примера кейса — первый экран интерфейса."""
+    charge(request)
     _, vacancies = _example()
     resume_file = await _read(resume, get_settings().max_file_bytes)
     vacancy_files = read_files(vacancies)
@@ -236,10 +245,12 @@ async def job_match_case(
 
 @app.post("/jobs/batch", response_model=JobStatus, status_code=202)
 async def job_batch(
+    request: Request,
     resumes: Annotated[list[UploadFile], File(description="Несколько резюме")],
     vacancies: Annotated[list[UploadFile], File(description="Одна или несколько вакансий")],
 ) -> JobStatus:
     resume_files, vacancy_files = await _batch_files(resumes, vacancies)
+    charge(request, len(resume_files))
     return _jobs().submit("batch", lambda p: run_batch(resume_files, vacancy_files, progress=p))
 
 
@@ -318,20 +329,24 @@ def delete_vacancy(vacancy_id: str) -> Response:
 
 @app.post("/jobs/match/registry", response_model=JobStatus, status_code=202)
 async def job_match_registry(
+    request: Request,
     resume: Annotated[UploadFile, File(description="Резюме: docx, pdf, rtf или txt")],
 ) -> JobStatus:
     """Резюме против всех открытых вакансий реестра."""
     vacancy_files = _registry_or_404()
+    charge(request)
     resume_file = await _read(resume, get_settings().max_file_bytes)
     return _jobs().submit("match", lambda p: run(resume_file, vacancy_files, progress=p))
 
 
 @app.post("/jobs/batch/registry", response_model=JobStatus, status_code=202)
 async def job_batch_registry(
+    request: Request,
     resumes: Annotated[list[UploadFile], File(description="Несколько резюме")],
 ) -> JobStatus:
     vacancy_files = _registry_or_404()
     resume_files, _ = await _batch_files(resumes, [])
+    charge(request, len(resume_files))
     return _jobs().submit("batch", lambda p: run_batch(resume_files, vacancy_files, progress=p))
 
 

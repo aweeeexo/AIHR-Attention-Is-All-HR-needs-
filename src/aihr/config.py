@@ -71,6 +71,9 @@ class Settings(BaseSettings):
     vacancies_dir: Path = Path("data/vacancies")
     vacancies_seed: bool = True  # при первом запуске положить в реестр вакансии из case_dir
     url_timeout_s: float = Field(default=15, gt=0)  # загрузка вакансии по ссылке
+    # Публичный стенд (D62): анализов своих файлов в час, всего и с одного адреса; 0 — без лимита
+    analysis_limit_per_hour: int = Field(default=0, ge=0)
+    analysis_limit_per_ip_hour: int = Field(default=0, ge=0)
     scoring_config: Path = Path("config/scoring.yaml")
     synonyms_path: Path = Path("data/synonyms.yaml")
     today: str | None = None  # "2026-11" — фиксированная дата для воспроизводимых тестов

@@ -194,6 +194,8 @@ Python 3.12, все версии закреплены в [`pyproject.toml`](pypr
 | `LLM_STRUCTURED_MODE` | `json_schema`, `json_object` или `auto` (json_schema, при отказе провайдера — json_object) | `auto` | нет |
 | `LLM_CACHE` | Кэш ответов LLM по хэшу запроса | `1` | нет |
 | `WARM_ON_START` | Прогреть кэш на примере кейса при старте API | `0` | нет |
+| `ANALYSIS_LIMIT_PER_HOUR` | Публичный стенд: анализов своих файлов в час на весь сайт, `0` — без лимита. Пример из кейса не считается | `0` | нет |
+| `ANALYSIS_LIMIT_PER_IP_HOUR` | То же с одного адреса (берётся из `X-Forwarded-For`); пакет из N резюме — N анализов | `0` | нет |
 | `WITH_EMBEDDINGS` | Аргумент сборки: `1` — образ с sentence-transformers и torch (CPU), `0` — только BM25 | `1` | нет |
 | `EMBEDDINGS_MODEL` | Модель эмбеддингов; пусто — только BM25 | `intfloat/multilingual-e5-small` | нет |
 | `MAX_FILE_MB` | Лимит размера файла | `10` | нет |

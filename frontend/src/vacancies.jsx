@@ -17,6 +17,22 @@ export function VacanciesPage({ api }) {
   const [busy, setBusy] = useState(false);
   const [url, setUrl] = useState('');
   const input = useRef(null);
+  const dialog = useRef(null);
+  const [toDelete, setToDelete] = useState(null);
+
+  // Удаление необратимо: сначала окно подтверждения «Да / Нет», фокус на безопасном «Нет»
+  useEffect(() => {
+    const node = dialog.current;
+    if (!node) return;
+    if (toDelete && !node.open) node.showModal();
+    if (!toDelete && node.open) node.close();
+  }, [toDelete]);
+
+  function confirmDelete() {
+    const item = toDelete;
+    setToDelete(null);
+    if (item) act(async () => { await api.deleteVacancy(item.id); setNotice(`Вакансия «${item.title}» удалена.`); });
+  }
 
   async function load() {
     try {
@@ -123,7 +139,7 @@ export function VacanciesPage({ api }) {
                     {item.url && <a className="caption-5 registry-url" href={item.url} target="_blank" rel="noreferrer noopener">{item.url}</a>}
                   </div>
                   <button type="button" className="icon-button" disabled={busy} aria-label={`Удалить вакансию «${item.title}»`}
-                    onClick={() => act(async () => { await api.deleteVacancy(item.id); setNotice(`Вакансия «${item.title}» удалена.`); })}>
+                    onClick={() => setToDelete(item)}>
                     <Trash size={16} aria-hidden="true" />
                   </button>
                 </li>
@@ -132,6 +148,18 @@ export function VacanciesPage({ api }) {
           )}
         </section>
       </div>
+
+      <dialog ref={dialog} className="confirm-dialog" aria-labelledby="confirm-title" aria-describedby="confirm-text"
+        onClose={() => setToDelete(null)}>
+        <h2 id="confirm-title" className="title-2">Удалить вакансию?</h2>
+        <p id="confirm-text" className="body-6">
+          Вакансия «{toDelete?.title}» будет удалена из списка открытых вакансий безвозвратно. Вернуть её можно только повторной загрузкой.
+        </p>
+        <div className="confirm-actions">
+          <button type="button" className="button secondary button-md" autoFocus onClick={() => setToDelete(null)}>Нет</button>
+          <button type="button" className="button danger button-md" onClick={confirmDelete}>Да, удалить</button>
+        </div>
+      </dialog>
     </div>
   );
 }
