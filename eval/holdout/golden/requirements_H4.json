@@ -4,42 +4,42 @@
   {
    "key": "приготовление блюд европейской кухни технологическим картам",
    "fragment_ids": [
-    "V4.3"
+    "V1.3"
    ],
    "modality": "nice"
   },
   {
    "key": "контроль качества заготовок",
    "fragment_ids": [
-    "V4.4"
+    "V1.4"
    ],
    "modality": "nice"
   },
   {
    "key": "опыт работы поваром",
    "fragment_ids": [
-    "V4.6"
+    "V1.6"
    ],
    "modality": "must"
   },
   {
    "key": "среднее профессиональное образование специальности",
    "fragment_ids": [
-    "V4.7"
+    "V1.7"
    ],
    "modality": "must"
   },
   {
    "key": "санитарная книжка",
    "fragment_ids": [
-    "V4.8"
+    "V1.8"
    ],
    "modality": "must"
   },
   {
    "key": "пароконвектоматом",
    "fragment_ids": [
-    "V4.9"
+    "V1.9"
    ],
    "modality": "nice"
   }
