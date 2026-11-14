@@ -81,6 +81,23 @@ def _period(p: Position) -> str:
 # ---------- стаж ----------
 
 
+# Слова, из которых состоит требование общего стажа без темы: «опыт работы от 1 года»,
+# «общий стаж не менее 2 лет». Осталось что-то ещё — у требования есть тема, даже если
+# модель не заполнила threshold.subject
+_GENERIC_TENURE = re.compile(
+    r"(?i)(?:(?:опыт|работ|стаж|трудов|общ|профессиональн|коммерческ|практическ|подтвержд"
+    r"|официальн|деятельност|свыше|год|лет|месяц|experience|work|year|commercial"
+    r"|professional|total|minimum)\w*|не|менее|более|от|до|в|на|и|of|at|least|min|\d+(?:[.,]\d+)?)"
+)
+
+
+def _has_topic(req: Requirement) -> bool:
+    if req.threshold and req.threshold.subject:
+        return True
+    words = re.findall(r"\w+", req.text)
+    return any(not _GENERIC_TENURE.fullmatch(w) for w in words)
+
+
 def _years_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -> Verdict:
     assert req.threshold is not None
     m = _NUMBER.search(req.threshold.value)
@@ -91,7 +108,9 @@ def _years_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -
         return verdict
 
     evidence_ids = {e.fragment_id for e in verdict.evidence}
-    if req.threshold.subject:
+    topical = _has_topic(req)
+    if topical:
+        # Стаж по теме — только места работы, которые модель привела как доказательство (D56)
         positions = [p for p in profile.positions if evidence_ids & set(p.fragment_ids)]
         scope = "по теме"
     else:
@@ -112,7 +131,7 @@ def _years_rule(req: Requirement, verdict: Verdict, profile: CandidateProfile) -
         status, partial_value, sign = Status.partial, round(fact_years / required_years, 2), "<"
     computed = f"{scope}: {periods} = {fact} {sign} {need}"
     weak = verdict.evidence_type in (EvidenceType.adjacent, EvidenceType.indirect)
-    if status == Status.match and req.threshold.subject and weak:
+    if status == Status.match and topical and weak:
         # Стаж набран, но опыт по теме смежный или косвенный — не выше «Частично» (D15, D43)
         status = Status.partial
         computed += "; опыт по теме смежный — не выше «Частично»"
@@ -170,12 +189,20 @@ def _education_rule(req: Requirement, verdict: Verdict, profile: CandidateProfil
     ids = [fid for e in profile.education if e.level == best for fid in e.fragment_ids]
     computed = f"уровень в резюме: {best.value}; требуется не ниже {required.value}"
     status = Status.match if ok else Status.mismatch
-    field_doubt = verdict.status in (Status.partial, Status.mismatch) and bool(verdict.evidence)
+    # Специальность не подтвердила модель: сочла другой (partial/mismatch с фрагментом)
+    # или не нашла вовсе (not_stated) — D43, D56
+    field_doubt = verdict.status == Status.not_stated or (
+        verdict.status in (Status.partial, Status.mismatch) and bool(verdict.evidence)
+    )
     if ok and _FIELD.search(f"{req.threshold.value} {req.text}") and field_doubt:
         # Уровень подходит, а специальность модель сочла другой: код уровень проверил,
         # специальность — нет. Не выше «Частично» (D43)
         status = Status.partial
-        computed += "; специальность не совпала по оценке модели"
+        computed += (
+            "; специальность в резюме не найдена"
+            if verdict.status == Status.not_stated
+            else "; специальность не совпала по оценке модели"
+        )
     return _changed(
         verdict,
         status=status,

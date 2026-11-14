@@ -191,7 +191,8 @@ def test_years_match_and_union() -> None:
 
 def test_years_total_without_subject_adds_evidence() -> None:
     profile = _profile(positions=[_position("2016 — 2018", "R2")])
-    v = apply_rules(_req(ThresholdKind.years, "1"), _verdict(Status.not_stated), profile)
+    req = _req(ThresholdKind.years, "1").model_copy(update={"text": "Опыт работы от 1 года"})
+    v = apply_rules(req, _verdict(Status.not_stated), profile)
     assert v.status == Status.match
     assert [e.fragment_id for e in v.evidence] == ["R2"]
     assert v.computed == "общий стаж: 2016–2018 = ≈ 2 г. ≥ 1 года"
@@ -311,3 +312,36 @@ def test_education_field_doubt_is_partial() -> None:
     assert apply_rules(plain, _verdict(Status.partial, "R7"), _profile(education=[edu])).status == (
         Status.match
     )
+
+
+def test_years_topic_in_text_without_subject_uses_topic_positions() -> None:
+    """Тема в тексте требования, а subject пуст: общий стаж «по другой профессии» не засчитываем."""
+    profile = _profile(positions=[_position("2015 — 2025", "R2")])
+    req = _req(ThresholdKind.years, "3").model_copy(
+        update={"text": "Опыт не менее 3 лет в одном из направлений: сметчик, прораб"}
+    )
+    verdict = _verdict(Status.not_stated)  # модель не нашла опыта по теме
+    assert apply_rules(req, verdict, profile) == verdict
+    v = apply_rules(req, _verdict(Status.partial, "R2"), profile)
+    assert v.status == Status.match and v.computed.startswith("по теме:")
+
+
+@pytest.mark.parametrize(
+    "text", ["Опыт работы от 1 года", "Общий стаж не менее 2 лет", "Commercial experience 1+ years"]
+)
+def test_years_generic_text_counts_total(text: str) -> None:
+    profile = _profile(positions=[_position("2016 — 2018", "R2")])
+    req = _req(ThresholdKind.years, "1").model_copy(update={"text": text})
+    v = apply_rules(req, _verdict(Status.not_stated), profile)
+    assert v.status == Status.match and v.computed.startswith("общий стаж:")
+
+
+def test_education_field_not_confirmed_is_partial() -> None:
+    """Уровень подтверждён, специальность модель не нашла → «Частично», а не «Соответствует»."""
+    req = _req(ThresholdKind.education_level, "higher").model_copy(
+        update={"text": "Высшее юридическое образование"}
+    )
+    edu = Education(level=EducationLevel.bachelor, institution="Вуз", field=None,
+                    year_end=2021, fragment_ids=["R7"])  # fmt: skip
+    v = apply_rules(req, _verdict(Status.not_stated), _profile(education=[edu]))
+    assert v.status == Status.partial and [e.fragment_id for e in v.evidence] == ["R7"]
