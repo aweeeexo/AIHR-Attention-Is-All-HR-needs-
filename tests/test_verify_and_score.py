@@ -50,12 +50,12 @@ def _verdict(status: Status, *fids: str, rid: str = "V1.req1", **kw: object) -> 
     )
 
 
-def _req(i: int, modality: Modality) -> Requirement:
+def _req(i: int, modality: Modality, kind: ReqKind = ReqKind.skill) -> Requirement:
     return Requirement(
         id=f"V1.req{i}",
         vacancy_id="V1",
         text=f"требование {i}",
-        kind=ReqKind.skill,
+        kind=kind,
         modality=modality,
         modality_marker=None,
         modality_reason="",
@@ -246,3 +246,43 @@ def test_score_has_no_case_specific_logic() -> None:
     source = inspect.getsource(score_module).lower()
     for word in ("вакансия 1", "вакансия 2", "вакансия 3", "v1.", "v2.", "v3."):
         assert word not in source
+
+
+# ---------- личные качества (D55) ----------
+
+
+def test_soft_must_weighs_like_nice() -> None:
+    reqs = [_req(1, Modality.must), _req(2, Modality.must, ReqKind.soft)]
+    verdicts = [
+        _verdict(Status.match, "R1", rid="V1.req1"),
+        _verdict(Status.not_stated, rid="V1.req2"),
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    # веса 3 и 1: (3·1 + 1·0.5) / 4
+    assert s.score == pytest.approx(87.5)
+    assert (s.score_min, s.score_max) == (75.0, 100.0)
+    assert s.must.total == 2  # в счётчиках требование остаётся обязательным
+    assert "Личных качеств 1" in s.explanation
+
+
+def test_soft_does_not_count_for_label() -> None:
+    # одно подтверждённое обязательное и три неуказанных личных качества:
+    # без правила D55 подтверждена 1 из 4 обязательных — «не подходит»
+    reqs = [_req(1, Modality.must)] + [_req(i, Modality.must, ReqKind.soft) for i in (2, 3, 4)]
+    verdicts = [_verdict(Status.match, "R1", rid="V1.req1")] + [
+        _verdict(Status.not_stated, rid=f"V1.req{i}") for i in (2, 3, 4)
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    assert s.score == pytest.approx(75.0)
+    assert s.label == FitLabel.fits
+
+
+def test_soft_mismatch_is_not_blocking() -> None:
+    reqs = [_req(1, Modality.must), _req(2, Modality.must, ReqKind.soft)]
+    verdicts = [
+        _verdict(Status.match, "R1", rid="V1.req1"),
+        _verdict(Status.mismatch, "R2", rid="V1.req2"),
+    ]
+    s = score_vacancy(VACANCY, reqs, verdicts)
+    assert s.blocking_gaps == []
+    assert s.score == pytest.approx(75.0)

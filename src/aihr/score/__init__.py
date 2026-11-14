@@ -3,6 +3,8 @@
 S = 100 · Σ wᵢ·vᵢ / Σ wᵢ, где v = 1 (соответствует), p (частично), 0 (не соответствует),
 u (не указано). Основной балл при u = 0.5, интервал — при u = 0 и u = 1 (D5).
 Нокаута нет (D4): обязательное «не соответствует» → blocking_gaps, метка не «подходит».
+Личные качества (kind = soft) весят w_soft даже как обязательные и не влияют на метку (D55):
+люди редко пишут их в резюме, а проверяются они на собеседовании.
 Объяснения собирает шаблон из чисел и текстов требований, без LLM.
 """
 
@@ -21,6 +23,7 @@ from aihr.contracts import (
     FitLabel,
     Modality,
     Ranking,
+    ReqKind,
     Requirement,
     Status,
     StatusCounts,
@@ -43,6 +46,7 @@ class ScoringConfig:
     caveats_min_score: float
     close_margin: float = 3.0  # D40
     caveats_min_confirmed: float = 0.5  # D41
+    w_soft: float = 1.0  # D55: личные качества
 
     def with_changes(self, **kw: float) -> ScoringConfig:
         return replace(self, **kw)  # type: ignore[arg-type]
@@ -66,6 +70,7 @@ def _load_scoring_config(path: Path) -> ScoringConfig:
         caveats_min_score=float(labels["fits_with_caveats"]["min_score"]),
         close_margin=float(raw.get("close_margin", 3)),
         caveats_min_confirmed=float(labels["fits_with_caveats"].get("min_confirmed", 0.5)),
+        w_soft=float(raw["weights"].get("soft", raw["weights"]["nice"])),
     )
 
 
@@ -107,6 +112,12 @@ class _Row:
     weight: float
 
 
+def _weight(req: Requirement, cfg: ScoringConfig) -> float:
+    if req.kind == ReqKind.soft:
+        return cfg.w_soft  # D55: личное качество весит одинаково, обязательное оно или нет
+    return cfg.w_must if req.modality == Modality.must else cfg.w_nice
+
+
 def _rows(reqs: list[Requirement], verdicts: list[Verdict], cfg: ScoringConfig) -> list[_Row]:
     by_req = {v.requirement_id: v for v in verdicts}
     out = []
@@ -117,7 +128,7 @@ def _rows(reqs: list[Requirement], verdicts: list[Verdict], cfg: ScoringConfig) 
                 req=req,
                 status=v.status if v else Status.not_stated,  # нет вердикта — нет сведений
                 partial_value=v.partial_value if v else None,
-                weight=cfg.w_must if req.modality == Modality.must else cfg.w_nice,
+                weight=_weight(req, cfg),
             )
         )
     return out
@@ -152,14 +163,18 @@ def score_vacancy(
     score = _total(rows, cfg, cfg.unknown_value)
     score_min, score_max = _total(rows, cfg, 0.0), _total(rows, cfg, 1.0)
     must, nice = _count(rows, Modality.must), _count(rows, Modality.nice)
+    # D55: личные качества не блокируют метку и не входят в долю подтверждённых
+    hard = [r for r in rows if r.req.kind != ReqKind.soft]
+    soft = len(rows) - len(hard)
     blocking = [
-        r.req.id for r in rows if r.req.modality == Modality.must and r.status == Status.mismatch
+        r.req.id for r in hard if r.req.modality == Modality.must and r.status == Status.mismatch
     ]
     unknown = must.not_stated + nice.not_stated
     all_unknown = bool(rows) and unknown == len(rows)
     # D41: «с оговорками» — только если данных достаточно: подтверждена доля обязательных
     # (без обязательных — всех) или даже при худшем раскладе неуказанного балл не ниже порога
-    base = must if must.total else nice
+    hard_must, hard_nice = _count(hard, Modality.must), _count(hard, Modality.nice)
+    base = hard_must if hard_must.total else hard_nice if hard_nice.total else nice
     confirmed = base.match + base.partial
     enough_data = bool(base.total) and confirmed >= cfg.caveats_min_confirmed * base.total
     low_data = not enough_data and score_min < cfg.caveats_min_score
@@ -204,8 +219,13 @@ def score_vacancy(
             f"Не указано {unknown} {plural(unknown, _REQ)}, поэтому балл от {score_min:g} "
             f"до {score_max:g}."
         )
+    if soft:
+        parts.append(
+            f"Личных качеств {soft}: весят как желательные требования и не влияют на метку, "
+            "их стоит уточнить на собеседовании."
+        )
     if label == FitLabel.not_fit and score >= cfg.caveats_min_score and low_data:
-        which = "обязательных" if must.total else "требований"
+        which = "обязательных" if hard_must.total else "требований"
         parts.append(
             f"Мало данных: в резюме подтверждено {confirmed} из {base.total} {which}, "
             "поэтому «не подходит» до уточнения у кандидата — ответы могут поднять балл "
@@ -294,11 +314,13 @@ def _comparison(upper: VacancyScore, lower: VacancyScore, cfg: ScoringConfig) ->
 def formula_text(cfg: ScoringConfig) -> str:
     return (
         "Балл = 100 · Σ(вес · значение) / Σ(вес). Вес: обязательное требование "
-        f"{cfg.w_must:g}, желательное и обязанность {cfg.w_nice:g}. Значение: «Соответствует» 1, "
+        f"{cfg.w_must:g}, желательное и обязанность {cfg.w_nice:g}, личное качество "
+        f"{cfg.w_soft:g} (даже обязательное). Значение: «Соответствует» 1, "
         f"«Частично» {cfg.partial_default:g} (или доля порога, например 1,5 года из 3 = 0,5), "
         f"«Не соответствует» 0, «Не указано» {cfg.unknown_value:g}. Интервал — тот же расчёт, "
         "если все «Не указано» окажутся 0 или 1. Метка «подходит»: балл не ниже "
-        f"{cfg.fits_min_score:g} и нет обязательных требований без соответствия; "
+        f"{cfg.fits_min_score:g} и нет обязательных требований без соответствия (личные качества "
+        "на метку не влияют); "
         f"«подходит с оговорками»: не ниже {cfg.caveats_min_score:g} и в резюме подтверждено "
         f"не меньше {cfg.caveats_min_confirmed:.0%} обязательных (или нижняя граница интервала "
         f"не ниже {cfg.caveats_min_score:g}); иначе «не подходит», мало данных. Веса одинаковы "

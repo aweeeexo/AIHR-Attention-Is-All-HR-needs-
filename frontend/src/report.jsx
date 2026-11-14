@@ -21,6 +21,8 @@ export function Report({ result, vacancy, api, score }) {
   const fragments = [...(result.resume?.fragments || [])].sort((a, b) => a.order - b.order);
   const review = new Set(result.verdicts[vacancy.id]?.filter((item) => item.needs_review).map((item) => item.requirement_id));
   const activeIds = new Set(selection?.ids);
+  // D55: личные качества весят как желательные и проверяются на собеседовании
+  const soft = new Set((result.requirements?.[vacancy.id] || []).filter((req) => req.kind === 'soft').map((req) => req.id));
 
   useEffect(() => {
     if (!showResume || !selection?.ids.length) return;
@@ -85,13 +87,15 @@ export function Report({ result, vacancy, api, score }) {
                 <tr key={row.requirement_id} className={showResume && selection?.rowId === row.requirement_id ? 'selected-row' : ''}
                   onClick={ids.length ? () => highlight(ids, row.requirement_id) : undefined}>
                   <th scope="row">{row.requirement}</th>
-                  <td className="requirement-type">{modality[row.modality]}</td>
+                  <td className="requirement-type">{modality[row.modality]}
+                    {soft.has(row.requirement_id) && <small className="soft-note">Личное качество: вес как у желательного, уточнить на собеседовании</small>}</td>
                   <td><Tag kind={row.status}>{row.status_ru}</Tag>{review.has(row.requirement_id) &&
                     <small className="manual"><TriangleAlert size={13} aria-hidden="true" /> Проверить вручную</small>}</td>
                   <td>
                     {!ids.length && <span className="muted">Нет цитаты из резюме</span>}
+                    {ids.length > 0 && row.status === 'not_stated' && <small className="related-note">Ближайшее по теме, требование не подтверждает</small>}
                     {row.resume_evidence.map((evidence, index) => (
-                      <div className="quote" key={`${evidence.fragment_id}/${index}`}><small>{evidence.fragment_id}</small><blockquote>{evidence.quote}</blockquote></div>
+                      <div className={`quote${row.status === 'not_stated' ? ' related' : ''}`} key={`${evidence.fragment_id}/${index}`}><small>{evidence.fragment_id}</small><blockquote>{evidence.quote}</blockquote></div>
                     ))}
                     {ids.length > 0 && <button className="text-button" type="button" aria-pressed={showResume && selection?.rowId === row.requirement_id}
                       aria-controls="resume-viewer"><LocateFixed size={15} aria-hidden="true" /> Показать в резюме</button>}

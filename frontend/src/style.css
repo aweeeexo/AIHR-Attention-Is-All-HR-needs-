@@ -522,6 +522,9 @@ table small, .report-section small, details small, .fragment small { display: bl
 .quote { display: grid; gap: var(--s-25); margin-bottom: var(--s-75); }
 .quote small { margin: 0; }
 blockquote { padding: var(--s-50) var(--s-75); border-radius: var(--r-sm); background: var(--mark-partial); color: var(--text); white-space: pre-wrap; overflow-wrap: anywhere; }
+.quote.related blockquote { background: none; box-shadow: inset 0 0 0 1px var(--border-strong); color: var(--text-secondary); }
+.related-note { margin: 0 0 var(--s-50); color: var(--text-tertiary); }
+.requirement-type .soft-note { color: var(--ink-partial); }
 .vacancy-quote { margin-top: var(--s-75); }
 .vacancy-quote summary { font: var(--button-xsm); color: var(--accent); cursor: pointer; }
 .vacancy-quote blockquote { margin-top: var(--s-50); background: var(--surface-secondary); }

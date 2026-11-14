@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import io
 
-from aihr.contracts import STATUS_RU, MatchResult, Modality, Point, Status
+from aihr.contracts import STATUS_RU, MatchResult, Modality, Point, ReqKind, Status
 
 _STATUS_FILL = {
     Status.match: "D4EDDA",
@@ -81,13 +81,18 @@ def report_docx(result: MatchResult, vacancy_id: str) -> bytes:
     ):
         cell.text = title
         cell.paragraphs[0].runs[0].bold = True
+    soft = {r.id for r in result.requirements.get(vacancy_id, []) if r.kind == ReqKind.soft}
     for row in report.rows:
         cells = table.add_row().cells
         cells[0].text = row.requirement
         cells[1].text = "обязательное" if row.modality == Modality.must else "желательное"
+        if row.requirement_id in soft:  # D55
+            cells[1].text += ", личное качество (вес как у желательного)"
         cells[2].text = STATUS_RU[row.status]
         _shade(cells[2], _STATUS_FILL[row.status])
         quotes = " … ".join(f"«{e.quote}» [{e.fragment_id}]" for e in row.resume_evidence)
+        if quotes and row.status == Status.not_stated:
+            quotes = f"Ближайшее по теме, требование не подтверждает: {quotes}"
         cells[3].text = quotes or "—"
         comment = row.comment
         if row.computed:
