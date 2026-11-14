@@ -88,3 +88,25 @@ test('sends what-if answers as JSON and loads the vacancy check', async () => {
   await api.whatIf('r1', [{ vacancy_id: 'V1', requirement_id: 'V1.req2', status: 'match' }]);
   assert.equal((await api.vacancyCheck('r1'))[0].vacancy_id, 'V1');
 });
+
+test('registry calls send only resumes and manage vacancies by id', async () => {
+  const calls = [];
+  const api = createApi('http://localhost:8000', async (url, options = {}) => {
+    calls.push([new URL(url).pathname, options.method || 'GET']);
+    if (url.endsWith('/jobs/match/registry')) {
+      assert.equal(options.body.get('resume').name, 'r.txt');
+      assert.equal(options.body.getAll('vacancies').length, 0);
+    }
+    if (url.endsWith('/vacancies/url')) assert.deepEqual(JSON.parse(options.body), { url: 'https://hh.ru/vacancy/1' });
+    if (options.method === 'DELETE') return new Response(null, { status: 204 });
+    return Response.json({ job_id: 'j', status: 'queued' });
+  });
+  await api.startRegistry('single', [new File(['x'], 'r.txt')]);
+  await api.startRegistry('batch', [new File(['x'], 'a.txt')]);
+  await api.addVacancyUrl('https://hh.ru/vacancy/1');
+  await api.deleteVacancy('abc123abc123');
+  assert.deepEqual(calls, [
+    ['/jobs/match/registry', 'POST'], ['/jobs/batch/registry', 'POST'],
+    ['/vacancies/url', 'POST'], ['/vacancies/abc123abc123', 'DELETE'],
+  ]);
+});

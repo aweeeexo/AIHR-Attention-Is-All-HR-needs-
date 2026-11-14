@@ -12,6 +12,7 @@ import { Nav } from './nav.jsx';
 import { Footer, Landing } from './landing.jsx';
 import { PageSkeleton, RankingSkeleton } from './skeleton.jsx';
 import { takePendingResume } from './pending.js';
+import { VacanciesPage } from './vacancies.jsx';
 
 const api = createApi(import.meta.env.VITE_API_URL || 'http://localhost:8000');
 
@@ -22,6 +23,7 @@ function readRoute() {
   if (!parts.length) return { page: 'landing' };
   if (parts[0] === 'faq' && parts[1] === 'data') return { page: 'landing', anchor: 'faq-data' };
   if (parts[0] === 'app' && parts.length === 1) return { page: 'app' };
+  if (parts[0] === 'vacancies' && parts.length === 1) return { page: 'vacancies' };
   if (['runs', 'batches'].includes(parts[0]) && parts[1]) {
     return { page: 'result', kind: parts[0], id: parts[1], vacancy: parts[2] };
   }
@@ -76,6 +78,7 @@ function App() {
           window.location.hash = value.batch_id ? path('batches', value.batch_id) : path('runs', value.run_id);
         }} />}
         {route.page === 'app' && <Analysis files={exampleFiles} />}
+        {route.page === 'vacancies' && <VacanciesPage api={api} />}
         {route.page === 'result' && <Result route={route} />}
         {route.page === 'missing' && <NotFound />}
       </main>
@@ -107,7 +110,12 @@ function Analysis({ files }) {
   const [pending, setPending] = useState(false);
   const [progress, setProgress] = useState(null);
   const [error, setError] = useState('');
+  const [registry, setRegistry] = useState(undefined);
   const busy = useRef(false);
+
+  useEffect(() => {
+    api.vacancies().then(setRegistry).catch(() => setRegistry(null));
+  }, []);
 
   async function analyze(request) {
     if (busy.current) return;
@@ -132,7 +140,7 @@ function Analysis({ files }) {
     <div className="container page">
       <header className="page-head">
         <h1 className="heading-4">Новый анализ</h1>
-        <p className="body-3 secondary">Три шага: резюме, вакансии, запуск. Или запустите готовый пример из кейса.</p>
+        <p className="body-3 secondary">Загрузите резюме: по умолчанию сравним его со всеми открытыми вакансиями. Можно приложить свои вакансии или запустить пример из кейса.</p>
       </header>
       <div className="segmented" role="group" aria-label="Режим анализа">
         <button type="button" className="button-sm" aria-pressed={mode === 'single'} disabled={pending} onClick={() => setMode('single')}>Одно резюме</button>
@@ -140,7 +148,8 @@ function Analysis({ files }) {
       </div>
       <div className="analysis-layout">
         <div className="analysis-main">
-          <Upload mode={mode} pending={pending} initialResumes={initialResume ? [initialResume] : undefined} submit={(resumes, vacancies) => analyze(() => api.startUpload(mode, resumes, vacancies))} />
+          <Upload mode={mode} pending={pending} registry={registry} initialResumes={initialResume ? [initialResume] : undefined}
+            submit={(resumes, vacancies) => analyze(() => (vacancies ? api.startUpload(mode, resumes, vacancies) : api.startRegistry(mode, resumes)))} />
           <Notices error={error} />
           {pending && <Progress job={progress} />}
         </div>

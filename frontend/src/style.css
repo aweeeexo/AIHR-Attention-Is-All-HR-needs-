@@ -581,6 +581,34 @@ details pre { max-height: 360px; overflow: auto; padding: var(--s-100); border-r
 :is(.rank-score, .matrix td) .tag::before { margin-top: var(--s-50); flex: none; }
 
 /* ---------- Адаптивность ---------- */
+/* ---------- Реестр открытых вакансий (D58) ---------- */
+.ok-text { color: var(--status-match); }
+.registry-layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: var(--s-400); align-items: start; }
+.registry-add, .registry-list { display: grid; gap: var(--s-200); }
+.url-form { display: grid; gap: var(--s-100); }
+.text-input {
+  width: 100%; min-height: 40px; padding: var(--s-75) var(--s-100);
+  border: 1px solid var(--border-strong); border-radius: var(--r-lg); background: var(--surface); color: var(--text);
+}
+.text-input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.registry-list-head { display: flex; align-items: center; justify-content: space-between; gap: var(--s-200); flex-wrap: wrap; }
+.registry-items { display: grid; gap: var(--s-75); margin: 0; padding: 0; list-style: none; }
+.registry-items li {
+  display: flex; align-items: flex-start; gap: var(--s-200); padding: var(--s-100) var(--s-200);
+  border-radius: var(--r-lg); background: var(--surface-subtle);
+}
+.registry-items li > div { display: grid; gap: var(--s-25); flex: 1; min-width: 0; }
+.registry-items p { overflow-wrap: anywhere; }
+.registry-url { color: var(--accent); overflow-wrap: anywhere; }
+.registry-empty { display: grid; gap: var(--s-50); padding: var(--s-400) var(--s-200); border-radius: var(--r-lg); background: var(--surface-subtle); }
+.registry-skeleton { display: grid; gap: var(--s-75); }
+.registry-skeleton .skeleton { height: 56px; }
+.registry-summary { display: grid; gap: var(--s-100); }
+.registry-summary a { color: var(--accent); justify-self: start; }
+@media (max-width: 900px) {
+  .registry-layout { grid-template-columns: minmax(0, 1fr); }
+}
+
 @media (min-width: 1360px) {
   .report-grid.with-resume { grid-template-columns: minmax(0, 1fr) 360px; }
   .resume-panel { max-height: min(600px, 70vh); }

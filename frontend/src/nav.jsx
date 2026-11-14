@@ -5,6 +5,7 @@ import { applyMode, storedMode } from './theme.js';
 const links = [
   { href: '#/', label: 'О системе', match: (page) => page === 'landing' },
   { href: '#/app', label: 'Анализ', match: (page) => page === 'app' || page === 'result' },
+  { href: '#/vacancies', label: 'Вакансии', match: (page) => page === 'vacancies' },
 ];
 
 function Status({ health, onRefresh }) {

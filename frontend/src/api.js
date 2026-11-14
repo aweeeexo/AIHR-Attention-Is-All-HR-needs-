@@ -14,7 +14,7 @@ export function createApi(baseUrl, fetcher = fetch) {
       }
       return await response.json();
     } catch (error) {
-      if (error.name === 'TimeoutError') throw new Error('API не ответил за 12 минут. Повторите запрос.');
+      if (error.name === 'TimeoutError') throw new Error(path === '/vacancies/url' ? 'Сайт вакансии отвечает слишком долго. Загрузите вакансию файлом.' : 'API не ответил за 12 минут. Повторите запрос.');
       if (error instanceof TypeError) throw new Error('Не удалось подключиться к API. Проверьте, запущен ли сервер.');
       throw error;
     }
@@ -52,6 +52,34 @@ export function createApi(baseUrl, fetcher = fetch) {
       const body = new FormData();
       body.append('resume', resume);
       return request('/jobs/match/case', { method: 'POST', body });
+    },
+    // Реестр открытых вакансий (D58): вакансии хранятся на сервере, на анализ уходит только резюме
+    startRegistry(mode, resumes) {
+      const batch = mode === 'batch';
+      const body = new FormData();
+      for (const resume of resumes) body.append(batch ? 'resumes' : 'resume', resume);
+      return request(batch ? '/jobs/batch/registry' : '/jobs/match/registry', { method: 'POST', body });
+    },
+    vacancies: () => request('/vacancies', { signal: AbortSignal.timeout(8000) }),
+    addVacancies(files) {
+      const body = new FormData();
+      for (const file of files) body.append('files', file);
+      return request('/vacancies', { method: 'POST', body });
+    },
+    addVacancyUrl: (url) => request('/vacancies/url', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url }),
+      signal: AbortSignal.timeout(40000),
+    }),
+    async deleteVacancy(id) {
+      try {
+        const response = await fetcher(`${base}/vacancies/${encodeURIComponent(id)}`, { method: 'DELETE', signal: AbortSignal.timeout(8000) });
+        if (!response.ok && response.status !== 404) throw new Error(`Ошибка API (${response.status})`);
+      } catch (error) {
+        if (error instanceof TypeError) throw new Error('Не удалось подключиться к API. Проверьте, запущен ли сервер.');
+        throw error;
+      }
     },
     job: (id) => request(`/jobs/${encodeURIComponent(id)}`, { signal: AbortSignal.timeout(15000) }),
     async waitJob(job, onProgress = () => {}, { interval = 800, sleep } = {}) {

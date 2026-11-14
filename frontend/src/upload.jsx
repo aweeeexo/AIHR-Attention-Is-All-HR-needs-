@@ -1,20 +1,28 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { ArrowRight, FileText, Paperclip, X } from '@phosphor-icons/react';
+import { RegistrySummary } from './vacancies.jsx';
 
 const formats = /\.(docx|pdf|rtf|txt)$/i;
 const accepted = '.docx,.pdf,.rtf,.txt';
 
-export function Upload({ mode, pending, submit, initialResumes }) {
+export function Upload({ mode, pending, submit, initialResumes, registry }) {
   const [resumes, setResumes] = useState(initialResumes || []);
   const [vacancies, setVacancies] = useState([]);
   const [resumeText, setResumeText] = useState('');
   const [vacancyText, setVacancyText] = useState('');
   const [resumeSource, setResumeSource] = useState('file');
   const [vacancySource, setVacancySource] = useState('file');
+  const touched = useRef(false);
+
+  // D58: есть открытые вакансии — по умолчанию сравниваем с ними, пока рекрутер не выбрал другое
+  useEffect(() => {
+    if (!touched.current && registry?.length) setVacancySource('registry');
+  }, [registry]);
   const batch = mode === 'batch';
   const activeResumeSource = batch ? 'file' : resumeSource;
   const resumeReady = activeResumeSource === 'text' ? resumeText.trim() : resumes.length;
-  const vacancyReady = vacancySource === 'text' ? vacancyText.trim() : vacancies.length;
+  const vacancyReady = vacancySource === 'registry' ? registry?.length
+    : vacancySource === 'text' ? vacancyText.trim() : vacancies.length;
   const ready = resumeReady && vacancyReady && (!batch || resumes.length <= 50);
 
   function handleSubmit(event) {
@@ -26,7 +34,7 @@ export function Upload({ mode, pending, submit, initialResumes }) {
     const vacancyDocs = vacancySource === 'text'
       ? [new File([vacancyText], 'вакансия.txt', { type: 'text/plain;charset=utf-8' })]
       : vacancies;
-    submit(resumeDocs, vacancyDocs);
+    submit(resumeDocs, vacancySource === 'registry' ? null : vacancyDocs);
   }
 
   return (
@@ -39,9 +47,12 @@ export function Upload({ mode, pending, submit, initialResumes }) {
           value={resumeText} setValue={setResumeText} disabled={pending} />
         <UploadCard id="vacancy" title="Вакансии"
           files={vacancies} setFiles={setVacancies} multiple canPaste source={vacancySource} setSource={setVacancySource}
-          value={vacancyText} setValue={setVacancyText} disabled={pending} />
+          value={vacancyText} setValue={setVacancyText} disabled={pending}
+          registry={registry} onSource={() => { touched.current = true; }} />
         <div className="submit-row">
-          {!ready && !pending && <span>Добавьте резюме и хотя бы одну вакансию.</span>}
+          {!ready && !pending && <span>{vacancySource === 'registry' && !registry?.length
+            ? 'В списке открытых вакансий пусто: добавьте вакансии или приложите файлы.'
+            : 'Добавьте резюме и хотя бы одну вакансию.'}</span>}
           <button className="button primary" type="submit" disabled={!ready || pending}>
             {pending ? 'Анализируем документы' : <>Начать анализ <ArrowRight size={18} aria-hidden="true" /></>}
           </button>
@@ -53,7 +64,7 @@ export function Upload({ mode, pending, submit, initialResumes }) {
 
 function UploadCard({
   id, title, description, files, setFiles, multiple, limit,
-  canPaste, source, setSource, value, setValue, disabled,
+  canPaste, source, setSource, value, setValue, disabled, registry, onSource,
 }) {
   const input = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -83,10 +94,11 @@ function UploadCard({
         {description && <p>{description}</p>}
       </div>
       {canPaste && <div className="source-control" role="group" aria-label={`Источник · ${title}`}>
-        <button type="button" aria-pressed={source === 'file'} onClick={() => setSource('file')}>Файлы</button>
-        <button type="button" aria-pressed={source === 'text'} onClick={() => setSource('text')}>Вставить текст</button>
+        {Array.isArray(registry) && <button type="button" aria-pressed={source === 'registry'} onClick={() => { onSource?.(); setSource('registry'); }}>Открытые вакансии{registry.length ? ` · ${registry.length}` : ''}</button>}
+        <button type="button" aria-pressed={source === 'file'} onClick={() => { onSource?.(); setSource('file'); }}>Файлы</button>
+        <button type="button" aria-pressed={source === 'text'} onClick={() => { onSource?.(); setSource('text'); }}>Вставить текст</button>
       </div>}
-      {source === 'text' ? (
+      {source === 'registry' ? <RegistrySummary registry={registry} /> : source === 'text' ? (
         <textarea aria-label={`Текст · ${title}`} value={value} onChange={(event) => setValue(event.target.value)}
           placeholder={id === 'resume' ? 'Вставьте текст резюме' : 'Вставьте описание вакансии'} />
       ) : (
